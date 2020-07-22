@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <% include ../partial/header %>
+        <div class="container w-1/2 my-5 text-center">
+            <h1 class="text-4xl">SIGN UP</h1>
+            <div class="my-10">
+                <form method="POST">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inputEmail4">이메일</label>
+                            <input type="email" class="form-control" id="inputEmail4" name="email" required />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputFarm">농장 이름</label>
+                            <input type="text" class="form-control" id="inputFarm" name="farm" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inputPassword4">비밀번호</label>
+                            <input type="password" class="form-control" id="inputPassword4" name="password" onKeyUp="checkPasswordStrength()" required />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputPasswordConfirm">비밀번호 확인</label>
+                            <input type="password" class="form-control" id="inputPasswordConfirm" name="passwordConfirm" onKeyUp="checkPasswordConfirm()" required />
+                        </div>
+                    </div>
+                    <div class="alert alert-danger" id="password-strength-status" role="alert">
+                        사용할 수 없는 비밀번호입니다
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="inputNickname">메이플 닉네임</label>
+                            <input type="text" class="form-control js_nickname" id="inputNickname" name="nickname" required />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="inputServer">서버</label>
+                            <input type="text" class="form-control js_server" id="inputServer" value="닉네임 찾기를 해주세요" name="server" readonly />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="inputGuild">길드</label>
+                            <input type="text" class="form-control js_guild" id="inputGuild" value="닉네임 찾기를 해주세요" name="guild" readonly />
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="inputSearchNickname">캐릭터 찾기</label>
+                            <input type="button" class="form-control btn btn-primary" id="inputSearchNickname" value="캐릭터 찾기" onclick="checkNickname()" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="gridCheck" required />
+                            <label class="form-check-label" for="gridCheck"> <strong class="text-red-400">[필수]</strong> 이용약관에 동의합니다 </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">회원가입</button>
+                </form>
+            </div>
+        </div>
+        <% include ../partial/foot %>
+        <br />
+        <% include ../partial/footer %>
+        <script src="/javascripts/signup.js"></script>
+    </body>
+</html>

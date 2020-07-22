@@ -3,6 +3,7 @@ import express from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
+import session from "express-session";
 
 import "./env";
 import "./db";
@@ -20,6 +21,17 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(
+    session({
+        key: process.env.SESSION_KEY,
+        secret: process.env.SESSION_SECRET,
+        resave: true,
+        saveUninitialized: true,
+        cookie: {
+            maxAge: 24000 * 60 * 60, // 쿠키 유효기간 24시간
+        },
+    })
+);
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
@@ -38,13 +50,13 @@ app.use(function (err, req, res, next) {
 
     // render the error page
     res.status(err.status || 500);
-    res.render("error");
+    res.render("error/error");
 });
 
 app.set("port", process.env.PORT || process.env.PORT);
 
 const server = app.listen(app.get("port"), function () {
-    console.log(`SERVER START WITH http://localhost:${server.address().port}/`);
+    console.log(`SERVER START AT http://localhost:${server.address().port}/`);
 });
 
 module.exports = app;
