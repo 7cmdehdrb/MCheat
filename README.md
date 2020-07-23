@@ -2,11 +2,10 @@
 
 # USER
 
-    [ ] Sign up<br>
-    [ ] Login<br>
-    [ ] Logout<br>
-    [ ] Find Accout<br>
-    [ ] Find Password<br>
+    [o] Sign up<br>
+    [o] Login<br>
+    [o] Logout<br>
+    [o] Find Password<br>
     [ ] Update Profile<br>
     [ ] Update Password<br>
     [ ] See Profile<br>

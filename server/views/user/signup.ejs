@@ -7,8 +7,8 @@
         <% include ../partial/header %>
         <div class="container w-1/2 my-5 text-center">
             <h1 class="text-4xl">SIGN UP</h1>
-            <div class="my-10">
-                <form method="POST">
+            <div>
+                <form class="my-10" method="POST">
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="inputEmail4">이메일</label>
@@ -35,7 +35,7 @@
                     <div class="form-row">
                         <div class="form-group col-md-4">
                             <label for="inputNickname">메이플 닉네임</label>
-                            <input type="text" class="form-control js_nickname" id="inputNickname" name="nickname" required />
+                            <input type="text" class="form-control js_nickname" id="inputNickname" name="nickname" placeholder="(대소문자 구분)" required />
                         </div>
                         <div class="form-group col-md-3">
                             <label for="inputServer">서버</label>
@@ -52,17 +52,22 @@
                     </div>
                     <div class="form-group">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="gridCheck" required />
-                            <label class="form-check-label" for="gridCheck"> <strong class="text-red-400">[필수]</strong> 이용약관에 동의합니다 </label>
+                            <input class="form-check-input js_agree" type="checkbox" id="gridCheck" required />
+                            <label class="form-check-label" for="gridCheck">
+                                <strong class="text-red-400">[필수]</strong> <a data-toggle="modal" data-target="#agreementModal" style="cursor: pointer; text-decoration: underline;">이용약관</a>에
+                                동의합니다
+                            </label>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary">회원가입</button>
                 </form>
+                이미 가입하셨다면
+                <a href="/users/login"
+                    ><i><strong>로그인</strong></i></a
+                >하세요!
             </div>
         </div>
-        <% include ../partial/foot %>
-        <br />
-        <% include ../partial/footer %>
+        <% include ../partial/agreement %> <% include ../partial/foot %> <% include ../partial/footer %>
         <script src="/javascripts/signup.js"></script>
     </body>
 </html>

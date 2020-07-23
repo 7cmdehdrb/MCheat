@@ -23,7 +23,11 @@
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="/users/logout">로그아웃</a>
-                    <a class="dropdown-item" href="#"><%= session.user.nickname %>님의 페이지 </a>
+                    <a class="dropdown-item" href="#"
+                        ><%= session.user.nickname %>님의 페이지 <% if(session.user.is_admin == true){ %>
+                        <span class="badge badge-secondary">ADMIN</span>
+                        <% } %>
+                    </a>
                 </div>
             </li>
             <% }else{ %>

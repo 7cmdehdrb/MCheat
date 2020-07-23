@@ -7,6 +7,10 @@ export const userSchema = new mongoose.Schema({
     server: { type: String, unique: false, required: true },
     guild: { type: String, unique: false, required: false },
     farm: { type: String, unique: false, required: false },
+    email_secret: { type: String, unique: true, required: false },
+    email_valid: { type: Boolean, unique: false, required: true, default: false },
+    is_admin: { type: Boolean, unique: false, required: true, default: false },
+    is_activated: { type: Boolean, unique: false, required: true, default: true },
 });
 
 export const userModel = mongoose.model("User", userSchema);

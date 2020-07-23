@@ -1,7 +1,10 @@
 import crypto from "crypto";
-import "./env";
 const axios = require("axios");
 const cheerio = require("cheerio");
+import nodemailer from "nodemailer";
+import smtpTransport from "nodemailer-smtp-transport";
+import { emailVerification, passwordReset } from "./emails";
+import "./env";
 
 const getWorld = (icon) => {
     const url = "https://ssl.nx.com/s2/game/maplestory/renewal/common/world_icon/";
@@ -71,8 +74,6 @@ export const getGuild = async (nickname) => {
                     });
                 });
 
-                getWorld(servers[5]);
-
                 return { guild: guilds[13] !== undefined ? guilds[13] : "길드없음", server: getWorld(servers[5]) };
             })
             .catch((err) => {
@@ -92,4 +93,74 @@ export const hashFunction = (password) => {
         .update(password + process.env.HASH)
         .digest("hex");
     return encodedPw;
+};
+
+function s4() {
+    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+}
+
+function guid() {
+    return s4() + s4() + s4() + s4() + s4();
+}
+
+export const createUUID = () => {
+    return guid();
+};
+
+export const sendMail = (address, secret) => {
+    const transporter = nodemailer.createTransport(
+        smtpTransport({
+            service: "gmail",
+            host: "smtp.gmail.com",
+            auth: {
+                user: process.env.EMAIL_ADDRESS,
+                pass: process.env.EMAIL_PASSWORD,
+            },
+        })
+    );
+
+    transporter.sendMail(
+        {
+            from: process.env.EMAIL_ADDRESS,
+            to: address,
+            subject: "MCheat 이메일 인증",
+            html: emailVerification(secret),
+        },
+        (err, info) => {
+            if (err) {
+                console.log(err);
+                return false;
+            }
+            console.log(info);
+        }
+    );
+};
+
+export const sendResetMail = (address, secret) => {
+    const transporter = nodemailer.createTransport(
+        smtpTransport({
+            service: "gmail",
+            host: "smtp.gmail.com",
+            auth: {
+                user: process.env.EMAIL_ADDRESS,
+                pass: process.env.EMAIL_PASSWORD,
+            },
+        })
+    );
+
+    transporter.sendMail(
+        {
+            from: process.env.EMAIL_ADDRESS,
+            to: address,
+            subject: "MCheat 비밀번호 초기화",
+            html: passwordReset(secret),
+        },
+        (err, info) => {
+            if (err) {
+                console.log(err);
+                return false;
+            }
+            console.log(info);
+        }
+    );
 };

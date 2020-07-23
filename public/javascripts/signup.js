@@ -5,6 +5,7 @@ let passwordConfirm = false;
 const nicknameInput = document.querySelector(".js_nickname");
 const serverInput = document.querySelector(".js_server");
 const guildInput = document.querySelector(".js_guild");
+const agreeInput = document.querySelector(".js_agree");
 
 document.addEventListener("submit", (ev) => {
     if (check == false) {
@@ -42,6 +43,10 @@ checkNickname = () => {
             }
         })
         .catch((err) => console.log(err));
+};
+
+agree = () => {
+    agreeInput.checked = true;
 };
 
 function checkPasswordStrength() {

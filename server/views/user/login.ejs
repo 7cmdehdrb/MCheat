@@ -6,8 +6,9 @@
     <body>
         <% include ../partial/header %>
         <div class="container w-1/2 my-5 text-center">
+            <% if(show == "true"){ %> <% include ../partial/toast %> <% } %>
             <h1 class="text-4xl my-4">LOGIN</h1>
-            <div class="my-10">
+            <div class="mt-10 mb-5">
                 <form method="POST" class="w-1/2 mx-auto">
                     <div class="form-group">
                         <label for="exampleInputEmail1">이메일</label>
@@ -17,12 +18,18 @@
                         <label for="exampleInputPassword1">비밀번호</label>
                         <input type="password" class="form-control" id="exampleInputPassword1" name="password" required />
                     </div>
-                    <button type="submit" class="btn btn-primary">로그인</button>
+                    <div class="form-group flex mb-5">
+                        <div class="flex-1">
+                            <a href="/users/signup">회원가입</a>
+                        </div>
+                        <div class="flex-1">
+                            <a href="/users/findPassword">비밀번호 찾기</a>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-lg btn-block">로그인</button>
                 </form>
             </div>
         </div>
-        <% include ../partial/foot %>
-        <br />
-        <% include ../partial/footer %>
+        <% include ../partial/foot %> <% include ../partial/footer %>
     </body>
 </html>

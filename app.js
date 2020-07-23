@@ -4,6 +4,7 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import session from "express-session";
+import flash from "connect-flash";
 
 import "./env";
 import "./db";
@@ -32,6 +33,7 @@ app.use(
         },
     })
 );
+app.use(flash());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
