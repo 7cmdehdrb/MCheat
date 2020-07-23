@@ -4,7 +4,11 @@ var router = express.Router();
 /* GET home page. */
 router.get("/", (req, res, next) => {
     const { session } = req;
-    res.render("core/index", { session: session });
+
+    const show = req.flash("show");
+    const message = req.flash("message");
+
+    res.render("core/index", { session: session, show: show, message: message });
 });
 
 module.exports = router;

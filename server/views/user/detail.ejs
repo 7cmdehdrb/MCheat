@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <% include ../partial/header %>
+        <div class="container w-1/2 my-5 text-center">
+            <% if(show == "true"){ %> <% include ../partial/toast %> <% } %>
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="card-title mb-4">
+                                    <div class="d-flex justify-content-start">
+                                        <div class="image-container">
+                                            <img src="<%= user.profile %> " id="imgProfile" style="width: 150px; height: 150px;" class="img-thumbnail" />
+                                        </div>
+                                        <div class="userData ml-3 mt-4 text-left">
+                                            <h2 class="d-block" style="font-size: 1.5rem; font-weight: bold;">
+                                                <%= user.nickname %> <% if(user.is_admin == true){ %>
+                                                <span class="badge badge-secondary">ADMIN</span>
+                                                <% } %>
+                                            </h2>
+                                            <p class="mt-4 text-left">
+                                                <% if(user.bio == "" || !user.bio){ %> 소개가 없습니다 <% }else{ %> <%= user.bio %> <% } %>
+                                            </p>
+                                        </div>
+                                        <div class="ml-auto">
+                                            <input type="button" class="btn btn-primary d-none" id="btnDiscard" value="Discard Changes" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+                                            <li class="nav-item">
+                                                <a class="nav-link active" id="basicInfo-tab" data-toggle="tab" href="#basicInfo" role="tab" aria-controls="basicInfo" aria-selected="true">기본정보</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a
+                                                    class="nav-link"
+                                                    id="connectedServices-tab"
+                                                    data-toggle="tab"
+                                                    href="#connectedServices"
+                                                    role="tab"
+                                                    aria-controls="connectedServices"
+                                                    aria-selected="false"
+                                                    >서비스</a
+                                                >
+                                            </li>
+                                        </ul>
+                                        <div class="tab-content ml-1" id="myTabContent">
+                                            <div class="tab-pane fade show active" id="basicInfo" role="tabpanel" aria-labelledby="basicInfo-tab">
+                                                <div class="row pt-3 pb-2">
+                                                    <div class="col-sm-3 col-md-2 col-5">
+                                                        <label style="font-weight: bold;">이메일</label>
+                                                    </div>
+                                                    <div class="col-md-8 col-6">
+                                                        <%= user.email %>
+                                                    </div>
+                                                </div>
+                                                <hr />
+
+                                                <div class="row pt-3 pb-2">
+                                                    <div class="col-sm-3 col-md-2 col-5">
+                                                        <label style="font-weight: bold;">서버</label>
+                                                    </div>
+                                                    <div class="col-md-8 col-6">
+                                                        <img class="inline-block" src="/images/server/<%= user.server %>.png" alt="<%= user.server %>" />
+                                                        <div class="inline-block"><%= user.server %></div>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                                <div class="row pt-3 pb-2">
+                                                    <div class="col-sm-3 col-md-2 col-5">
+                                                        <label style="font-weight: bold;">길드</label>
+                                                    </div>
+                                                    <div class="col-md-8 col-6">
+                                                        <%= user.guild %>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                                <div class="row pt-3 pb-2">
+                                                    <div class="col-sm-3 col-md-2 col-5">
+                                                        <label style="font-weight: bold;">농장명</label>
+                                                    </div>
+                                                    <div class="col-md-8 col-6">
+                                                        <%= user.farm %>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                                <div class="row pt-3 pb-2">
+                                                    <div class="col-sm-3 col-md-2 col-5">
+                                                        <label style="font-weight: bold;">이메일 인증</label>
+                                                    </div>
+                                                    <div class="col-md-8 col-6">
+                                                        <% if(user.email_valid){ %>
+                                                        <i class="fas fa-check-circle text-green-500"></i>
+                                                        <% }else{ %>
+                                                        <i class="fas fa-times-circle text-red-500"></i>
+                                                        <% } %>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                            </div>
+                                            <div class="tab-pane fade" id="connectedServices" role="tabpanel" aria-labelledby="ConnectedServices-tab">
+                                                Comming soon...
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <% if(session.user){ %> <% if(user.email == session.user.email){ %>
+                                <div class="btn-group btn-group-lg mt-4" role="group" aria-label="Basic example">
+                                    <button type="button" class="btn btn-secondary" onclick="javascript: location.href='/users/editProfile'">기본정보 수정</button>
+                                    <button type="button" class="btn btn-secondary" onclick="javascript: location.href='/users/changePassword'">비밀번호 변경</button>
+                                    <% if(session.user){ %> <% if(session.user.is_admin == true){ %>
+                                    <button type="button" class="btn btn-secondary">유저 비활성화</button>
+                                    <button type="button" class="btn btn-secondary">유저 삭제</button>
+                                    <% }} %>
+                                </div>
+                                <% }} %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% include ../partial/foot %> <% include ../partial/footer %>
+    </body>
+</html>

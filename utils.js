@@ -74,7 +74,7 @@ export const getGuild = async (nickname) => {
                     });
                 });
 
-                return { guild: guilds[13] !== undefined ? guilds[13] : "길드없음", server: getWorld(servers[5]) };
+                return { guild: guilds[13] !== undefined ? guilds[13] : "길드없음", server: getWorld(servers[5]), profile: servers[3] };
             })
             .catch((err) => {
                 console.log("ERROR!" + err);

@@ -9,8 +9,9 @@ import flash from "connect-flash";
 import "./env";
 import "./db";
 
-const indexRouter = require("./server/routes/index");
-const usersRouter = require("./server/routes/users");
+import indexRouter from "./server/routes/index";
+import usersRouter from "./server/routes/users";
+import adminRouter from "./server/routes/admin";
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+app.use("/admin", adminRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

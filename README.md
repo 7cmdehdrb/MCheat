@@ -6,9 +6,9 @@
     [o] Login<br>
     [o] Logout<br>
     [o] Find Password<br>
-    [ ] Update Profile<br>
-    [ ] Update Password<br>
-    [ ] See Profile<br>
+    [o] Update Profile<br>
+    [o] Update Password<br>
+    [o] See Profile<br>
 
 # CHEAT
 

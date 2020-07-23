@@ -1,68 +1,18 @@
-let check = false;
 let passwordValid = false;
 let passwordConfirm = false;
-
-const nicknameInput = document.querySelector(".js_nickname");
-const serverInput = document.querySelector(".js_server");
-const guildInput = document.querySelector(".js_guild");
-const profileInput = document.querySelector(".js_profile");
-const agreeInput = document.querySelector(".js_agree");
-
-document.addEventListener("submit", (ev) => {
-    if (check == false) {
-        ev.preventDefault();
-        alert("캐릭터 찾기를 해주세요");
-        return;
-    }
-
-    if (passwordValid == false) {
-        ev.preventDefault();
-        alert("비밀번호가 충분히 강력하지 않습니다");
-        return;
-    }
-
-    if (passwordConfirm == false) {
-        ev.preventDefault();
-        alert("비밀번호가 서로 일치하지 않습니다");
-        return;
-    }
-});
-
-checkNickname = () => {
-    check = false;
-
-    const nickname = nicknameInput.value;
-    serverInput.value = "로딩중...";
-    guildInput.value = "로딩중...";
-    fetch(`/users/searchNickname?id=${nickname}`)
-        .then((Response) => Response.json())
-        .then((json) => {
-            serverInput.value = json.server;
-            guildInput.value = json.guild;
-            profileInput.value = json.profile;
-            if (json.server != "캐릭터를 찾을 수 없습니다") {
-                check = true;
-            }
-        })
-        .catch((err) => console.log(err));
-};
-
-agree = () => {
-    agreeInput.checked = true;
-};
 
 function checkPasswordStrength() {
     passwordValid = false;
     var number = /([0-9])/;
     var alphabets = /([a-zA-Z])/;
     var special_characters = /([~,!,@,#,$,%,^,&,*,-,_,+,=,?,>,<])/;
-    if ($("#inputPassword4").val().length < 6) {
+    if ($("#inputPassword").val().length < 6) {
         $("#password-strength-status").removeClass();
         $("#password-strength-status").addClass("alert");
         $("#password-strength-status").addClass("alert-danger");
         $("#password-strength-status").html("비밀번호가 안전도가 너무 낮습니다");
     } else {
-        if ($("#inputPassword4").val().match(number) && $("#inputPassword4").val().match(alphabets) && $("#inputPassword4").val().match(special_characters)) {
+        if ($("#inputPassword").val().match(number) && $("#inputPassword").val().match(alphabets) && $("#inputPassword").val().match(special_characters)) {
             $("#password-strength-status").removeClass();
             $("#password-strength-status").addClass("alert");
             $("#password-strength-status").addClass("alert-success");
@@ -79,7 +29,7 @@ function checkPasswordStrength() {
 
 function checkPasswordConfirm() {
     passwordConfirm = false;
-    if ($("#inputPassword4").val() === $("#inputPasswordConfirm").val()) {
+    if ($("#inputPassword").val() === $("#inputConfirmPassword").val()) {
         $("#password-strength-status").removeClass();
         $("#password-strength-status").addClass("alert");
         $("#password-strength-status").addClass("alert-success");
@@ -92,3 +42,17 @@ function checkPasswordConfirm() {
         $("#password-strength-status").html("비밀번호가 서로 일치하지 않습니다");
     }
 }
+
+window.addEventListener("submit", (ev) => {
+    if (passwordValid == false || passwordConfirm == false) {
+        ev.preventDefault();
+        alert("비밀번호가 충분히 강하지 않거나, 서로 일치하지 않습니다");
+        return;
+    }
+
+    if ($("#inputPassword").val() == $("#current_password").val()) {
+        ev.preventDefault();
+        alert("변경할 비밀번호가 현 비밀번호와 같습니다");
+        return;
+    }
+});

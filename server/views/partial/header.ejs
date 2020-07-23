@@ -22,12 +22,12 @@
                     <span class="navbar-brand">사용자 관리</span>
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="/users/logout">로그아웃</a>
-                    <a class="dropdown-item" href="#"
+                    <a class="dropdown-item" href="/users/userProfile"
                         ><%= session.user.nickname %>님의 페이지 <% if(session.user.is_admin == true){ %>
                         <span class="badge badge-secondary">ADMIN</span>
                         <% } %>
                     </a>
+                    <a class="dropdown-item" href="/users/logout">로그아웃</a>
                 </div>
             </li>
             <% }else{ %>

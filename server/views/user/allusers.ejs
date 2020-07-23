@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <% include ../partial/header %>
+
+        <div class="container w-10/12 mx-auto my-10">
+            <h1 class="text-4xl text-center">USER LIST</h1>
+            <table class="table-auto mx-auto my-4 text-center">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">email</th>
+                        <th class="px-4 py-2">nickname</th>
+                        <th class="px-4 py-2">server</th>
+                        <th class="px-4 py-2">guild</th>
+                        <th class="px-4 py-2">farm</th>
+                        <th class="px-4 py-2">email_secret</th>
+                        <th class="px-4 py-2">email_valid</th>
+                        <th class="px-4 py-2">is_admin</th>
+                        <th class="px-4 py-2">is_activated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% users.forEach(element => { %>
+                    <tr>
+                        <td class="border px-4 py-2"><a href="/users/userProfile?id=<%= element.email %>"><%= element.email %></a></td>
+                        <td class="border px-4 py-2"><%= element.nickname %></td>
+                        <td class="border px-4 py-2"><%= element.server %></td>
+                        <td class="border px-4 py-2"><%= element.guild %></td>
+                        <td class="border px-4 py-2"><%= (element.farm == "") ? "농장없음" : element.farm %></td>
+                        <td class="border px-4 py-2"><%= element.email_secret %></td>
+                        <td class="border px-4 py-2">
+                            <% if(element.email_valid){ %>
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <% }else{ %>
+                            <i class="fas fa-times-circle text-red-500"></i>
+                            <% } %>
+                        </td>
+                        <td class="border px-4 py-2">
+                            <% if(element.is_admin){ %>
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <% }else{ %>
+                            <i class="fas fa-times-circle text-red-500"></i>
+                            <% } %>
+                        </td>
+                        <td class="border px-4 py-2">
+                            <% if(element.is_activated){ %>
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <% }else{ %>
+                            <i class="fas fa-times-circle text-red-500"></i>
+                            <% } %>
+                        </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation mx-auto">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item <%= (current_page == 1) ? "disabled" : "" %> ">
+                        <a class="page-link" href="/admin/allusers?page=<%= current_page - 1 %>">Prev</a>
+                    </li>
+                    <% for(let i=1; i <= all_page; i++){ %>
+                    <li class="page-item <%= (i == current_page) ? "active" : "" %>" ><a class="page-link" href="/admin/allusers?page=<%= i %>" ><%= i %> </a></li>
+                    <% } %>
+                    <li class="page-item <%= (current_page == all_page) ? "disabled" : "" %>">
+                        <a class="page-link" href="/admin/allusers?page=<%= current_page + 1 %>">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <% include ../partial/foot %> <% include ../partial/footer %>
+    </body>
+</html>

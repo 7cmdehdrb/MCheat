@@ -5,8 +5,8 @@ import { getGuild, hashFunction, createUUID, sendMail, sendResetMail } from "../
 
 /* GET users listing. */
 router.get("/", async (req, res, next) => {
-    // const allUser = await userModel.deleteOne().where("email").equals("7cmdehdrb@naver.com");
-    const allUser = await userModel.find().exec();
+    const allUser = await userModel.deleteOne().where("email").equals("7cmdehdrb@naver.com");
+    // const allUser = await userModel.find().exec();
     res.json(allUser);
 });
 
@@ -26,7 +26,13 @@ router.post("/login", async (req, res, next) => {
     const { session } = req;
     const { email, password } = req.body;
 
-    const user = await userModel.findOne().where("email").equals(email).where("password").equals(hashFunction(password)).select("email nickname server guild farm email_valid is_admin is_activated");
+    // const user = await userModel.findOne().where("email").equals(email).where("password").equals(hashFunction(password)).select("email nickname server guild farm email_valid is_admin is_activated");
+
+    const user = await userModel
+        .findOne({
+            $and: [{ email: email }, { password: hashFunction(password) }],
+        })
+        .exec();
 
     if (user !== null) {
         if (user.email_valid == false) {
@@ -77,7 +83,7 @@ router.get("/signup", (req, res, next) => {
 });
 
 router.post("/signup", async (req, res, next) => {
-    const { email, password, nickname, server, guild, farm } = req.body;
+    const { email, password, nickname, server, guild, farm, profile } = req.body;
 
     await userModel
         .create({
@@ -87,6 +93,7 @@ router.post("/signup", async (req, res, next) => {
             server,
             guild,
             farm,
+            profile,
             email_secret: createUUID(),
             email_valid: false,
             is_admin: false,
@@ -104,6 +111,143 @@ router.post("/signup", async (req, res, next) => {
             req.flash("message", "회원가입에 실패하였습니다. 이 오류가 지속되면 관리자에게 문의해주세요");
             res.redirect("/users/signup");
         });
+});
+
+router.get("/userProfile", async (req, res, next) => {
+    const { session } = req;
+    const { id } = req.query;
+
+    const show = req.flash("show");
+    const message = req.flash("message");
+
+    let targetUser;
+
+    if (!id) {
+        if (!session.user) {
+            res.redirect("/");
+        } else {
+            targetUser = await userModel
+                .findOne({
+                    email: session.user.email,
+                })
+                .exec();
+        }
+    } else {
+        targetUser = await userModel
+            .findOne({
+                email: id,
+            })
+            .exec();
+
+        if (targetUser === null) {
+            res.redirect("/");
+            return;
+        }
+    }
+
+    res.render("user/detail", { session: session, user: targetUser, show: show, message: message });
+});
+
+router.get("/editProfile", (req, res, next) => {
+    const { session } = req;
+
+    const show = req.flash("show");
+    const message = req.flash("message");
+
+    if (!session.user) {
+        res.redirect("/users/login");
+    } else {
+        res.render("user/editProfile", { session: session, show: show, message: message });
+    }
+});
+
+router.post("/editProfile", async (req, res, next) => {
+    const { session } = req;
+    const { farm, nickname, server, guild, profile, bio } = req.body;
+
+    await userModel
+        .updateOne(
+            {
+                email: session.user.email,
+            },
+            {
+                $set: {
+                    nickname,
+                    server,
+                    guild,
+                    farm,
+                    profile,
+                    bio,
+                },
+            }
+        )
+        .then(() => {
+            req.flash("show", "true");
+            req.flash("message", "정보를 변경했습니다");
+            res.redirect("/users/userProfile");
+        })
+        .catch((err) => {
+            console.log(err);
+            req.flash("show", "true");
+            req.flash("message", "정보를 변경할 수 없습니다. 이미 사용중인 캐릭터일 수 있습니다");
+            res.redirect("/users/editProfile");
+        });
+});
+
+router.get("/changePassword", (req, res, next) => {
+    const { session } = req;
+
+    const show = req.flash("show");
+    const message = req.flash("message");
+
+    if (!session.user) {
+        res.redirect("/users/login");
+        return;
+    }
+
+    res.render("user/changePassword", { session: session, show: show, message: message });
+});
+
+router.post("/changePassword", async (req, res, next) => {
+    const { session } = req;
+    const { current_password, password } = req.body;
+
+    if (session.user) {
+        await userModel
+            .update(
+                {
+                    $and: [
+                        {
+                            email: session.user.email,
+                        },
+                        {
+                            password: hashFunction(current_password),
+                        },
+                    ],
+                },
+                {
+                    $set: {
+                        password: hashFunction(password),
+                    },
+                }
+            )
+            .then((user) => {
+                req.flash("show", "true");
+                if (user.nModified == 0) {
+                    req.flash("message", "정보를 변경할 수 없습니다");
+                    res.redirect("/users/changePassword");
+                } else {
+                    req.flash("message", "정보를 변경했습니다");
+                    res.redirect("/users/userProfile");
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+                req.flash("show", "true");
+                req.flash("message", "정보를 변경할 수 없습니다");
+                res.redirect("/users/editProfile");
+            });
+    }
 });
 
 router.get("/findPassword", (req, res, next) => {
@@ -219,11 +363,12 @@ router.get("/verifyEmail", async (req, res, next) => {
 router.get("/searchNickname", async (req, res, next) => {
     const { id } = req.query;
 
-    const { guild, server } = await getGuild(id);
+    const { guild, server, profile } = await getGuild(id);
 
     res.json({
         guild: guild,
         server: server,
+        profile: profile,
     });
 });
 
