@@ -105,6 +105,21 @@
                                                     </div>
                                                 </div>
                                                 <hr />
+                                                <% if(session.user.is_admin == true){ %>
+                                                <div class="row pt-3 pb-2">
+                                                    <div class="col-sm-3 col-md-2 col-5">
+                                                        <label style="font-weight: bold;">유저 활성화</label>
+                                                    </div>
+                                                    <div class="col-md-8 col-6">
+                                                        <% if(user.is_activated){ %>
+                                                        <i class="fas fa-check-circle text-green-500"></i>
+                                                        <% }else{ %>
+                                                        <i class="fas fa-times-circle text-red-500"></i>
+                                                        <% } %>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                                <% } %>
                                             </div>
                                             <div class="tab-pane fade" id="connectedServices" role="tabpanel" aria-labelledby="ConnectedServices-tab">
                                                 Comming soon...
@@ -113,22 +128,39 @@
                                     </div>
                                 </div>
 
-                                <% if(session.user){ %> <% if(user.email == session.user.email){ %>
                                 <div class="btn-group btn-group-lg mt-4" role="group" aria-label="Basic example">
+                                    <% if(session.user.email == user.email){ %>
                                     <button type="button" class="btn btn-secondary" onclick="javascript: location.href='/users/editProfile'">기본정보 수정</button>
                                     <button type="button" class="btn btn-secondary" onclick="javascript: location.href='/users/changePassword'">비밀번호 변경</button>
-                                    <% if(session.user){ %> <% if(session.user.is_admin == true){ %>
-                                    <button type="button" class="btn btn-secondary">유저 비활성화</button>
-                                    <button type="button" class="btn btn-secondary">유저 삭제</button>
-                                    <% }} %>
+                                    <% } if(session.user.is_admin == true && session.user.email != user.email){ %>
+                                    <button type="button" class="btn btn-secondary" onclick="javascript: location.href='/admin/editProfile?id=<%= user.email %>'">기본정보 수정</button>
+                                    <button
+                                        type="button"
+                                        class="btn btn-secondary"
+                                        onclick="javascript: location.href='/admin/changeActivation?id=<%= user.email %>&status=<%= (user.is_activated == true) ? `activate` : `unactivate` %>'"
+                                    >
+                                        유저(비)활성화
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" onclick="deleteUser()">유저 완전삭제</button>
+                                    <% } %>
                                 </div>
-                                <% }} %>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <script>
+            const userEmail = "<%= user.email %>";
+        </script>
+        <script>
+            deleteUser = () => {
+                let confirm = prompt("유저를 완전히 삭제하며, 복구할 수 없습니다\n정말 삭제하려면 \n<<%= user.email %>을(를) 완전히 삭제합니다.> 라고 입력해주세요");
+                if (confirm == `${userEmail}을(를) 완전히 삭제합니다.`) {
+                    location.href = `/admin/deleteUser?id=${userEmail}`;
+                }
+            };
+        </script>
         <% include ../partial/foot %> <% include ../partial/footer %>
     </body>
 </html>

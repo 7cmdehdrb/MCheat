@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <% include ../partial/header %>
+        <div class="container w-1/2 mx-auto">
+            <% if(show == "true"){ %> <% include ../partial/toast %> <% } %> 
+            <h1 class="text-4xl text-center my-10">ADMIN MENU</h1>
+            <div class="list-group text-center mb-10">
+                <a href="/admin/allUsers" class="list-group-item list-group-item-action">모든 유저 보기</a>
+                <a href="/admin/getAdminPermission" class="list-group-item list-group-item-action <%= (session.user.is_admin == true) ? "disabled" : "" %> ">관리자권한 받기</a>
+            </div>
+        </div>
+
+        <% include ../partial/foot %> <% include ../partial/footer %>
+    </body>
+</html>

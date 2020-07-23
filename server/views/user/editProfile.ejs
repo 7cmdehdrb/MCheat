@@ -13,18 +13,18 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="inputEmail4">이메일</label>
-                            <input type="email" class="form-control" id="inputEmail4" name="email" value="<%= session.user.email %> " readonly />
+                            <input type="email" class="form-control" id="inputEmail4" name="email" value="<%= defaultUser.email %> " readonly />
                         </div>
                         <div class="form-group col-md-6">
                             <label for="inputFarm">농장 이름</label>
-                            <input type="text" class="form-control" id="inputFarm" name="farm" value="<%= session.user.farm %> " />
+                            <input type="text" class="form-control" id="inputFarm" name="farm" value="<%= defaultUser.farm %> " />
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group col-md-4">
                             <label for="inputNickname">메이플 닉네임</label>
-                            <input type="text" class="form-control js_nickname" id="inputNickname" name="nickname" value="<%= session.user.nickname %>" placeholder="(대소문자 구분)" required />
+                            <input type="text" class="form-control js_nickname" id="inputNickname" name="nickname" value="<%= defaultUser.nickname %>" placeholder="(대소문자 구분)" required />
                         </div>
                         <div class="form-group col-md-3">
                             <label for="inputServer">서버</label>
@@ -41,7 +41,7 @@
                     </div>
                     <div class="form-row mb-4">
                         <label for="inputBio">한줄소개</label>
-                        <textarea class="form-control" id="inputBio" name="bio" rows="3"><%= session.user.bio %></textarea>
+                        <textarea class="form-control" id="inputBio" name="bio" rows="3"><%= defaultUser.bio %></textarea>
                     </div>
                     <input type="hidden" class="js_profile" name="profile" />
                     <button type="submit" class="btn btn-primary">수정하기</button>

@@ -28,6 +28,9 @@
                         <% } %>
                     </a>
                     <a class="dropdown-item" href="/users/logout">로그아웃</a>
+                    <% if(session.user.is_admin == true){ %>
+                    <a class="dropdown-item" href="/admin">관리자모드</a>
+                    <% } %>
                 </div>
             </li>
             <% }else{ %>
