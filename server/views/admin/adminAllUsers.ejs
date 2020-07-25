@@ -109,13 +109,13 @@
 
             <% users.forEach(element => { %>
 
-                <div class="card my-3" style="width: 18rem;">
+                <div class="card mx-auto my-3" style="width: 18rem;">
                     <img src="<%= element.profile %>" class="card-img-top" alt="profile">
                     <div class="card-body" onclick="javascript: location.href='/users/userProfile?id=<%= element.email %>'">
                     <h5 class="card-title text-2xl"><%= element.nickname %>
                     <img class="inline-block" src="/images/server/<%= element.server %>.png" alt="<%= element.server %>" />
                     <% if(element.is_admin == true){ %>
-                        <span class="badge badge-secondary">ADMIN</span>
+                        <span class="badge badge-pill badge-success">ADMIN</span>
                     <% } %>
                     </h5>
                     <small><%= element.email %></small>
@@ -154,6 +154,8 @@
 
             <!-- Mobile List End -->
 
+            <!-- Paginator -->
+
             <nav aria-label="Page navigation mx-auto">
                 <ul class="pagination justify-content-center">
                     <li class="page-item <%= (current_page == 1) ? "disabled" : "" %> ">
@@ -165,6 +167,9 @@
                     </li>
                 </ul>
             </nav>
+
+            <!-- Paginator End -->
+
         </div>
 
         <% include ../partial/foot %> <% include ../partial/footer %>

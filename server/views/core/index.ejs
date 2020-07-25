@@ -67,7 +67,7 @@
                 <li class="list-group-item" onclick="javascript: location.href='/communities/list'"><i class="far fa-comments"></i> 커뮤니티</span></li>
                 <% if(session.user){ %>
                     <li class="list-group-item" onclick="javascript: location.href='/users/userProfile'">
-                        <%= session.user.nickname %>님의 페이지
+                        마이 페이지
                         <% if(session.user.is_admin == true){ %>
                         <span class="badge badge-secondary">ADMIN</span>
                         <% } %> 

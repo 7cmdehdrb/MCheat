@@ -10,8 +10,10 @@
             <!-- Buttons -->
             <div class="my-2">
                 <div class="btn-group" role="group" aria-label="Basic example">
-                    <button type="button" class="btn btn-secondary" onclick="javascript: location.href='/communities/list'">전체목록</button>
-                    <button type="button" class="btn btn-secondary" onclick="javascript: history.back()">뒤로가기</button>
+                    <% if(session.user) { if(session.user.email == detail.writer.email){ %> 
+                        <button type="button" class="btn btn-secondary text-sm lg:text-lg" onclick="javascript: location.href='/communities/updatePost?id=<%= detail._id %>'">수정하기</button>
+                        <button type="button" class="btn btn-secondary text-sm lg:text-lg" onclick="deletePost('<%= detail._id %>')">삭제하기</button>
+                    <% }} %> 
                 </div>
             </div>
             <!-- Buttons End -->
@@ -82,11 +84,10 @@
             <% if(session.user){ %>
                 <div class="w-full flex my-5 justify-between">
                     <div class="btn-group" role="group" aria-label="Basic example">
-                        <% if(session.user.email == detail.writer.email){ %> 
-                            <button type="button" class="btn btn-secondary text-sm lg:text-lg" onclick="javascript: location.href='/communities/updatePost?id=<%= detail._id %>'">수정하기</button>
-                            <button type="button" class="btn btn-secondary text-sm lg:text-lg" onclick="deletePost('<%= detail._id %>')">삭제하기</button>
-                            <% } %> 
+                        <button type="button" class="btn btn-secondary text-sm lg:text-lg" onclick="javascript: location.href='/communities/list'">전체목록</button>
+                        <button type="button" class="btn btn-secondary text-sm lg:text-lg" onclick="javascript: history.back()">뒤로가기</button>
                     </div>
+                    
                     <div>
                         <button type="button" class="btn btn-outline-success text-sm lg:text-lg" onclick="likePost('<%= detail._id %>')"><i class="far fa-thumbs-up"></i> 추천하기</button>
                         <button type="button" class="btn btn-outline-danger text-sm lg:text-lg" onclick="javascript: alert('Comming Soon...')"><i class="far fa-thumbs-down"></i> 신고하기</button>

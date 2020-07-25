@@ -5,9 +5,15 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 import session from "express-session";
 import flash from "connect-flash";
+import admin from "sriracha";
+import rateLimit from "express-rate-limit";
+import ipblock from "express-ip-block";
+import helmet from "helmet";
 
 import "./env";
 import "./db";
+
+import { bannedIps, getBannedIps } from "./server/models/ips";
 
 import indexRouter from "./server/routes/index";
 import usersRouter from "./server/routes/users";
@@ -20,8 +26,20 @@ const app = express();
 app.set("views", path.join(__dirname, "server/views"));
 app.set("view engine", "ejs");
 
+getBannedIps();
+
+app.use(ipblock(bannedIps, { allow: false, allowForwarded: true }), (req, res, next) => {
+    next();
+});
+app.use(
+    rateLimit({
+        windowMs: 1 * 60 * 1000, // 1min
+        max: 10 * 100,
+    })
+);
+
 app.use(logger("common"));
-// app.use(logger("dev"));
+// app.use(logger(" dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -37,10 +55,21 @@ app.use(
     })
 );
 app.use(flash());
+app.use(helmet());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 app.use("/admin", adminRouter);
+app.use(
+    "/express-admin",
+    admin({
+        username: process.env.ADMIN_USERNAME,
+        password: process.env.ADMIN_PASSWORD,
+        User: {
+            searchField: "email",
+        },
+    })
+);
 app.use("/users", usersRouter);
 app.use("/communities", communityRouter);
 

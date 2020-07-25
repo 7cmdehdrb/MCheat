@@ -1,7 +1,8 @@
 var express = require("express");
 var router = express.Router();
 import sanitize from "mongo-sanitize";
-const { User } = require("../models/users");
+import { User } from "../models/users";
+import { IP, getBannedIps } from "../models/ips";
 import "../../env";
 
 router.get("/", (req, res, next) => {
@@ -85,6 +86,120 @@ router.post("/getAdminPermission", async (req, res, next) => {
         req.flash("show", "true");
         req.flash("message", "관리자 키가 일치하지 않습니다");
         res.redirect("/");
+    }
+});
+
+// 차단 유저 관리
+
+router.get("/prohibitIp", async (req, res, next) => {
+    const { session } = req;
+    const { page } = req.query;
+
+    if (!session.user) {
+        res.redirect("/users/login");
+        return;
+    }
+
+    if (session.user.is_admin == false) {
+        req.flash("show", "true");
+        req.flash("message", "관리자 전용 기능입니다");
+        res.redirect("/");
+        return;
+    }
+
+    const show = req.flash("show");
+    const message = req.flash("message");
+
+    await IP.paginate(
+        {
+            // query
+        },
+        {
+            sort: "ip",
+            page: page || 1,
+            limit: 20,
+        },
+        {}
+    )
+        .then((ip) => {
+            const { docs, page, totalPages } = ip;
+            res.render("admin/prohibitIp", { session: session, ip: docs, current_page: page, total_page: totalPages, show: show, message: message });
+        })
+        .catch((err) => {
+            console.log(err);
+            req.flash("show", "true");
+            req.flash("message", "알 수 없는 오류가 발생했습니다");
+            res.redirect("/");
+        });
+});
+
+router.get("/removeProhibition", async (req, res, next) => {
+    const { session } = req;
+    const { id } = req.query;
+
+    if (!session.user) {
+        res.redirect("/users/login");
+        return;
+    }
+
+    if (session.user.is_admin == false) {
+        req.flash("show", "true");
+        req.flash("message", "관리자 전용 기능입니다");
+        res.redirect("/");
+        return;
+    }
+
+    const removeIp = await IP.deleteOne({
+        _id: sanitize(id),
+    });
+
+    if (removeIp.deletedCount == 1) {
+        await getBannedIps();
+
+        req.flash("show", "true");
+        req.flash("message", "삭제에 성공했습니다");
+        res.redirect("/admin/prohibitIp");
+    } else {
+        console.log(removeIp);
+
+        req.flash("show", "true");
+        req.flash("message", "삭제에 실패하였습니다");
+        res.redirect("/admin/prohibitIp");
+    }
+});
+
+router.post("/newProhibition", async (req, res, next) => {
+    const { session } = req;
+    const { ip } = req.body;
+
+    if (!session.user) {
+        res.redirect("/users/login");
+        return;
+    }
+
+    if (session.user.is_admin == false) {
+        req.flash("show", "true");
+        req.flash("message", "관리자 전용 기능입니다");
+        res.redirect("/");
+        return;
+    }
+
+    const newIp = await IP.create({
+        ip: sanitize(ip),
+    }).catch((err) => {
+        console.log(err);
+    });
+
+    if (newIp == null) {
+        req.flash("show", "true");
+        req.flash("message", "추가에 실패하였습니다");
+        res.redirect("/admin/prohibitIp");
+    } else {
+        await getBannedIps();
+
+        req.flash("show", "true");
+        req.flash("message", `${newIp.ip}가 차단 목록에 추가되었습니다`);
+        res.redirect("/admin/prohibitIp");
     }
 });
 

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import mongoosePaginate from "mongoose-paginate-v2";
+import paginator from "mongoose-paginate-v2";
 
 export const userSchema = new mongoose.Schema({
     email: { type: String, unique: true, required: true },
@@ -26,6 +26,6 @@ export const userSchema = new mongoose.Schema({
     is_activated: { type: Boolean, unique: false, required: true, default: true },
 });
 
-userSchema.plugin(mongoosePaginate);
+userSchema.plugin(paginator);
 
 export const User = mongoose.model("User", userSchema);

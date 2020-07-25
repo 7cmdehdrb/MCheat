@@ -259,7 +259,7 @@ router.get("/detail", async (req, res, next) => {
         bio
         `
         )
-        .sort("-time")
+        .sort("time")
         .exec()
         .catch((err) => {
             console.log(err);
