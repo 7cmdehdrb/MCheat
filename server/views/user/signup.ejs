@@ -5,7 +5,10 @@
     </head>
     <body>
         <% include ../partial/header %>
-        <div class="container w-1/2 my-5 text-center">
+
+        <!-- Main -->
+
+        <div class="container w-full lg:w-1/2 my-5 text-center">
             <h1 class="text-4xl">SIGN UP</h1>
             <div>
                 <form class="my-10" method="POST">
@@ -68,7 +71,14 @@
                 >하세요!
             </div>
         </div>
-        <% include ../partial/agreement %> <% include ../partial/foot %> <% include ../partial/footer %>
+
+        <!-- Main -->
+
+        <% include ../partial/agreement %>
+        <!--  -->
+        <% include ../partial/foot %>
+        <!--  -->
+        <% include ../partial/footer %>
         <script src="/javascripts/signup.js"></script>
     </body>
 </html>

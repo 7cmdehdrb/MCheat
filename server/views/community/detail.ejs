@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %> <% include ../partial/commentcss %>
+    </head>
+    <body>
+        <% include ../partial/header %>
+
+        <div class="container w-full lg:w-2/3 my-5">
+            <!-- Buttons -->
+            <div class="my-2">
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-secondary" onclick="javascript: location.href='/communities/list'">전체목록</button>
+                    <button type="button" class="btn btn-secondary" onclick="javascript: history.back()">뒤로가기</button>
+                </div>
+            </div>
+            <!-- Buttons End -->
+
+            <!-- Main -->
+            <div class="w-full mb-5">
+                <div class="flex py-2 text-center text-lg rounded-lg bg-gray-400">
+                    <div class="flex-1">
+                        작성자 : <%= detail.writer.nickname %>
+                    </div>
+                    <div class="flex-1 js_datetime">
+                        작성일 : <%= detail.time %>
+                    </div>
+                    <div class="flex-1">
+                        추천수 : <span class="js_likecnt"><%= detail.recommends.length %></span>
+                    </div>
+                </div>
+                <div class="border-gray-200 border-2 rounded-lg">
+                    <!-- Title -->
+                    <div class="py-10 text-center text-2xl text-black">
+                        <i><strong>[<%= detail.tag %>]</strong> <%= detail.title %></i>
+                    </div>
+                    <!-- Title End -->
+                    <!-- Content -->
+                    <div class="py-10 text-lg text-gray-800">
+                        <% if(detail.file){ %>
+                        <div class="w-full lg:w-5/6 mx-auto px-1 mb-10">
+                            <img class="w-full" src="/uploads/<%= detail.file %>" alt="첨부한 사진" />
+                        </div>
+                        <% } %>
+                        <div class="mb-10 px-5">
+                            <p>
+                                <%= detail.content %>
+                            </p>
+                        </div>
+                        <!-- Profile Card -->
+                        <div class="flex mx-4">
+                            <div class="card flex-1 mx-1 lg:mx-3" style="width: 18rem;">
+                                <h1 class="mt-4 text-center text-2xl">작성자 프로필</h1>
+                                <img src="<%= detail.writer.profile %>" class="card-img-top w-full lg:w-2/3 lg:mx-auto" alt="작성자 프로필" />
+                                <div class="card-body">
+                                    <h5 class="card-title"><%= detail.writer.nickname %> <small>(<%= detail.writer.email %>)</small></h5>
+                                    <p class="card-text my-3"><%= (detail.writer.bio == "") ? "소개가 없습니다" : detail.writer.bio %></p>
+                                    <a href="/users/userProfile?id=<%= detail.writer.email %>" class="btn btn-primary">프로필 보기</a>
+                                </div>
+                            </div>
+                            <div class="my_mobile_disappear flex-1 mx-3">
+                                <h1 class="my-4 text-center text-2xl">작성자의 다른 글</h1>
+                                <ul class="list-group">
+                                    <% if(more.length == 0){ %>
+                                        <li class="list-group-item disabled" style="cursor: pointer;">다른 게시글이 없습니다</li>
+                                    <% } %>  
+                                    <% more.forEach(element => { %>
+                                    <li class="list-group-item" style="cursor: pointer;" onclick="javascript: location.href='/communities/detail?id=<%= element._id %>'"><%= element.title %></li>
+                                    <% }); %>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- Profile Card End -->
+                    </div>
+                    <!-- Content End -->
+                </div>
+            </div>
+            <!-- Main End -->
+
+            <!-- Buttons -->
+
+            <% if(session.user){ %>
+                <div class="w-full flex my-5 justify-between">
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        <% if(session.user.email == detail.writer.email){ %> 
+                            <button type="button" class="btn btn-secondary text-sm lg:text-lg" onclick="javascript: location.href='/communities/updatePost?id=<%= detail._id %>'">수정하기</button>
+                            <button type="button" class="btn btn-secondary text-sm lg:text-lg" onclick="deletePost('<%= detail._id %>')">삭제하기</button>
+                            <% } %> 
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-outline-success text-sm lg:text-lg" onclick="likePost('<%= detail._id %>')"><i class="far fa-thumbs-up"></i> 추천하기</button>
+                        <button type="button" class="btn btn-outline-danger text-sm lg:text-lg" onclick="javascript: alert('Comming Soon...')"><i class="far fa-thumbs-down"></i> 신고하기</button>
+                    </div>
+                </div>
+            <% } %>
+
+            <!-- Buttions End -->
+
+            <!-- Comment -->
+
+            <!-- Write Comment -->
+
+            <form method="POST" class="js_commentForm" action="/communities/newComment">
+                <div class="input-group mb-3">
+                    <input type="hidden" name="noticeId" value="<%= detail._id %>" />
+                    <textarea rows="4" name="content" class="form-control js_commentInput" placeholder="<%= (Boolean(session.user) ? "댓글을 작성해주세요(최대 300자)" : "로그인 후에 작성해주세요") %>" <%= (Boolean(session.user) ? "" : "readonly") %> require aria-label="Recipient's username" aria-describedby="button-addon2"></textarea>           
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" onclick="commentSubmit()" type="button" id="button-addon2">작성하기</button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Write Comment End -->
+
+            <!-- Read Comment -->
+
+            <div>
+                <% comments.forEach(element => { %>
+                    <div class="media comment-box">
+                        <div class="media-left">
+                            <img class="img-responsive user-photo" src="<%= Boolean(element.writer.profile) ? element.writer.profile : "https://ssl.gstatic.com/accounts/ui/avatar_2x.png" %>" />
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading">
+                                <a style="text-decoration: none;" href="/users/userProfile?id=<%= element.writerEmail %>">
+                                    <%= element.writer.nickname %> (<%= element.writer.email %>)
+                                </a>
+                                <div class="inline-block h-3" >
+                                    <img style="width: auto; height: auto; max-width: 40px; max-height: 40px;" src="/images/server/<%= element.writer.server %>.png">
+                                </div> 
+                            </h4>
+                            <p>
+                                <%= element.is_deleted ? "삭제된 댓글입니다" : element.content %> 
+                            </p>
+                            <% if(session.user){ if(session.user.email == element.writerEmail && !element.is_deleted){ %>
+                            <div class="flex justify-end">
+                                <small class="mx-2 my-1" style="cursor: pointer;" onclick="deleteComment('<%= element._id %>')">삭제하기</small>
+                            </div>
+                            <% }} %> 
+                        </div>
+                    </div>
+                    
+                <% }); %> 
+            </div>
+
+            <!-- Read Comment End -->
+
+            <!-- Comment End -->
+
+        </div>
+
+        <% include ../partial/foot %> <% include ../partial/footer %>
+        <script src="/javascripts/postDetail.js"></script>
+    </body>
+</html>

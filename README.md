@@ -10,6 +10,21 @@
     [o] Update Password<br>
     [o] See Profile<br>
 
+# BOARD
+
+    [ ] Write
+    [ ] Read
+    [ ] Search
+    [ ] Update
+    [ ] Delete
+
+# COMMENT
+
+    [ ] Write
+    [ ] Read
+    [ ] Update
+    [ ] Delete
+
 # CHEAT
 
     [ ] Make alert

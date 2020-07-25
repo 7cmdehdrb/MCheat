@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 import sanitize from "mongo-sanitize";
-const { userModel } = require("../models/users");
+const { User } = require("../models/users");
 import "../../env";
 
 router.get("/", (req, res, next) => {
@@ -44,24 +44,23 @@ router.post("/getAdminPermission", async (req, res, next) => {
     }
 
     if (sanitize(adminKey) == process.env.ADMIN_KEY) {
-        await userModel
-            .updateOne(
-                {
-                    $and: [
-                        {
-                            email: sanitize(session.user.email),
-                        },
-                        {
-                            is_admin: false,
-                        },
-                    ],
-                },
-                {
-                    $set: {
-                        is_admin: true,
+        await User.updateOne(
+            {
+                $and: [
+                    {
+                        email: sanitize(session.user.email),
                     },
-                }
-            )
+                    {
+                        is_admin: false,
+                    },
+                ],
+            },
+            {
+                $set: {
+                    is_admin: true,
+                },
+            }
+        )
             .then((newAdmin) => {
                 console.log(newAdmin);
                 if (newAdmin.nModified == 1) {
@@ -91,7 +90,7 @@ router.post("/getAdminPermission", async (req, res, next) => {
 
 router.get("/allUsers", async (req, res, next) => {
     const { session } = req;
-    const { page } = req.query;
+    const { page, key, value } = req.query;
 
     if (!session.user) {
         res.redirect("/users/login");
@@ -108,15 +107,38 @@ router.get("/allUsers", async (req, res, next) => {
     const show = req.flash("show");
     const message = req.flash("message");
 
-    await userModel
-        .paginate(
-            {},
-            {
-                page: page || 1,
-                limit: 15,
+    let query;
+
+    if (value) {
+        query = {
+            [key]: {
+                $regex: `.*${sanitize(value)}.*`,
             },
-            {}
-        )
+        };
+    } else {
+        query = {};
+    }
+
+    await User.paginate(
+        query,
+        {
+            select: `
+            email
+            nickname
+            server
+            guild
+            farm
+            profile
+            email_secret
+            email_valid
+            is_admin
+            is_activated
+            `,
+            page: page || 1,
+            limit: 15,
+        },
+        {}
+    )
         .then((users) => {
             res.render("admin/adminAllUsers", { session: session, users: users.docs, current_page: users.page, all_page: users.totalPages, show: show, message: message });
         })
@@ -147,10 +169,17 @@ router.get("/editProfile", async (req, res, next) => {
     const show = req.flash("show");
     const message = req.flash("message");
 
-    await userModel
-        .findOne({
-            email: sanitize(id),
-        })
+    await User.findOne({
+        email: sanitize(id),
+    })
+        .select(
+            `
+        email
+        nickname
+        farm
+        bio
+        `
+        )
         .exec()
         .then((targetUser) => {
             if (targetUser == null) {
@@ -182,22 +211,21 @@ router.post("/editProfile", async (req, res, next) => {
         return;
     }
 
-    await userModel
-        .update(
-            {
-                email: sanitize(email),
+    await User.updateOne(
+        {
+            email: sanitize(email),
+        },
+        {
+            $set: {
+                nickname: sanitize(nickname),
+                server: sanitize(server),
+                guild: sanitize(guild),
+                farm: sanitize(farm.trim()),
+                profile: sanitize(profile),
+                bio: sanitize(bio),
             },
-            {
-                $set: {
-                    farm: sanitize(farm),
-                    nickname: sanitize(nickname),
-                    server: sanitize(server),
-                    guild: sanitize(guild),
-                    profile: sanitize(profile),
-                    bio: sanitize(bio),
-                },
-            }
-        )
+        }
+    )
         .then((updatedUser) => {
             if (updatedUser.nModified == 1) {
                 req.flash("show", "true");
@@ -231,26 +259,25 @@ router.get("/changeActivation", async (req, res, next) => {
         return;
     }
 
-    await userModel
-        .updateOne(
-            {
-                $and: [
-                    {
-                        email: sanitize(id),
-                    },
-                    {
-                        is_activated: sanitize(status) == "activate" ? true : false,
-                    },
-                ],
-            },
-            {
-                $set: {
-                    is_activated: sanitize(status) == "activate" ? false : true,
+    await User.updateOne(
+        {
+            $and: [
+                {
+                    email: sanitize(id),
                 },
-            }
-        )
+                {
+                    is_activated: sanitize(status) == "activate" ? true : false,
+                },
+            ],
+        },
+        {
+            $set: {
+                is_activated: sanitize(status) == "activate" ? false : true,
+            },
+        }
+    )
         .then((updatedUser) => {
-            if (updatedUser.deletedCount == 1) {
+            if (updatedUser.nModified == 1) {
                 req.flash("show", "true");
                 req.flash("message", "성공적으로 변경하였습니다");
                 res.redirect("/admin/allUsers");
@@ -282,13 +309,11 @@ router.get("/deleteUser", async (req, res, next) => {
         return;
     }
 
-    await userModel
-        .deleteOne({
-            email: sanitize(id),
-        })
+    await User.deleteOne({
+        email: sanitize(id),
+    })
         .then((deletedUser) => {
-            console.log(deletedUser);
-            if (deletedUser.nModified == 1) {
+            if (deletedUser.deletedCount == 1) {
                 req.flash("show", "true");
                 req.flash("message", "성공적으로 삭제하였습니다");
                 res.redirect("/");

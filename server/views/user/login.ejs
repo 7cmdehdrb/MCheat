@@ -5,11 +5,11 @@
     </head>
     <body>
         <% include ../partial/header %>
-        <div class="container w-1/2 my-5 text-center">
+        <div class="container w-full lg:w-1/2 my-5 text-center">
             <% if(show == "true"){ %> <% include ../partial/toast %> <% } %>
             <h1 class="text-4xl my-4">LOGIN</h1>
             <div class="mt-10 mb-5">
-                <form method="POST" class="w-1/2 mx-auto">
+                <form method="POST" class="mx-auto">
                     <div class="form-group">
                         <label for="exampleInputEmail1">이메일</label>
                         <input type="email" class="form-control" id="exampleInputEmail1" name="email" aria-describedby="emailHelp" required />

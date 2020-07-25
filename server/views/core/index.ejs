@@ -2,13 +2,21 @@
 <html lang="en">
     <head>
         <% include ../partial/head %>
+        <style>
+            .list-group-item {
+                cursor: pointer;
+            }
+        </style>
     </head>
     <body>
         <% include ../partial/header %>
 
-        <div class="container w-1/2 my-5 text-center">
+        <div class="container w-11/12 my-5 text-center">
             <% if(show == "true"){ %> <% include ../partial/toast %> <% } %>
-            <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel">
+
+            <!-- Slider -->
+
+            <div id="carouselExampleCaptions" class="my_mobile_disappear carousel slide" data-ride="carousel">
                 <ol class="carousel-indicators">
                     <li data-target="#carouselExampleCaptions" data-slide-to="0" class="active"></li>
                     <li data-target="#carouselExampleCaptions" data-slide-to="1"></li>
@@ -16,21 +24,21 @@
                 </ol>
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img src="https://ssl.nx.com/s2/Game/Maplestory/renewal/banner/main_banner/main_bn_200625_FFC6A877F02FF2A6.jpg" class="d-block w-100" alt="..." />
+                        <img src="/images/slider/main1.jpg" class="d-block w-100" alt="MAIN" />
                         <div class="carousel-caption d-none d-md-block">
                             <h5>First slide label</h5>
                             <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
                         </div>
                     </div>
                     <div class="carousel-item">
-                        <img src="https://ssl.nx.com/s2/Game/Maplestory/renewal/banner/main_banner/main_bn_200625_BFFD6E5E388E2275.jpg" class="d-block w-100" alt="..." />
+                        <img src="/images/slider/main2.jpg" class="d-block w-100" alt="MAIN" />
                         <div class="carousel-caption d-none d-md-block">
                             <h5>Second slide label</h5>
                             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
                         </div>
                     </div>
                     <div class="carousel-item">
-                        <img src="https://ssl.nx.com/s2/Game/Maplestory/renewal/banner/main_banner/main_bn_200625_DADBDDD6E44B8148.jpg" class="d-block w-100" alt="..." />
+                        <img src="/images/slider/main3.jpg" class="d-block w-100" alt="MAIN" />
                         <div class="carousel-caption d-none d-md-block">
                             <h5>Third slide label</h5>
                             <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
@@ -48,7 +56,37 @@
             </div>
         </div>
 
-        <% include ../partial/footer %> <br />
+        <!-- Slider End -->
+
+        <!-- Mobile Menu -->
+
+        <div class="my_mobile_appear container w-11/12 mx-auto text-center my-10">
+            <ul class="list-group">
+                <li class="list-group-item"><i class="fas fa-user-edit"></i> 피해등록</li>
+                <li class="list-group-item"><i class="far fa-laugh-wink"></i> 안심등록</li>
+                <li class="list-group-item" onclick="javascript: location.href='/communities/list'"><i class="far fa-comments"></i> 커뮤니티</span></li>
+                <% if(session.user){ %>
+                    <li class="list-group-item" onclick="javascript: location.href='/users/userProfile'">
+                        <%= session.user.nickname %>님의 페이지
+                        <% if(session.user.is_admin == true){ %>
+                        <span class="badge badge-secondary">ADMIN</span>
+                        <% } %> 
+                    </li>
+                    <% if(session.user.is_admin == true){ %>
+                        <li class="list-group-item" onclick="javascript: location.href='/admin'"><i class="fas fa-users-cog"></i> 관리자모드</li>
+                    <% } %> 
+                    <li class="list-group-item" onclick="javascript: location.href='/users/logout'"><i class="fas fa-sign-out-alt"></i> 로그아웃</li>
+                <% }else{ %>
+                    <li class="list-group-item" onclick="javascript: location.href='/users/login'"><i class="fas fa-sign-in-alt"></i> 로그인</li>
+                    <li class="list-group-item" onclick="javascript: location.href='/users/signup'"><i class="fas fa-user-check"></i> 회원가입</li>
+                <% } %>  
+            </ul>
+        </div>
+
+        <!-- Mobile Menu End -->
+
+        <% include ../partial/footer %>
+        <!--  -->
         <% include ../partial/foot %>
     </body>
 </html>

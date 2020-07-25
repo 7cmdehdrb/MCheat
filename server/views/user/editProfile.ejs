@@ -5,7 +5,7 @@
     </head>
     <body>
         <% include ../partial/header %>
-        <div class="container w-1/2 my-5 text-center">
+        <div class="container w-full lg:w-1/2 my-5 text-center">
             <% if(show == "true"){ %> <% include ../partial/toast %> <% } %>
             <h1 class="text-4xl">EDIT PROFILE</h1>
             <div>
@@ -41,7 +41,7 @@
                     </div>
                     <div class="form-row mb-4">
                         <label for="inputBio">한줄소개</label>
-                        <textarea class="form-control" id="inputBio" name="bio" rows="3"><%= defaultUser.bio %></textarea>
+                        <textarea class="form-control js_bioInput" id="inputBio" placeholder="한줄소개를 작성해주세요(최대 50자)" name="bio" rows="3"><%= defaultUser.bio %></textarea>
                     </div>
                     <input type="hidden" class="js_profile" name="profile" />
                     <button type="submit" class="btn btn-primary">수정하기</button>

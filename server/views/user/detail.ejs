@@ -5,8 +5,11 @@
     </head>
     <body>
         <% include ../partial/header %>
-        <div class="container w-1/2 my-5 text-center">
+        <div class="container w-full my-5 text-center">
             <% if(show == "true"){ %> <% include ../partial/toast %> <% } %>
+
+            <!-- Main -->
+
             <div class="container">
                 <div class="row">
                     <div class="col-12">
@@ -20,10 +23,10 @@
                                         <div class="userData ml-3 mt-4 text-left">
                                             <h2 class="d-block" style="font-size: 1.5rem; font-weight: bold;">
                                                 <%= user.nickname %> <% if(user.is_admin == true){ %>
-                                                <span class="badge badge-secondary">ADMIN</span>
+                                                <span class="badge badge-pill badge-success">ADMIN</span>
                                                 <% } %>
                                             </h2>
-                                            <p class="mt-4 text-left">
+                                            <p class="my_mobile_disappear mt-4 text-left">
                                                 <% if(user.bio == "" || !user.bio){ %> 소개가 없습니다 <% }else{ %> <%= user.bio %> <% } %>
                                             </p>
                                         </div>
@@ -31,6 +34,9 @@
                                             <input type="button" class="btn btn-primary d-none" id="btnDiscard" value="Discard Changes" />
                                         </div>
                                     </div>
+                                    <p class="my_mobile_appear mt-4 text-left">
+                                        <% if(user.bio == "" || !user.bio){ %> 소개가 없습니다 <% }else{ %> <%= user.bio %> <% } %>
+                                    </p>
                                 </div>
 
                                 <div class="row">
@@ -141,7 +147,8 @@
                                     >
                                         유저(비)활성화
                                     </button>
-                                    <button type="button" class="btn btn-secondary" onclick="deleteUser()">유저 완전삭제</button>
+                                    <button type="button" class="btn btn-secondary" onclick="deleteUser('<%= user.email %>')">유저 완전삭제</button>
+                                    <script src="/javascripts/adminDeleteUser.js"></script>
                                     <% } %>
                                 </div>
                             </div>
@@ -149,18 +156,12 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Main End -->
         </div>
-        <script>
-            const userEmail = "<%= user.email %>";
-        </script>
-        <script>
-            deleteUser = () => {
-                let confirm = prompt("유저를 완전히 삭제하며, 복구할 수 없습니다\n정말 삭제하려면 \n<<%= user.email %>을(를) 완전히 삭제합니다.> 라고 입력해주세요");
-                if (confirm == `${userEmail}을(를) 완전히 삭제합니다.`) {
-                    location.href = `/admin/deleteUser?id=${userEmail}`;
-                }
-            };
-        </script>
-        <% include ../partial/foot %> <% include ../partial/footer %>
+
+        <% include ../partial/foot %>
+        <!--  -->
+        <% include ../partial/footer %>
     </body>
 </html>

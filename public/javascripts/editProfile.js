@@ -4,11 +4,18 @@ const nicknameInput = document.querySelector(".js_nickname");
 const serverInput = document.querySelector(".js_server");
 const guildInput = document.querySelector(".js_guild");
 const profileInput = document.querySelector(".js_profile");
+const bioInput = document.querySelector(".js_bioInput");
 
 document.addEventListener("submit", (ev) => {
     if (check == false) {
         ev.preventDefault();
         alert("캐릭터 찾기를 해주세요");
+        return;
+    }
+
+    if (bioInput.value.length > 50) {
+        ev.preventDefault();
+        alert("한줄소개는 최대 50자까지 작성 가능합니다");
         return;
     }
 });

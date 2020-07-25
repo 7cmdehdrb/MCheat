@@ -48,6 +48,21 @@ const getWorld = (icon) => {
     }
 };
 
+export const getTag = (tag) => {
+    switch (tag) {
+        case "free":
+            return "자유";
+        case "info":
+            return "정보";
+        case "group":
+            return "모임";
+        case "request":
+            return "건의";
+        default:
+            return null;
+    }
+};
+
 export const getGuild = async (nickname) => {
     let result;
     const encodedNickname = encodeURI(nickname);
@@ -163,4 +178,23 @@ export const sendResetMail = (address, secret) => {
             console.log(info);
         }
     );
+};
+
+export const newDatetimeFormat = () => {
+    const today = new Date();
+
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1 < 10 ? "0" + today.getMonth() + 1 : today.getMonth() + 1;
+    const date = today.getDate() < 10 ? "0" + today.getDate() : today.getDate();
+    const hour = today.getHours() < 10 ? "0" + today.getHours() : today.getHours();
+    const minute = today.getMinutes() < 10 ? "0" + today.getMinutes() : today.getMinutes();
+    const second = today.getSeconds() < 10 ? "0" + today.getSeconds() : today.getSeconds();
+
+    return `${year}${month}${date}${hour}${minute}${second}`;
+};
+
+export const datetimeToString = (date) => {
+    const month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+    const day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+    return `${month}${day}`;
 };

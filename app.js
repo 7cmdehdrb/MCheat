@@ -12,6 +12,7 @@ import "./db";
 import indexRouter from "./server/routes/index";
 import usersRouter from "./server/routes/users";
 import adminRouter from "./server/routes/admin";
+import communityRouter from "./server/routes/community";
 
 const app = express();
 
@@ -19,8 +20,8 @@ const app = express();
 app.set("views", path.join(__dirname, "server/views"));
 app.set("view engine", "ejs");
 
-// app.use(logger("common"));
-app.use(logger("dev"));
+app.use(logger("common"));
+// app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -39,8 +40,9 @@ app.use(flash());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
-app.use("/users", usersRouter);
 app.use("/admin", adminRouter);
+app.use("/users", usersRouter);
+app.use("/communities", communityRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
