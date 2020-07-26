@@ -161,8 +161,8 @@
                     <li class="page-item <%= (current_page == 1) ? "disabled" : "" %> ">
                         <a class="page-link" onclick="setUrl('<%= current_page - 1 %>')">Prev</a>
                     </li>
-                    <li class="page-item"><a class="page-link"><%= current_page %> / <%= all_page %></a></li>
-                    <li class="page-item <%= (current_page == all_page) ? "disabled" : "" %>">
+                    <li class="page-item"><a class="page-link"><%= current_page %> / <%= total_page %></a></li>
+                    <li class="page-item <%= (current_page == total_page) ? "disabled" : "" %>">
                         <a class="page-link" onclick="setUrl('<%= current_page + 1 %>')">Next</a>
                     </li>
                 </ul>

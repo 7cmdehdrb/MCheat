@@ -10,6 +10,7 @@
             <h1 class="text-4xl my-4">LOGIN</h1>
             <div class="mt-10 mb-5">
                 <form method="POST" class="mx-auto">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                     <div class="form-group">
                         <label for="exampleInputEmail1">이메일</label>
                         <input type="email" class="form-control" id="exampleInputEmail1" name="email" aria-describedby="emailHelp" required />

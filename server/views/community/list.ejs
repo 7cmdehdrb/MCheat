@@ -108,7 +108,7 @@
                         <div class="form-group col-md-4">
                             <select class="form-control" name="key">
                                 <option value="title" selected>제목</option>   
-                                <option value="writerEmail">작성자(이메일)</option>
+                                <option value="email">작성자(이메일)</option>
                                 <option value="nickname">작성자(닉네임)</option>
                             </select>
                         </div>
@@ -128,12 +128,12 @@
 
             <nav aria-label="Page navigation mx-auto my-5">
                 <ul class="pagination justify-content-center">
-                    <li style="cursor: pointer;" class="page-item <%= currentPage == 1 ? "disabled" : "" %>">
-                        <a class="page-link" onclick="setUrl('<%= currentPage -1 %>')">Prev</a>
+                    <li style="cursor: pointer;" class="page-item <%= current_page == 1 ? "disabled" : "" %>">
+                        <a class="page-link" onclick="setUrl('<%= current_page -1 %>')">Prev</a>
                     </li>
-                    <li class="page-item"><a class="page-link"><%= currentPage %> / <%= totalPages %></a></li>
-                    <li style="cursor: pointer;" class="page-item <%= currentPage == totalPages ? "disabled" : "" %>">
-                        <a class="page-link" onclick="setUrl('<%= currentPage + 1 %>')">Next</a>
+                    <li class="page-item"><a class="page-link"><%= current_page %> / <%= total_page %></a></li>
+                    <li style="cursor: pointer;" class="page-item <%= current_page == total_page ? "disabled" : "" %>">
+                        <a class="page-link" onclick="setUrl('<%= current_page + 1 %>')">Next</a>
                     </li>
                 </ul>
             </nav>

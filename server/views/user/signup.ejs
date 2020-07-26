@@ -9,9 +9,11 @@
         <!-- Main -->
 
         <div class="container w-full lg:w-1/2 my-5 text-center">
+            <% if(show == "true"){ %> <% include ../partial/toast %> <% } %>
             <h1 class="text-4xl">SIGN UP</h1>
             <div>
                 <form class="my-10" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="inputEmail4">이메일</label>

@@ -9,7 +9,7 @@
         <div class="container w-full lg:w-1/2 my-5">
             <h1 class="text-4xl text-center">새 글쓰기</h1>
             <form method="POST" enctype="multipart/form-data" class="mt-10">
-                <input type="hidden" name="writerEmail" value="<%= session.user.email %>" />
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <select class="form-control" name="tag">
@@ -35,7 +35,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="inputFile">사진첨부(png, jpg, gif)</label>
-                        <input type="file" class="form-control-file js_inputFile" id="inputFile" name="inputFile" />
+                        <input type="file" accept="image/*" class="form-control-file js_inputFile" id="inputFile" name="inputFile" />
                     </div>
                 </div>
                 <div class="form-row w-full lg:w-1/2 mx-auto">

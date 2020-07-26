@@ -1,6 +1,10 @@
 import mongoose from "mongoose";
 import paginator from "mongoose-paginate-v2";
 
+const sessionSchema = new mongoose.Schema({}, { collection: "sessions" });
+
+export const Session = mongoose.model("Session", sessionSchema);
+
 export const userSchema = new mongoose.Schema({
     email: { type: String, unique: true, required: true },
     password: { type: String, unique: false, required: true },

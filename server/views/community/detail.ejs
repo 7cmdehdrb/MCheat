@@ -103,6 +103,7 @@
 
             <form method="POST" class="js_commentForm" action="/communities/newComment">
                 <div class="input-group mb-3">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                     <input type="hidden" name="noticeId" value="<%= detail._id %>" />
                     <textarea rows="4" name="content" class="form-control js_commentInput" placeholder="<%= (Boolean(session.user) ? "댓글을 작성해주세요(최대 300자)" : "로그인 후에 작성해주세요") %>" <%= (Boolean(session.user) ? "" : "readonly") %> require aria-label="Recipient's username" aria-describedby="button-addon2"></textarea>           
                     <div class="input-group-append">

@@ -1,10 +1,12 @@
 var express = require("express");
 var router = express.Router();
 import sanitize from "mongo-sanitize";
-import { datetimeToString, getTag } from "../../utils";
-import { upload } from "../../multer";
 import { Community, Comment } from "../models/communities";
 import { User } from "../models/users";
+import { datetimeToString, getTag } from "../../utils";
+import { upload } from "../../multer";
+import { doc } from "sriracha/lib/controllers/main";
+import { csrfProtection } from "../../middleware";
 
 router.get("/", async (req, res, next) => {
     res.redirect("/");
@@ -20,44 +22,41 @@ router.get("/list", async (req, res, next) => {
     const show = req.flash("show");
     const message = req.flash("message");
 
-    let query, paginate_page, paginate_total_page;
+    let query = {
+        tag: {
+            $ne: "공지",
+        },
+    };
+    let currnetPage, totalPages;
     let newCommunities = [];
     let newAlerts = [];
 
     if (tag) {
+        // 태그 조건
         query = {
             tag: getTag(tag),
         };
-    } else if (key) {
-        if (key == "nickname") {
-            const { email } = await User.findOne({
-                nickname: sanitize(value),
-            })
-                .select("email")
-                .exec()
-                .catch((err) => {
-                    console.log(err);
-                });
-
-            key = "writerEmail";
-            value = email;
-        }
-
-        query = {
-            [key]: {
-                $regex: `.*${sanitize(value)}.*`,
-            },
-            tag: {
-                $ne: "공지",
-            },
-        };
     } else {
-        query = {
-            tag: {
-                $ne: "공지",
-            },
-        };
+        // 검색 조건
+        if (key == "title") {
+            query = {
+                $and: [
+                    {
+                        tag: {
+                            $ne: "공지",
+                        },
+                    },
+                    {
+                        title: {
+                            $regex: `.*${sanitize(value)}.*`,
+                        },
+                    },
+                ],
+            };
+        }
     }
+
+    // 검색
 
     await Community.paginate(
         query,
@@ -68,14 +67,28 @@ router.get("/list", async (req, res, next) => {
             sort: {
                 time: "desc",
             },
-            populate: "writer",
+            populate: {
+                path: "writer",
+                select: `
+                email
+                nickname
+                server
+                `,
+                model: "User",
+            },
         },
         {}
     )
         .then(async (communities) => {
             let { docs } = communities;
-            paginate_page = communities.page;
-            paginate_total_page = communities.totalPages;
+            currnetPage = communities.page;
+            totalPages = communities.totalPages;
+
+            if (key == "nickname") {
+                docs = docs.filter((element) => element.writer.nickname.includes(sanitize(value)));
+            } else if (key == "email") {
+                docs = docs.filter((element) => element.writer.email.includes(sanitize(value)));
+            }
 
             docs.forEach((element) => {
                 let temp = {
@@ -89,7 +102,9 @@ router.get("/list", async (req, res, next) => {
             console.log(err);
         });
 
-    const alerts = await Community.find({
+    // 공지 찾기
+
+    await Community.find({
         tag: {
             $eq: "공지",
         },
@@ -109,37 +124,39 @@ router.get("/list", async (req, res, next) => {
         .limit(5)
         .sort("-time")
         .exec()
+        .then((alerts) => {
+            alerts.forEach((element) => {
+                let temp2 = {
+                    origin: element,
+                    newTime: datetimeToString(element.time),
+                };
+                newAlerts.push(temp2);
+            });
+        })
         .catch((err) => {
             console.log(err);
         });
 
-    alerts.forEach((element) => {
-        let temp2 = {
-            origin: element,
-            newTime: datetimeToString(element.time),
-        };
-        newAlerts.push(temp2);
-    });
-
-    res.render("community/list", { session: session, show: show, message: message, alerts: newAlerts, communities: newCommunities, currentPage: paginate_page, totalPages: paginate_total_page });
+    res.render("community/list", { session: session, show: show, message: message, alerts: newAlerts, communities: newCommunities, current_page: currnetPage, total_page: totalPages });
 });
 
 // 새 글쓰기
 
-router.get("/new", (req, res, next) => {
+router.get("/new", csrfProtection, (req, res, next) => {
     const { session } = req;
+    const csrfToken = req.csrfToken();
 
     if (!session.user) {
         res.redirect("/users/login");
         return;
     }
 
-    res.render("community/new", { session: session });
+    res.render("community/new", { session: session, csrfToken: csrfToken });
 });
 
-router.post("/new", upload.single("inputFile"), async (req, res, next) => {
+router.post("/new", csrfProtection, upload.single("inputFile"), async (req, res, next) => {
     const { session } = req;
-    const { writerEmail, tag, title, content } = req.body;
+    const { tag, title, content } = req.body;
     const { file } = req;
 
     if (!session.user) {
@@ -155,13 +172,16 @@ router.post("/new", upload.single("inputFile"), async (req, res, next) => {
     }
 
     await Community.create({
-        writerEmail: sanitize(writerEmail),
+        writerEmail: session.user.email,
         tag: sanitize(tag),
         title: sanitize(title),
         content: sanitize(content),
         file: Boolean(file) ? sanitize(file.filename) : null,
     })
         .then((newCommunity) => {
+            if (newCommunity == null) {
+                throw Error();
+            }
             res.redirect(`/communities/detail?id=${newCommunity._id}`);
         })
         .catch((err) => {
@@ -174,9 +194,10 @@ router.post("/new", upload.single("inputFile"), async (req, res, next) => {
 
 // 글보기
 
-router.get("/detail", async (req, res, next) => {
+router.get("/detail", csrfProtection, async (req, res, next) => {
     const { session } = req;
     const { id } = req.query;
+    const csrfToken = req.csrfToken();
 
     if (!id) {
         res.redirect("/communities/list");
@@ -216,6 +237,13 @@ router.get("/detail", async (req, res, next) => {
             res.redirect("/communities/list");
             return;
         });
+
+    if (detail == null) {
+        req.flash("show", "true");
+        req.flash("message", "알 수 없는 오류가 발생했습니다");
+        res.redirect("/communities/list");
+        return;
+    }
 
     const more = await Community.find({
         $and: [
@@ -271,14 +299,15 @@ router.get("/detail", async (req, res, next) => {
 
     const newTime = datetimeToString(detail.time);
 
-    res.render("community/detail", { session: session, detail: detail, time: newTime, more: more, comments: comments });
+    res.render("community/detail", { session: session, detail: detail, time: newTime, more: more, comments: comments, csrfToken: csrfToken });
 });
 
 // 글 수정
 
-router.get("/updatePost", async (req, res, next) => {
+router.get("/updatePost", csrfProtection, async (req, res, next) => {
     const { session } = req;
     const { id } = req.query;
+    const csrfToken = req.csrfToken();
 
     if (!session.user) {
         res.redirect("/users/login");
@@ -297,7 +326,7 @@ router.get("/updatePost", async (req, res, next) => {
             if (targetPost == null) {
                 throw Error();
             }
-            res.render("community/updatePost", { session, session, post: targetPost });
+            res.render("community/updatePost", { session, session, post: targetPost, csrfToken: csrfToken });
         })
         .catch((err) => {
             console.log(err);
@@ -307,7 +336,7 @@ router.get("/updatePost", async (req, res, next) => {
         });
 });
 
-router.post("/updatePost", async (req, res, next) => {
+router.post("/updatePost", csrfProtection, async (req, res, next) => {
     const { session } = req;
     const { tag, title, content, id } = req.body;
 
@@ -339,7 +368,6 @@ router.post("/updatePost", async (req, res, next) => {
             if (updatedPost.nModified == 1) {
                 res.redirect(`/communities/detail?id=${id}`);
             } else {
-                console.log(updatedPost);
                 throw Error();
             }
         })
@@ -400,19 +428,14 @@ router.get("/recommendPost", async (req, res, next) => {
     const { session } = req;
     const { id } = req.query;
 
-    if (!session.user) {
+    if (!session.user || !id) {
         res.json({
             success: false,
         });
         return;
     }
 
-    if (!id) {
-        res.json({
-            success: false,
-        });
-    }
-
+    let action;
     let success = false;
     let count = 0;
     let increase = false;
@@ -433,9 +456,8 @@ router.get("/recommendPost", async (req, res, next) => {
             console.log(err);
         });
 
-    let action;
-
     if (recommendPost == null) {
+        // 추천 이력 없음
         increase = true;
         action = {
             $push: {
@@ -445,6 +467,8 @@ router.get("/recommendPost", async (req, res, next) => {
             },
         };
     } else {
+        // 추천 이력 있음
+        increase = false;
         action = {
             $pull: {
                 recommends: {
@@ -479,6 +503,9 @@ router.get("/recommendPost", async (req, res, next) => {
         .select("recommends")
         .exec()
         .then((rec) => {
+            if (rec == null) {
+                throw Error();
+            }
             count = rec.recommends.length;
         })
         .catch((err) => {
@@ -494,7 +521,7 @@ router.get("/recommendPost", async (req, res, next) => {
 
 // 댓글쓰기
 
-router.post("/newComment", async (req, res, next) => {
+router.post("/newComment", csrfProtection, async (req, res, next) => {
     const { session } = req;
     const { noticeId, content } = req.body;
 
@@ -545,7 +572,7 @@ router.get("/deleteComment", async (req, res, next) => {
         return;
     }
 
-    const { noticeId } = await Comment.findOne({
+    const comment = await Comment.findOne({
         _id: sanitize(id),
     })
         .select("noticeId")
@@ -553,6 +580,13 @@ router.get("/deleteComment", async (req, res, next) => {
         .catch((err) => {
             console.log(err);
         });
+
+    if (comment == null) {
+        req.flash("show", "true");
+        req.flash("show", "알 수 없는 오류가 발생했습니다");
+        res.redirect("/communities/list");
+        return;
+    }
 
     await Comment.updateOne(
         {
@@ -571,9 +605,9 @@ router.get("/deleteComment", async (req, res, next) => {
             },
         }
     )
-        .then((deletedComment) => {
-            if (deletedComment.nModified == 1) {
-                res.redirect(`/communities/detail?id=${noticeId}`);
+        .then((updatedComment) => {
+            if (updatedComment.nModified == 1) {
+                res.redirect(`/communities/detail?id=${comment.noticeId}`);
             } else {
                 throw Error();
             }

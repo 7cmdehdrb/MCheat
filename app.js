@@ -3,17 +3,22 @@ import express from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
+import bodyParser from "body-parser";
 import session from "express-session";
+import ipblock from "express-ip-block";
+import timeout from "express-timeout-handler";
+import helmet from "helmet";
 import flash from "connect-flash";
 import admin from "sriracha";
-import rateLimit from "express-rate-limit";
-import ipblock from "express-ip-block";
-import helmet from "helmet";
+const MongoStore = require("connect-mongo")(session);
+import socketIo from "socket.io";
+import socketEvent from "./socket";
 
 import "./env";
 import "./db";
 
 import { bannedIps, getBannedIps } from "./server/models/ips";
+import { rateLimitModule, timeoutModule } from "./middleware";
 
 import indexRouter from "./server/routes/index";
 import usersRouter from "./server/routes/users";
@@ -26,37 +31,54 @@ const app = express();
 app.set("views", path.join(__dirname, "server/views"));
 app.set("view engine", "ejs");
 
-getBannedIps();
+// Security
 
-app.use(ipblock(bannedIps, { allow: false, allowForwarded: true }), (req, res, next) => {
+// time-out-handle
+app.use(timeoutModule);
+//  D-Dos block
+app.use(rateLimitModule);
+// helmet
+app.use(helmet());
+// ip block
+getBannedIps();
+app.use(ipblock(bannedIps, { allow: false, allowForwarded: true }), timeout.set(5000), (req, res, next) => {
     next();
 });
-app.use(
-    rateLimit({
-        windowMs: 1 * 60 * 1000, // 1min
-        max: 10 * 100,
-    })
-);
 
-app.use(logger("common"));
-// app.use(logger(" dev"));
+app.use(logger(process.env.DEBUG == "true" ? "dev" : "common"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser(process.env.SESSION_SECRET));
 app.use(
     session({
         key: process.env.SESSION_KEY,
         secret: process.env.SESSION_SECRET,
-        resave: true,
+        resave: false,
         saveUninitialized: true,
+        store: new MongoStore({
+            url: process.env.DB,
+            collection: "sessions",
+        }),
         cookie: {
-            maxAge: 24000 * 60 * 60, // 쿠키 유효기간 24시간
+            maxAge: 1000 * 60 * 60 * 12, // 쿠키 유효기간 12시간
+            httpOnly: true,
         },
     })
 );
 app.use(flash());
-app.use(helmet());
 app.use(express.static(path.join(__dirname, "public")));
+
+app.use(function (err, req, res, next) {
+    console.log(err);
+    if (err.code !== "EBADCSRFTOKEN") return next(err);
+
+    // handle CSRF token errors here
+    res.status(403);
+    res.send("form tampered with");
+});
+
+// URL Pattern
 
 app.use("/", indexRouter);
 app.use("/admin", adminRouter);
@@ -82,11 +104,10 @@ app.use(function (req, res, next) {
 app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
-    res.locals.error = req.app.get("env") === "development" ? err : {};
+    res.locals.error = process.env.DEBUG == "true" ? err : {};
 
     // render the error page
-    res.status(err.status || 500);
-    res.render("error/error");
+    res.status(err.status || 500).render("error/error");
 });
 
 app.set("port", process.env.PORT || process.env.PORT);
@@ -94,5 +115,8 @@ app.set("port", process.env.PORT || process.env.PORT);
 const server = app.listen(app.get("port"), function () {
     console.log(`SERVER START AT http://localhost:${server.address().port}/`);
 });
+
+const io = socketIo(server);
+socketEvent(io);
 
 module.exports = app;

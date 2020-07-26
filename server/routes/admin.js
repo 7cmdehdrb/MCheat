@@ -3,7 +3,10 @@ var router = express.Router();
 import sanitize from "mongo-sanitize";
 import { User } from "../models/users";
 import { IP, getBannedIps } from "../models/ips";
+import { csrfProtection } from "../../middleware";
 import "../../env";
+
+// 메뉴
 
 router.get("/", (req, res, next) => {
     const { session } = req;
@@ -19,8 +22,11 @@ router.get("/", (req, res, next) => {
     res.render("admin/adminMenu", { session: session, show: show, message: message });
 });
 
-router.get("/getAdminPermission", (req, res, next) => {
+// 관리자 권한 받기
+
+router.get("/getAdminPermission", csrfProtection, (req, res, next) => {
     const { session } = req;
+    const csrfToken = req.csrfToken();
 
     if (!session.user) {
         res.redirect("/users/login");
@@ -30,7 +36,7 @@ router.get("/getAdminPermission", (req, res, next) => {
     res.render("admin/getAdminPermission", { session: session });
 });
 
-router.post("/getAdminPermission", async (req, res, next) => {
+router.post("/getAdminPermission", csrfProtection, async (req, res, next) => {
     const { session } = req;
     const { adminKey } = req.body;
 
@@ -63,15 +69,11 @@ router.post("/getAdminPermission", async (req, res, next) => {
             }
         )
             .then((newAdmin) => {
-                console.log(newAdmin);
                 if (newAdmin.nModified == 1) {
                     req.flash("show", "true");
                     req.flash("message", "관리자권한 부여에 성공하였습니다! 재로그인 해주세요");
-
-                    session.user = null;
-                    session.save(() => {
-                        res.redirect("/");
-                    });
+                    session.destroy();
+                    res.redirect("/");
                 } else {
                     throw Error();
                 }
@@ -91,9 +93,10 @@ router.post("/getAdminPermission", async (req, res, next) => {
 
 // 차단 유저 관리
 
-router.get("/prohibitIp", async (req, res, next) => {
+router.get("/prohibitIp", csrfProtection, async (req, res, next) => {
     const { session } = req;
     const { page } = req.query;
+    const csrfToken = req.csrfToken();
 
     if (!session.user) {
         res.redirect("/users/login");
@@ -123,7 +126,7 @@ router.get("/prohibitIp", async (req, res, next) => {
     )
         .then((ip) => {
             const { docs, page, totalPages } = ip;
-            res.render("admin/prohibitIp", { session: session, ip: docs, current_page: page, total_page: totalPages, show: show, message: message });
+            res.render("admin/prohibitIp", { session: session, ip: docs, current_page: page, total_page: totalPages, show: show, message: message, csrfToken: csrfToken });
         })
         .catch((err) => {
             console.log(err);
@@ -133,40 +136,7 @@ router.get("/prohibitIp", async (req, res, next) => {
         });
 });
 
-router.get("/removeProhibition", async (req, res, next) => {
-    const { session } = req;
-    const { id } = req.query;
-
-    if (!session.user) {
-        res.redirect("/users/login");
-        return;
-    }
-
-    if (session.user.is_admin == false) {
-        req.flash("show", "true");
-        req.flash("message", "관리자 전용 기능입니다");
-        res.redirect("/");
-        return;
-    }
-
-    const removeIp = await IP.deleteOne({
-        _id: sanitize(id),
-    });
-
-    if (removeIp.deletedCount == 1) {
-        await getBannedIps();
-
-        req.flash("show", "true");
-        req.flash("message", "삭제에 성공했습니다");
-        res.redirect("/admin/prohibitIp");
-    } else {
-        console.log(removeIp);
-
-        req.flash("show", "true");
-        req.flash("message", "삭제에 실패하였습니다");
-        res.redirect("/admin/prohibitIp");
-    }
-});
+// 차단 유저 등록
 
 router.post("/newProhibition", async (req, res, next) => {
     const { session } = req;
@@ -195,13 +165,54 @@ router.post("/newProhibition", async (req, res, next) => {
         req.flash("message", "추가에 실패하였습니다");
         res.redirect("/admin/prohibitIp");
     } else {
-        await getBannedIps();
+        await getBannedIps(); // cannot use then
 
         req.flash("show", "true");
         req.flash("message", `${newIp.ip}가 차단 목록에 추가되었습니다`);
         res.redirect("/admin/prohibitIp");
     }
 });
+
+// 차단 유저 해제
+
+router.get("/removeProhibition", async (req, res, next) => {
+    const { session } = req;
+    const { id } = req.query;
+
+    if (!session.user) {
+        res.redirect("/users/login");
+        return;
+    }
+
+    if (session.user.is_admin == false) {
+        req.flash("show", "true");
+        req.flash("message", "관리자 전용 기능입니다");
+        res.redirect("/");
+        return;
+    }
+
+    const removeIp = await IP.deleteOne({
+        _id: sanitize(id),
+    }).catch((err) => {
+        console.log(err);
+    });
+
+    if (removeIp.deletedCount == 1) {
+        await getBannedIps(); // cannot use then
+
+        req.flash("show", "true");
+        req.flash("message", "삭제에 성공했습니다");
+        res.redirect("/admin/prohibitIp");
+    } else {
+        console.log(removeIp);
+
+        req.flash("show", "true");
+        req.flash("message", "삭제에 실패하였습니다");
+        res.redirect("/admin/prohibitIp");
+    }
+});
+
+// 유저 리스트
 
 router.get("/allUsers", async (req, res, next) => {
     const { session } = req;
@@ -225,6 +236,7 @@ router.get("/allUsers", async (req, res, next) => {
     let query;
 
     if (value) {
+        // 검색 조건이 있을 때
         query = {
             [key]: {
                 $regex: `.*${sanitize(value)}.*`,
@@ -255,7 +267,8 @@ router.get("/allUsers", async (req, res, next) => {
         {}
     )
         .then((users) => {
-            res.render("admin/adminAllUsers", { session: session, users: users.docs, current_page: users.page, all_page: users.totalPages, show: show, message: message });
+            const { docs, page, totalPages } = users;
+            res.render("admin/adminAllUsers", { session: session, users: docs, current_page: page, total_page: totalPages, show: show, message: message });
         })
         .catch((err) => {
             console.log(err);
@@ -265,9 +278,10 @@ router.get("/allUsers", async (req, res, next) => {
         });
 });
 
-router.get("/editProfile", async (req, res, next) => {
+router.get("/editProfile", csrfProtection, async (req, res, next) => {
     const { session } = req;
     const { id } = req.query;
+    const csrfToken = req.csrfToken();
 
     if (!session.user) {
         res.redirect("/users/login");
@@ -300,7 +314,7 @@ router.get("/editProfile", async (req, res, next) => {
             if (targetUser == null) {
                 throw Error();
             }
-            res.render("user/editProfile", { session: session, defaultUser: targetUser, show: show, message: message });
+            res.render("user/editProfile", { session: session, defaultUser: targetUser, show: show, message: message, csrfToken: csrfToken });
         })
         .catch((err) => {
             console.log(err);
@@ -310,7 +324,7 @@ router.get("/editProfile", async (req, res, next) => {
         });
 });
 
-router.post("/editProfile", async (req, res, next) => {
+router.post("/editProfile", csrfProtection, async (req, res, next) => {
     const { session } = req;
     const { email, farm, nickname, server, guild, profile, bio } = req.body;
 

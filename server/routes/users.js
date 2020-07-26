@@ -3,6 +3,7 @@ var router = express.Router();
 import sanitize from "mongo-sanitize";
 import { User } from "../models/users";
 import { getGuild, hashFunction, createUUID, sendMail, sendResetMail } from "../../utils";
+import { csrfProtection } from "../../middleware";
 
 /* GET users listing. */
 router.get("/", async (req, res, next) => {
@@ -11,8 +12,9 @@ router.get("/", async (req, res, next) => {
 
 // 로그인
 
-router.get("/login", (req, res, next) => {
+router.get("/login", csrfProtection, (req, res, next) => {
     const { session } = req;
+    const csrfToken = req.csrfToken();
 
     if (session.user) {
         res.redirect("/users/logout");
@@ -22,10 +24,10 @@ router.get("/login", (req, res, next) => {
     const show = req.flash("show");
     const message = req.flash("message");
 
-    res.render("user/login", { session: session, show: show, message: message });
+    res.render("user/login", { session: session, show: show, message: message, csrfToken: csrfToken });
 });
 
-router.post("/login", async (req, res, next) => {
+router.post("/login", csrfProtection, async (req, res, next) => {
     const { session } = req;
     const { email, password } = req.body;
 
@@ -47,24 +49,22 @@ router.post("/login", async (req, res, next) => {
         )
         .exec()
         .then((user) => {
-            if (user !== null) {
-                if (user.email_valid == false) {
-                    req.flash("show", true);
-                    req.flash("message", "이메일 인증을 진행해주세요");
-                    res.redirect("/users/login");
-                } else if (user.is_activated == false) {
-                    req.flash("show", true);
-                    req.flash("message", "비활성화된 계정입니다 관리자에게 문의해주세요");
-                    res.redirect("/users/login");
-                    return;
-                } else {
-                    session.user = user;
-                    session.save(() => {
-                        res.redirect("/");
-                    });
-                }
-            } else {
+            if (user == null) {
                 throw Error();
+            }
+            if (user.email_valid == false) {
+                req.flash("show", true);
+                req.flash("message", "이메일 인증을 진행해주세요");
+                res.redirect("/users/login");
+            } else if (user.is_activated == false) {
+                req.flash("show", true);
+                req.flash("message", "비활성화된 계정입니다 관리자에게 문의해주세요");
+                res.redirect("/users/login");
+            } else {
+                session.user = user;
+                session.save(() => {
+                    res.redirect("/");
+                });
             }
         })
         .catch((err) => {
@@ -85,14 +85,13 @@ router.get("/logout", (req, res, next) => {
         return;
     }
 
-    session.user = null;
-    session.save(() => {
-        res.redirect("/");
-    });
+    session.destroy();
+    res.redirect("/");
 });
 
-router.get("/signup", (req, res, next) => {
+router.get("/signup", csrfProtection, (req, res, next) => {
     const { session } = req;
+    const csrfToken = req.csrfToken();
 
     if (session.user) {
         res.redirect("user/logout");
@@ -102,12 +101,12 @@ router.get("/signup", (req, res, next) => {
     const show = req.flash("show");
     const message = req.flash("message");
 
-    res.render("user/signup", { session: session, show: show, message: message });
+    res.render("user/signup", { session: session, show: show, message: message, csrfToken: csrfToken });
 });
 
 // 회원가입
 
-router.post("/signup", async (req, res, next) => {
+router.post("/signup", csrfProtection, async (req, res, next) => {
     const { session } = req;
     const { email, password, nickname, server, guild, farm, profile } = req.body;
 
@@ -138,10 +137,12 @@ router.post("/signup", async (req, res, next) => {
         .catch((err) => {
             console.log(err);
             req.flash("show", true);
-            req.flash("message", "회원가입에 실패하였습니다. 이 오류가 지속되면 관리자에게 문의해주세요");
+            req.flash("message", "회원가입에 실패하였습니다. 이미 가입된 이메일/캐릭터입니다. 만약 다른 계정/캐릭터로도 이 오류가 지속된다면 관리자에게 문의해주십시오");
             res.redirect("/users/signup");
         });
 });
+
+// 프로필 보기
 
 router.get("/userProfile", async (req, res, next) => {
     const { session } = req;
@@ -215,8 +216,9 @@ router.get("/userProfile", async (req, res, next) => {
 
 // 개인정보 수정
 
-router.get("/editProfile", async (req, res, next) => {
+router.get("/editProfile", csrfProtection, async (req, res, next) => {
     const { session } = req;
+    const csrfToken = req.csrfToken();
 
     const show = req.flash("show");
     const message = req.flash("message");
@@ -244,10 +246,15 @@ router.get("/editProfile", async (req, res, next) => {
             return;
         });
 
-    res.render("user/editProfile", { session: session, defaultUser: defaultUser, show: show, message: message });
+    if (defaultUser == null) {
+        res.redirect("/");
+        return;
+    }
+
+    res.render("user/editProfile", { session: session, defaultUser: defaultUser, show: show, message: message, csrfToken: csrfToken });
 });
 
-router.post("/editProfile", async (req, res, next) => {
+router.post("/editProfile", csrfProtection, async (req, res, next) => {
     const { session } = req;
     const { farm, nickname, server, guild, profile, bio } = req.body;
 
@@ -271,10 +278,14 @@ router.post("/editProfile", async (req, res, next) => {
             },
         }
     )
-        .then(() => {
-            req.flash("show", "true");
-            req.flash("message", "정보를 변경했습니다");
-            res.redirect("/users/userProfile");
+        .then((updatedUser) => {
+            if (updatedUser.nModified == 1) {
+                req.flash("show", "true");
+                req.flash("message", "정보를 변경했습니다");
+                res.redirect("/users/userProfile");
+            } else {
+                throw Error();
+            }
         })
         .catch((err) => {
             console.log(err);
@@ -286,8 +297,9 @@ router.post("/editProfile", async (req, res, next) => {
 
 // 비밀번호 변경
 
-router.get("/changePassword", (req, res, next) => {
+router.get("/changePassword", csrfProtection, (req, res, next) => {
     const { session } = req;
+    const csrfToken = req.csrfToken();
 
     if (!session.user) {
         res.redirect("/users/login");
@@ -297,10 +309,10 @@ router.get("/changePassword", (req, res, next) => {
     const show = req.flash("show");
     const message = req.flash("message");
 
-    res.render("user/changePassword", { session: session, show: show, message: message });
+    res.render("user/changePassword", { session: session, show: show, message: message, csrfToken: csrfToken });
 });
 
-router.post("/changePassword", async (req, res, next) => {
+router.post("/changePassword", csrfProtection, async (req, res, next) => {
     const { session } = req;
     const { current_password, password } = req.body;
 
@@ -327,27 +339,27 @@ router.post("/changePassword", async (req, res, next) => {
         }
     )
         .then((user) => {
-            req.flash("show", "true");
-            if (user.nModified == 0) {
-                req.flash("message", "정보를 변경할 수 없습니다");
-                res.redirect("/users/changePassword");
-            } else {
+            if (user.nModified == 1) {
+                req.flash("show", "true");
                 req.flash("message", "정보를 변경했습니다");
                 res.redirect("/users/userProfile");
+            } else {
+                throw Error();
             }
         })
         .catch((err) => {
             console.log(err);
             req.flash("show", "true");
             req.flash("message", "정보를 변경할 수 없습니다");
-            res.redirect("/users/editProfile");
+            res.redirect("/users/changePassword");
         });
 });
 
 // 비밀번호 초기화
 
-router.get("/findPassword", (req, res, next) => {
+router.get("/findPassword", csrfProtection, (req, res, next) => {
     const { session } = req;
+    const csrfToken = req.csrfToken();
 
     if (session.user) {
         res.redirect("/users/logout");
@@ -357,12 +369,13 @@ router.get("/findPassword", (req, res, next) => {
     const show = req.flash("show");
     const message = req.flash("message");
 
-    res.render("user/findPassword", { session: session, show: show, message: message });
+    res.render("user/findPassword", { session: session, show: show, message: message, csrfToken: csrfToken });
 });
 
-router.post("/findPassword", async (req, res, next) => {
+router.post("/findPassword", csrfProtection, async (req, res, next) => {
     const { session } = req;
     const { email, nickname } = req.body;
+    const newSecret = createUUID();
 
     if (session.user) {
         res.redirect("/users/logout");
@@ -386,6 +399,7 @@ router.post("/findPassword", async (req, res, next) => {
             req.flash("show", "true");
             req.flash("message", "알 수 없는 오류가 발생했습니다");
             res.redirect("/users/findPassword");
+            return;
         });
 
     if (targetUser == null) {
@@ -394,8 +408,6 @@ router.post("/findPassword", async (req, res, next) => {
         res.redirect("/users/findPassword");
         return;
     }
-
-    const newSecret = createUUID();
 
     await User.updateOne(
         {
@@ -470,16 +482,15 @@ router.get("/resetPassword", async (req, res, next) => {
             if (updatedUser.nModified == 1) {
                 req.flash("show", "true");
                 req.flash("message", "비밀번호가 성공적으로 초기화되었습니다. 로그인 후에 비밀번호를 다시 변경해주세요");
+                res.redirect("/users/login");
             } else {
-                req.flash("show", "true");
-                req.flash("message", "비밀번호 초기화에 실패하였습니다");
+                throw Error();
             }
-            res.redirect("/users/login");
         })
         .catch((err) => {
             console.log(err);
             req.flash("show", "true");
-            req.flash("message", "알 수 없는 오류가 발생했습니다");
+            req.flash("message", "비밀번호 초기화에 실패하였습니다");
             res.redirect("/");
         });
 });
@@ -517,16 +528,15 @@ router.get("/verifyEmail", async (req, res, next) => {
             if (updatedUser.nModified == 1) {
                 req.flash("show", "true");
                 req.flash("message", "인증에 성공하였습니다!");
+                res.redirect("/users/login");
             } else {
-                req.flash("show", "true");
-                req.flash("message", "인증에 실패하였습니다");
+                throw Error();
             }
-            res.redirect("/users/login");
         })
         .catch((err) => {
             console.log(err);
             req.flash("show", "true");
-            req.flash("message", "알 수 없는 오류가 발생했습니다");
+            req.flash("message", "인증에 실패하였습니다");
             res.redirect("/");
         });
 });
