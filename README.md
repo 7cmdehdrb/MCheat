@@ -9,28 +9,37 @@
     [o] Update Profile<br>
     [o] Update Password<br>
     [o] See Profile<br>
+    [ ] Alert<br>
 
 # BOARD
 
-    [ ] Write
-    [ ] Read
-    [ ] Search
-    [ ] Update
-    [ ] Delete
+    [o] Write<br>
+    [o] Read<br>
+    [o] Search<br>
+    [o] Update<br>
+    [o] Delete<br>
+    [o] Recommed<br>
+    [ ] Alert<br>
 
 # COMMENT
 
-    [ ] Write
-    [ ] Read
-    [ ] Update
-    [ ] Delete
+    [o] Write<br>
+    [o] Read<br>
+    [o] Delete<br>
+
+# CHAT
+
+    [o] instantChat
+    [ ] GroupChat
+        > [ ] CreateRoom
+        > [ ] JoinRoom
+        > [ ] LeaveRoom
+        > [ ] DeleteRoom
+        > [ ] Force somebody into leaving room (master)
 
 # CHEAT
 
-    [ ] Make alert
-    [ ] See alert
-    [ ] Search alert
-        > By email
-        > By nickname
-        > By farmname
+    [ ] Make Cheat
+    [ ] See Cheat
+    [ ] Search Cheat
     [ ] Alert fake cheat (Only himself)

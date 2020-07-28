@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <% include ../partial/header %>
+
+        <div class="container mx-auto my-5 w-full lg:w-2/3">
+            <h1 class="text-center text-4xl my-5">그룹체팅</h1>
+
+            <table class="table table-striped table-hover">
+                <thead class="text-center">
+                    <tr>
+                        <th style="width: 60%;" class="">체팅방 이름</th>
+                        <th style="width: 20%;" class="">방장</th>
+                        <th style="width: 20%;" class="">참여자 수</th>
+                    </tr>
+                </thead>
+
+                <tr class="w-full table-danger">
+                    <td class="break-words" style="width: 60%; cursor: pointer;">미안하다 이거 보여주려고 어그로끌었다</td>
+                    <td class="text-center" style="width: 20%;">SoBin</td>
+                    <td class="text-center" style="width: 20%;">1</td>
+                </tr>
+            </table>
+
+            <div class="w-full flex justify-end">
+                <button type="button" class="btn btn-outline-secondary px-5">체팅방 개설</button>
+            </div>
+        </div>
+
+        <% include ../partial/foot %> <% include ../partial/footer %>
+    </body>
+</html>

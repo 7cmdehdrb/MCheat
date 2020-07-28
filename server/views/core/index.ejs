@@ -62,9 +62,10 @@
 
         <div class="my_mobile_appear container w-11/12 mx-auto text-center my-10">
             <ul class="list-group">
-                <li class="list-group-item"><i class="fas fa-user-edit"></i> 피해등록</li>
-                <li class="list-group-item"><i class="far fa-laugh-wink"></i> 안심등록</li>
+                <li class="list-group-item" onclick="javascript: location.href='/'"><i class="fas fa-user-edit"></i> 피해등록</li>
+                <li class="list-group-item" onclick="javascript: location.href='/'"><i class="far fa-laugh-wink"></i> 안심등록</li>
                 <li class="list-group-item" onclick="javascript: location.href='/communities/list'"><i class="far fa-comments"></i> 커뮤니티</span></li>
+                <li class="list-group-item" onclick="javascript: location.href='/'"><i class="fas fa-users"></i> 그룹체팅</span></li>
                 <% if(session.user){ %>
                     <li class="list-group-item" onclick="javascript: location.href='/users/userProfile'">
                         마이 페이지
