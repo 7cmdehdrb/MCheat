@@ -1,11 +1,32 @@
+import { InstantMessage } from "./server/models/messages";
+import sanitize from "mongo-sanitize";
+
 module.exports = (io) => {
     io.on("connection", (socket) => {
-        // 웹소켓 연결 시
-        console.log("Socket initiated!");
-        socket.on("newScoreToServer", (data) => {
-            // 클라이언트에서 newScoreToServer 이벤트 요청 시
-            console.log("Socket: newScore");
-            io.emit("newScoreToClient", data);
+        socket.on("instantMessage", async (data) => {
+            let { to, from, message } = data;
+
+            console.log(`Socket - ${to} >> ${from} : ${message}`);
+
+            await InstantMessage.create({
+                to: sanitize(to),
+                from: sanitize(from),
+                message: sanitize(message),
+            })
+                .then((instant) => {
+                    if (instant == null) {
+                        throw Error();
+                    } else {
+                        io.emit("instantMessage", {
+                            to: sanitize(to),
+                            from: sanitize(from),
+                            message: sanitize(message),
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
         });
     });
 };

@@ -42,6 +42,7 @@ router.post("/login", csrfProtection, async (req, res, next) => {
         .select(
             `
         email
+        nickname
         email_valid
         is_admin
         is_activated

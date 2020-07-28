@@ -11,9 +11,17 @@
 <link rel="stylesheet" href="/stylesheets/styles.css" />
 <LINK REL="SHORTCUT ICON" HREF="/images/favicon.ico" />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<!-- Socket.io -->
+
 <script src="/socket.io/socket.io.js"></script>
-<script src="http://jsgetip.appspot.com" type="text/javascript"></script>
-<script src="/socket/test.js"></script>
+<script>
+    let socket_session = "<%= Boolean(session.user) ? session.user.nickname : null %>";
+    socket_session = socket_session == "" ? undefined : socket_session;
+</script>
+
+<!-- Socket.io -->
+
 <style>
     body {
         font-family: "Jua", sans-serif;
@@ -26,6 +34,18 @@
         .my_mobile_appear {
             display: block;
         }
+
+        .my_chat_icon {
+            position: fixed;
+            width: 15%;
+            padding-top: 15%;
+            right: 5%;
+            bottom: 5%;
+            background-color: #f1f1f1;
+            background-image: url("/images/chat.png");
+            background-size: cover;
+            resize: both;
+        }
     }
 
     @media (min-width: 992px) {
@@ -34,6 +54,18 @@
         }
         .my_mobile_appear {
             display: none;
+        }
+
+        .my_chat_icon {
+            position: fixed;
+            width: 5%;
+            padding-top: 5%;
+            right: 2%;
+            bottom: 2%;
+            background-color: #f1f1f1;
+            background-image: url("/images/chat.png");
+            background-size: cover;
+            resize: both;
         }
     }
 </style>

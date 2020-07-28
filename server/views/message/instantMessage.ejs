@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+        <style>
+            body {
+                background-color: #f4f4f4;
+            }
+
+            @media (min-width: 0px) {
+                .my_refresh_icon {
+                    position: fixed;
+                    width: 15%;
+                    padding-top: 15%;
+                    right: 5%;
+                    bottom: 5%;
+                    background-color: #f1f1f1;
+                    background-image: url("/images/refresh.png");
+                    background-size: cover;
+                    resize: both;
+                    cursor: pointer;
+                }
+            }
+
+            @media (min-width: 992px) {
+                .my_refresh_icon {
+                    position: fixed;
+                    width: 5%;
+                    padding-top: 5%;
+                    right: 2%;
+                    bottom: 2%;
+                    background-color: #f1f1f1;
+                    background-image: url("/images/refresh.png");
+                    background-size: cover;
+                    resize: both;
+                    cursor: pointer;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="my-2">
+            <h1 class="text-center my-2 text-4xl">귓속말</h1>
+            <div class="container w-full lg:w-1/2 mx-auto border-2 border-black rounded-lg pt-4">
+                <div class="js_chat_box">
+                    <!-- Content -->
+
+                    <% messages.forEach(element => { %>
+                    <!--  -->
+                    <% if(element.from == session.user.nickname){ %>
+                    <!-- 내가 보낸 메세지 -->
+                    <div class="flex justify-end my-2 text-right text-gray-700">
+                        <div class="w-2/3 break-all">
+                            <%= element.to %> << <%= element.message %>
+                        </div>
+                    </div>
+                    <% }else{ %>
+                    <!-- 내가 받은 메세지 -->
+                    <div class="flex justify-start my-2 text-left text-green-700">
+                        <div class="w-2/3 break-all" onclick="setSendTo('<%= element.from %>')">
+                            <%= element.from %> >> <%= element.message %>
+                        </div>
+                    </div>
+                    <% } %>
+                    <!--  -->
+                    <% }); %>
+
+                    <div class="flex justify-start my-2 text-left text-red-700">
+                        <div class="w-2/3 break-all">
+                            SYSTEM >> 귓속말 TIP 1: 받은 귓속말을 클릭하면 보낸 유저한테 귓속말을 보낼 수 있습니다
+                        </div>
+                    </div>
+
+                    <div class="flex justify-start my-2 text-left text-red-700">
+                        <div class="w-2/3 break-all">
+                            SYSTEM >> 귓속말 TIP 2: 오른쪽 버튼을 클릭하면 스크롤을 올릴 수 있습니다
+                        </div>
+                    </div>
+
+                    <!-- Content End -->
+                </div>
+
+                <!-- Form -->
+
+                <hr />
+
+                <div class="form-row mt-3">
+                    <div class="form-group col-md-3">
+                        <input class="js_instant_to form-control" type="text" placeholder="귓속말(닉네임)" />
+                    </div>
+                    <div class="form-group col-md-7">
+                        <input class="js_instant_content form-control" type="text" placeholder="내용 (최대 50자)" />
+                    </div>
+                    <div class="form-group col-md-2">
+                        <input type="button" class="form-control btn btn-primary" value="전송" onclick="sendInstantMessage()" />
+                    </div>
+                </div>
+
+                <!-- Form End -->
+            </div>
+        </div>
+
+        <div class="my_refresh_icon rounded-full shadow-md hover:bg-gray-200" onclick="setAutoScroll()">
+            <!--  -->
+        </div>
+
+        <script src="/socket/instantMessageUpdate.js"></script>
+        <% include ../partial/foot %>
+    </body>
+</html>

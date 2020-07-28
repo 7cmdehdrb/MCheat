@@ -8,6 +8,7 @@ import session from "express-session";
 import ipblock from "express-ip-block";
 import timeout from "express-timeout-handler";
 import helmet from "helmet";
+import compression from "compression";
 import flash from "connect-flash";
 import admin from "sriracha";
 const MongoStore = require("connect-mongo")(session);
@@ -22,8 +23,9 @@ import { rateLimitModule, timeoutModule } from "./middleware";
 
 import indexRouter from "./server/routes/index";
 import usersRouter from "./server/routes/users";
-import adminRouter from "./server/routes/admin";
 import communityRouter from "./server/routes/community";
+import messageRouter from "./server/routes/message";
+import adminRouter from "./server/routes/admin";
 
 const app = express();
 
@@ -61,13 +63,18 @@ app.use(
             collection: "sessions",
         }),
         cookie: {
-            maxAge: 1000 * 60 * 60 * 12, // 쿠키 유효기간 12시간
+            maxAge: 1000 * 60 * 10, // 쿠키 유효기간 10분
             httpOnly: true,
         },
     })
 );
+app.use(compression());
 app.use(flash());
-app.use(express.static(path.join(__dirname, "public")));
+if (process.env.DEBUG == "true") {
+    app.use(express.static(path.join(__dirname, "public")));
+} else {
+    app.use(express.static(path.join(__dirname, "public"), { maxAge: 1000 * 60 * 60 * 12 }));
+}
 
 app.use(function (err, req, res, next) {
     console.log(err);
@@ -82,18 +89,22 @@ app.use(function (err, req, res, next) {
 
 app.use("/", indexRouter);
 app.use("/admin", adminRouter);
-app.use(
-    "/express-admin",
-    admin({
-        username: process.env.ADMIN_USERNAME,
-        password: process.env.ADMIN_PASSWORD,
-        User: {
-            searchField: "email",
-        },
-    })
-);
 app.use("/users", usersRouter);
 app.use("/communities", communityRouter);
+app.use("/messages", messageRouter);
+
+if (process.env.DEBUG == "true") {
+    app.use(
+        "/express-admin",
+        admin({
+            username: process.env.ADMIN_USERNAME,
+            password: process.env.ADMIN_PASSWORD,
+            User: {
+                searchField: "email",
+            },
+        })
+    );
+}
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
