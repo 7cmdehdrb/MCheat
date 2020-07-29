@@ -33,7 +33,7 @@ router.get("/getAdminPermission", csrfProtection, (req, res, next) => {
         return;
     }
 
-    res.render("admin/getAdminPermission", { session: session });
+    res.render("admin/getAdminPermission", { session: session, csrfToken: csrfToken });
 });
 
 router.post("/getAdminPermission", csrfProtection, async (req, res, next) => {

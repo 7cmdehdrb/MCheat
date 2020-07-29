@@ -11,17 +11,6 @@
 <link rel="stylesheet" href="/stylesheets/styles.css" />
 <LINK REL="SHORTCUT ICON" HREF="/images/favicon.ico" />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-<!-- Socket.io -->
-
-<script src="/socket.io/socket.io.js"></script>
-<script>
-    let socket_session = "<%= Boolean(session.user) ? session.user.nickname : null %>";
-    socket_session = socket_session == "" ? undefined : socket_session;
-</script>
-
-<!-- Socket.io -->
-
 <style>
     body {
         font-family: "Jua", sans-serif;

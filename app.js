@@ -10,7 +10,6 @@ import timeout from "express-timeout-handler";
 import helmet from "helmet";
 import compression from "compression";
 import flash from "connect-flash";
-import admin from "sriracha";
 const MongoStore = require("connect-mongo")(session);
 import socketIo from "socket.io";
 import socketEvent from "./socket";
@@ -63,7 +62,7 @@ app.use(
             collection: "sessions",
         }),
         cookie: {
-            maxAge: 1000 * 60 * 10, // 쿠키 유효기간 10분
+            maxAge: 1000 * 60 * 60, // 쿠키 유효기간 1시간
             httpOnly: true,
         },
     })
@@ -73,7 +72,7 @@ app.use(flash());
 if (process.env.DEBUG == "true") {
     app.use(express.static(path.join(__dirname, "public")));
 } else {
-    app.use(express.static(path.join(__dirname, "public"), { maxAge: 1000 * 60 * 60 * 12 }));
+    app.use(express.static(path.join(__dirname, "public"), { maxAge: 1000 * 60 * 60 }));
 }
 
 app.use(function (err, req, res, next) {
@@ -92,19 +91,6 @@ app.use("/admin", adminRouter);
 app.use("/users", usersRouter);
 app.use("/communities", communityRouter);
 app.use("/messages", messageRouter);
-
-if (process.env.DEBUG == "true") {
-    app.use(
-        "/express-admin",
-        admin({
-            username: process.env.ADMIN_USERNAME,
-            password: process.env.ADMIN_PASSWORD,
-            User: {
-                searchField: "email",
-            },
-        })
-    );
-}
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -127,7 +113,7 @@ const server = app.listen(app.get("port"), function () {
     console.log(`SERVER START AT http://localhost:${server.address().port}/`);
 });
 
-const io = socketIo(server);
+export const io = socketIo(server);
 socketEvent(io);
 
 module.exports = app;

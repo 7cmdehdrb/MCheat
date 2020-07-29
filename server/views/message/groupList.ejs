@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <% include ../partial/header %>
+
+        <div class="container mx-auto my-5 w-full lg:w-2/3">
+            <% if(show == "true"){ %> <% include ../partial/toast %> <% } %>
+            <h1 class="text-center text-4xl my-5">참여 가능한 체팅방</h1>
+
+            <table class="table table-striped table-hover">
+                <thead class="text-center">
+                    <tr>
+                        <th style="width: 70%;" class="">체팅방 이름</th>
+                        <th style="width: 15%;" class="">방장</th>
+                        <th style="width: 15%;" class="">참여자</th>
+                    </tr>
+                </thead>
+
+                <% rooms.docs.forEach(room => { %>
+
+                <tr class="w-full">
+                    <td class="break-words" style="width: 70%; cursor: pointer;" onclick="javascript: location.href='/messages/joinGroup?room=<%= room._id %>'">
+                        <strong><%= room.name %></strong>
+                    </td>
+                    <td class="text-center" style="width: 15%;"><%= room.master.nickname %></td>
+                    <td class="text-center" style="width: 15%;"><%= room.roomMember.length %>명</td>
+                </tr>
+
+                <% }); %>
+            </table>
+
+            <div class="w-full flex justify-end">
+                <button type="button" class="btn btn-secondary" onclick="javascript: location.href='/messages/groupMessage'">내 체팅방으로</button>
+            </div>
+
+
+            <!-- Paginator -->
+
+            <div>
+                <nav aria-label="Page navigation mx-auto my-5">
+                    <ul class="pagination justify-content-center">
+                        <li style="cursor: pointer;" class="page-item <%= rooms.page == 1 ? "disabled" : "" %>">
+                            <a class="page-link" onclick="setUrl('<%= rooms.page -1 %>')">Prev</a>
+                        </li>
+                        <li class="page-item"><a class="page-link"><%= rooms.page %> / <%= rooms.totalPages %></a></li>
+                        <li style="cursor: pointer;" class="page-item <%= rooms.page == rooms.totalPages ? "disabled" : "" %>">
+                            <a class="page-link" onclick="setUrl('<%= rooms.page + 1 %>')">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Paginator End -->
+
+        </div>
+
+        <script src="/javascripts/groupList.js"></script>
+        <% include ../partial/foot %>
+        <!--  -->
+        <% include ../partial/footer %>
+    </body>
+</html>

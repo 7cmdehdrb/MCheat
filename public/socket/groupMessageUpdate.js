@@ -3,11 +3,13 @@ let autoScroll = true;
 let rotateAngle = 0;
 let refreshRotation;
 const refreshIcon = document.querySelector(".my_refresh_icon");
-const instant_to = document.querySelector(".js_instant_to");
 const instant_content = document.querySelector(".js_instant_content");
 const chat_box = document.querySelector(".js_chat_box");
 
 init = () => {
+    socket.emit("joinGroup", {
+        room: socket_group_id,
+    });
     setTimeout(() => {
         $(document).scrollTop($(document).height());
     }, 100);
@@ -21,13 +23,8 @@ setAutoScroll = () => {
     }
 };
 
-setSendTo = (nickname) => {
-    instant_to.value = nickname;
-};
-
-sendInstantMessage = () => {
-    if (socket_nickname == instant_to.value) {
-        alert("자기 자신에게 보낼 수 없습니다");
+sendGroupMessage = () => {
+    if (instant_content.value == "") {
         return;
     }
 
@@ -36,29 +33,15 @@ sendInstantMessage = () => {
         return;
     }
 
-    if (instant_to.value != "" && instant_content.value != "") {
-        socket.emit("instantMessage", {
-            to: instant_to.value,
-            from: socket_nickname,
-            from_email: socket_email,
-            message: instant_content.value,
-        });
+    socket.emit("groupMessage", {
+        room: socket_group_id,
+        from: socket_nickname,
+        from_email: socket_email,
+        message: instant_content.value,
+    });
 
-        chat_box.innerHTML += `
-        <div class="flex justify-end my-2 text-right text-gray-700">
-            <div class="w-2/3 break-all">
-                ${instant_to.value} << ${instant_content.value}
-            </div>
-        </div>
-        `;
-
-        if (autoScroll) {
-            $(document).scrollTop($(document).height());
-        }
-
-        instant_content.value = "";
-        instant_content.focus();
-    }
+    instant_content.value = "";
+    instant_content.focus();
 };
 
 socket.on("event", (data) => {
@@ -68,20 +51,29 @@ socket.on("event", (data) => {
     }
 });
 
-socket.on("instantMessage", (data) => {
-    const { to, from, message } = data;
-    if (socket_nickname == to) {
+socket.on("groupMessage", (data) => {
+    let { from, from_email, message } = data;
+
+    if (from_email == socket_email) {
         chat_box.innerHTML += `
-        <div class="flex justify-start my-2 text-left text-green-700">
-        <div class="w-2/3 break-all" onclick="setSendTo('${from}')">
-            ${from} >> ${message}
-        </div>
+        <div class="flex justify-end my-2 text-right text-gray-700">
+            <div class="w-2/3 break-all">
+                ${message} << 나
+            </div>
         </div>
         `;
+    } else {
+        chat_box.innerHTML += `
+            <div class="flex justify-start my-2 text-left text-gray-700">
+            <div class="w-2/3 break-all">
+                ${from} ${from_email == socket_group_master_email ? "<i class='fas fa-crown'></i>" : ""} >> ${message}
+            </div>
+            </div>
+        `;
+    }
 
-        if (autoScroll) {
-            $(document).scrollTop($(document).height());
-        }
+    if (autoScroll) {
+        $(document).scrollTop($(document).height());
     }
 });
 
@@ -102,7 +94,7 @@ refreshIcon.addEventListener("click", () => {
 
 window.addEventListener("keypress", (ev) => {
     if (ev.keyCode === 13) {
-        sendInstantMessage();
+        sendGroupMessage();
     }
 });
 

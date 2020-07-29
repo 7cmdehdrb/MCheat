@@ -33,7 +33,7 @@
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="/users/userProfile"
-                        >마이 페이지 <% if(session.user.is_admin == true){ %>
+                        ><%= session.user.nickname %>의 페이지 <% if(session.user.is_admin == true){ %>
                         <span class="badge badge-secondary">ADMIN</span>
                         <% } %>
                     </a>

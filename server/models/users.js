@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import paginator from "mongoose-paginate-v2";
 
+mongoose.set("useCreateIndex", true);
+
 const sessionSchema = new mongoose.Schema({}, { collection: "sessions" });
 
 export const Session = mongoose.model("Session", sessionSchema);

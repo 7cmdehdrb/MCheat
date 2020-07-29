@@ -86,8 +86,11 @@ router.get("/logout", (req, res, next) => {
         return;
     }
 
+    const user = session.user.email;
+
     session.destroy();
-    res.redirect("/");
+
+    res.render("user/logout", { user: user });
 });
 
 router.get("/signup", csrfProtection, (req, res, next) => {
@@ -282,8 +285,8 @@ router.post("/editProfile", csrfProtection, async (req, res, next) => {
         .then((updatedUser) => {
             if (updatedUser.nModified == 1) {
                 req.flash("show", "true");
-                req.flash("message", "정보를 변경했습니다");
-                res.redirect("/users/userProfile");
+                req.flash("message", "정보를 변경했습니다! 다시 로그인 하여 정보를 갱신해주세요");
+                res.redirect("/users/logout");
             } else {
                 throw Error();
             }
@@ -342,8 +345,8 @@ router.post("/changePassword", csrfProtection, async (req, res, next) => {
         .then((user) => {
             if (user.nModified == 1) {
                 req.flash("show", "true");
-                req.flash("message", "정보를 변경했습니다");
-                res.redirect("/users/userProfile");
+                req.flash("message", "비밀번호 변경했습니다! 다시 로그인 하여 정보를 갱신해주세요");
+                res.redirect("/users/logout");
             } else {
                 throw Error();
             }
@@ -351,7 +354,7 @@ router.post("/changePassword", csrfProtection, async (req, res, next) => {
         .catch((err) => {
             console.log(err);
             req.flash("show", "true");
-            req.flash("message", "정보를 변경할 수 없습니다");
+            req.flash("message", "비밀번호 변경할 수 없습니다");
             res.redirect("/users/changePassword");
         });
 });

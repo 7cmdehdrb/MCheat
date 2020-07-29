@@ -18,7 +18,7 @@ openInstantChat = () => {
 
 socket.on("instantMessage", (data) => {
     const { to } = data;
-    if (socket_session == to) {
+    if (session_nickname == to) {
         getNewMessage();
     }
 });

@@ -7,29 +7,48 @@
         <% include ../partial/header %>
 
         <div class="container mx-auto my-5 w-full lg:w-2/3">
-            <h1 class="text-center text-4xl my-5">그룹체팅</h1>
+            <% if(show == "true"){ %> <% include ../partial/toast %> <% } %>
+            <h1 class="text-center text-4xl my-5">나의 체팅방</h1>
 
             <table class="table table-striped table-hover">
                 <thead class="text-center">
                     <tr>
-                        <th style="width: 60%;" class="">체팅방 이름</th>
-                        <th style="width: 20%;" class="">방장</th>
-                        <th style="width: 20%;" class="">참여자 수</th>
+                        <th style="width: 50%;" class="">체팅방 이름</th>
+                        <th style="width: 15%;" class="">방장</th>
+                        <th style="width: 20%;" class="">참여자</th>
+                        <th style="width: 15%;" class="">기타</th>
                     </tr>
                 </thead>
 
-                <tr class="w-full table-danger">
-                    <td class="break-words" style="width: 60%; cursor: pointer;">미안하다 이거 보여주려고 어그로끌었다</td>
-                    <td class="text-center" style="width: 20%;">SoBin</td>
-                    <td class="text-center" style="width: 20%;">1</td>
+                <% rooms.forEach(room => { %>
+
+                <tr class="w-full">
+                    <td class="break-words" style="width: 50%; cursor: pointer;" onclick="openRoom('<%= room._id %>')">
+                        <strong><%= room.name %></strong>
+                    </td>
+                    <td class="text-center" style="width: 15%;"><%= room.master.nickname %></td>
+                    <td class="text-center" style="width: 20%;"><%= room.roomMember.length %>명</td>
+                    <td class="text-center" style="width: 15%;">
+                        <% if(room.master.email == session.user.email){ %>
+                        <a href="#">관리</a>
+                        <% }else{ %>
+                        <span>-</span>
+                        <% } %>
+                    </td>
                 </tr>
+
+                <% }); %>
             </table>
 
             <div class="w-full flex justify-end">
-                <button type="button" class="btn btn-outline-secondary px-5">체팅방 개설</button>
+                <button type="button" class="btn btn-outline-success px-4 mx-2" onclick="javascript: location.href='/messages/joinGroupList'">체팅방 참여</button>
+                <button type="button" class="btn btn-outline-info px-4" onclick="javascript: location.href='/messages/newGroup'">체팅방 개설</button>
             </div>
         </div>
 
-        <% include ../partial/foot %> <% include ../partial/footer %>
+        <script src="/javascripts/groupMessageList.js"></script>
+        <% include ../partial/foot %>
+        <!--  -->
+        <% include ../partial/footer %>
     </body>
 </html>

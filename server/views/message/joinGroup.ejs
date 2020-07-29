@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <% include ../partial/header %>
+
+        <div class="container w-full lg:w-2/3 mx-auto my-5">
+            <h1 class="text-center text-4xl my-5">그룹참여</h1>
+
+            <table class="table-auto w-full lg:w-2/3 mx-auto text-center">
+                <tbody>
+                    <tr class="bg-gray-300">
+                        <td class="border px-4 py-2">분류</td>
+                        <td class="border px-4 py-2">내용</td>
+                    </tr>
+                    <tr>
+                        <td class="border px-4 py-2">그룹명</td>
+                        <td class="border px-4 py-2"><%= room.name %></td>
+                    </tr>
+                    <tr class="bg-gray-100">
+                        <td class="border px-4 py-2">그룹 참여자</td>
+                        <td class="border px-4 py-2"><%= room.roomMember.length %>명</td>
+                    </tr>
+                    <tr>
+                        <td class="border px-4 py-2">그룹 관리자</td>
+                        <td class="border px-4 py-2"><%= room.master.nickname %></td>
+                    </tr>
+                    <tr class="bg-gray-100">
+                        <td class="border px-4 py-2" colspan="2">소개</td>
+                    </tr>
+                    <tr>
+                        <td class="border px-4 py-2" colspan="2">
+                            <%= room.introduce %>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <form action="/messages/joinGroup" method="POST" class="w-full lg:w-1/2 mx-auto my-5">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                <input type="hidden" class="form-control" id="inputGroupPW" name="roomID" value="<%= room._id %>" />
+                <div class="form-row">
+                    <div class="form-group col-md-8">
+                        <input type="password" class="form-control" id="inputGroupPW" name="roomPW" required autocomplete="new-password" />
+                    </div>
+                    <div class="form-group col-md-4 flex justify-end">
+                        <button type="submit" class="btn btn-primary">참여하기</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <% include ../partial/foot %>
+        <!--  -->
+        <% include ../partial/footer %>
+    </body>
+</html>
