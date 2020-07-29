@@ -2,30 +2,30 @@
 
 # USER
 
-    [o] Sign up<br>
-    [o] Login<br>
-    [o] Logout<br>
-    [o] Find Password<br>
-    [o] Update Profile<br>
-    [o] Update Password<br>
-    [o] See Profile<br>
-    [ ] Alert<br>
+    [o] Sign up
+    [o] Login
+    [o] Logout
+    [o] Find Password
+    [o] Update Profile
+    [o] Update Password
+    [o] See Profile
+    [ ] Alert
 
 # BOARD
 
-    [o] Write<br>
-    [o] Read<br>
-    [o] Search<br>
-    [o] Update<br>
-    [o] Delete<br>
-    [o] Recommed<br>
-    [ ] Alert<br>
+    [o] Write
+    [o] Read
+    [o] Search
+    [o] Update
+    [o] Delete
+    [o] Recommed
+    [ ] Alert
 
 # COMMENT
 
-    [o] Write<br>
-    [o] Read<br>
-    [o] Delete<br>
+    [o] Write
+    [o] Read
+    [o] Delete
 
 # CHAT
 
