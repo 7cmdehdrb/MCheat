@@ -19,12 +19,16 @@ function isImage(filename) {
 }
 
 window.addEventListener("submit", (ev) => {
-    if (fileInput.value != "") {
-        if (!isImage(fileInput.value)) {
-            ev.preventDefault();
-            alert("사진첨부는 .jpg, .png, .gif 파일만 가능합니다");
-            return;
+    try {
+        if (fileInput.value != "") {
+            if (!isImage(fileInput.value)) {
+                ev.preventDefault();
+                alert("사진첨부는 .jpg, .png, .gif 파일만 가능합니다");
+                return;
+            }
         }
+    } catch (error) {
+        console.log(error);
     }
 
     if (titleInput.value > 20) {

@@ -10,9 +10,9 @@ import timeout from "express-timeout-handler";
 import helmet from "helmet";
 import compression from "compression";
 import flash from "connect-flash";
-const MongoStore = require("connect-mongo")(session);
 import socketIo from "socket.io";
 import socketEvent from "./socket";
+const MongoStore = require("connect-mongo")(session);
 
 import "./env";
 import "./db";
@@ -26,7 +26,6 @@ import communityRouter from "./server/routes/community";
 import messageRouter from "./server/routes/message";
 import adminRouter from "./server/routes/admin";
 import mongoAdminRouter from "sriracha";
-import { env } from "process";
 
 const adminOpt = {
     username: process.env.ADMIN_USERNAME,

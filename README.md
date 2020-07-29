@@ -30,12 +30,18 @@
 # CHAT
 
     [o] instantChat
-    [ ] GroupChat
-        > [ ] CreateRoom
-        > [ ] JoinRoom
-        > [ ] LeaveRoom
-        > [ ] DeleteRoom
-        > [ ] Force somebody into leaving room (master)
+    [o] GroupChat
+        > [o] Search Room
+        > [o] CreateRoom
+        > [o] JoinRoom
+        > [o] LeaveRoom
+        > [o] DeleteRoom
+
+# SECURITY
+
+    [o] SQL Injection
+    [o] CrossSite Scripting
+    [ ] CSRF
 
 # CHEAT
 

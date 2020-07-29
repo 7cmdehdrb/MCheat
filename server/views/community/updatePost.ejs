@@ -9,6 +9,7 @@
         <div class="container w-full lg:w-1/2 my-5">
             <h1 class="text-4xl text-center">수정하기</h1>
             <form method="POST" class="mt-10">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                 <input type="hidden" name="id" value="<%= post._id %>" />
                 <div class="form-row">
                     <div class="form-group col-md-4">

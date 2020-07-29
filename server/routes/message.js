@@ -130,7 +130,7 @@ router.post("/newGroup", async (req, res, next) => {
 
 router.get("/joinGroupList", async (req, res, next) => {
     const { session } = req;
-    const { page } = req.query;
+    const { page, search } = req.query;
 
     if (!session.user) {
         res.redirect("/users/login");
@@ -140,12 +140,33 @@ router.get("/joinGroupList", async (req, res, next) => {
     const show = req.flash("show");
     const message = req.flash("message");
 
-    await GroupMessageRoom.paginate(
-        {
+    let query = {};
+
+    if (search) {
+        query = {
+            $and: [
+                {
+                    "roomMember.user": {
+                        $ne: session.user.email,
+                    },
+                },
+                {
+                    name: {
+                        $regex: `.*${sanitize(search)}.*`,
+                    },
+                },
+            ],
+        };
+    } else {
+        query = {
             "roomMember.user": {
                 $ne: session.user.email,
             },
-        },
+        };
+    }
+
+    await GroupMessageRoom.paginate(
+        query,
         {
             select: `
             _id
