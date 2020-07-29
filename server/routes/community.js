@@ -2,10 +2,8 @@ var express = require("express");
 var router = express.Router();
 import sanitize from "mongo-sanitize";
 import { Community, Comment } from "../models/communities";
-import { User } from "../models/users";
 import { datetimeToString, getTag } from "../../utils";
 import { upload } from "../../multer";
-import { doc } from "sriracha/lib/controllers/main";
 import { csrfProtection } from "../../middleware";
 
 router.get("/", async (req, res, next) => {
@@ -154,7 +152,7 @@ router.get("/new", csrfProtection, (req, res, next) => {
     res.render("community/new", { session: session, csrfToken: csrfToken });
 });
 
-router.post("/new", csrfProtection, upload.single("inputFile"), async (req, res, next) => {
+router.post("/new", upload.single("inputFile"), csrfProtection, async (req, res, next) => {
     const { session } = req;
     const { tag, title, content } = req.body;
     const { file } = req;

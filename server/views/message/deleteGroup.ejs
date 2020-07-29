@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <h1>삭제중입니다...</h1>
+
+        <!-- Socket.io -->
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            const socket = io();
+            const deleteRoom = "<%= room %>";
+
+            init = () => {
+                socket.emit("event", {
+                    status: "delete",
+                    target: deleteRoom,
+                });
+
+                setTimeout(() => {
+                    location.href = "/messages/groupMessage";
+                }, 100);
+            };
+
+            init();
+        </script>
+    </body>
+</html>

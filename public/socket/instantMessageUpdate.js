@@ -62,9 +62,10 @@ sendInstantMessage = () => {
 };
 
 socket.on("event", (data) => {
-    const { status, user } = data;
-    if (status == "logout" && user == socket_email) {
+    const { status, target } = data;
+    if (status == "logout" && target == socket_email) {
         window.close();
+        return;
     }
 });
 

@@ -10,6 +10,12 @@ init = () => {
     socket.emit("joinGroup", {
         room: socket_group_id,
     });
+    socket.emit("groupMessage", {
+        room: socket_group_id,
+        from: socket_nickname,
+        from_email: socket_email,
+        message: `${socket_nickname}님이 체팅방에 들어왔습니다`,
+    });
     setTimeout(() => {
         $(document).scrollTop($(document).height());
     }, 100);
@@ -45,9 +51,15 @@ sendGroupMessage = () => {
 };
 
 socket.on("event", (data) => {
-    const { status, user } = data;
-    if (status == "logout" && user == socket_email) {
+    const { status, target } = data;
+    if (status == "logout" && target == socket_email) {
         window.close();
+        return;
+    }
+
+    if (status == "delete" && target == socket_group_id) {
+        window.close();
+        return;
     }
 });
 

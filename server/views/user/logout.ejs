@@ -13,7 +13,7 @@
             const user = "<%= user %>";
             socket.emit("event", {
                 status: "logout",
-                user: user,
+                target: user,
             });
             setTimeout(() => {
                 location.href = "/";

@@ -50,22 +50,25 @@ router.post("/login", csrfProtection, async (req, res, next) => {
         )
         .exec()
         .then((user) => {
+            console.log("Login");
+            console.log(user);
             if (user == null) {
                 throw Error();
-            }
-            if (user.email_valid == false) {
-                req.flash("show", true);
-                req.flash("message", "이메일 인증을 진행해주세요");
-                res.redirect("/users/login");
-            } else if (user.is_activated == false) {
-                req.flash("show", true);
-                req.flash("message", "비활성화된 계정입니다 관리자에게 문의해주세요");
-                res.redirect("/users/login");
             } else {
-                session.user = user;
-                session.save(() => {
-                    res.redirect("/");
-                });
+                if (user.email_valid == false) {
+                    req.flash("show", true);
+                    req.flash("message", "이메일 인증을 진행해주세요");
+                    res.redirect("/users/login");
+                } else if (user.is_activated == false) {
+                    req.flash("show", true);
+                    req.flash("message", "비활성화된 계정입니다 관리자에게 문의해주세요");
+                    res.redirect("/users/login");
+                } else {
+                    session.user = user;
+                    session.save(() => {
+                        res.redirect("/");
+                    });
+                }
             }
         })
         .catch((err) => {

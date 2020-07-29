@@ -25,6 +25,13 @@ import usersRouter from "./server/routes/users";
 import communityRouter from "./server/routes/community";
 import messageRouter from "./server/routes/message";
 import adminRouter from "./server/routes/admin";
+import mongoAdminRouter from "sriracha";
+import { env } from "process";
+
+const adminOpt = {
+    username: process.env.ADMIN_USERNAME,
+    password: process.env.ADMIN_PASSWORD,
+};
 
 const app = express();
 
@@ -47,6 +54,7 @@ app.use(ipblock(bannedIps, { allow: false, allowForwarded: true }), timeout.set(
 });
 
 app.use(logger(process.env.DEBUG == "true" ? "dev" : "common"));
+app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -67,13 +75,8 @@ app.use(
         },
     })
 );
-app.use(compression());
 app.use(flash());
-if (process.env.DEBUG == "true") {
-    app.use(express.static(path.join(__dirname, "public")));
-} else {
-    app.use(express.static(path.join(__dirname, "public"), { maxAge: 1000 * 60 * 60 }));
-}
+app.use(express.static(path.join(__dirname, "public"), { maxAge: process.env.DEBUG == "true" ? 0 : 1000 * 60 * 60 }));
 
 app.use(function (err, req, res, next) {
     console.log(err);
@@ -88,6 +91,14 @@ app.use(function (err, req, res, next) {
 
 app.use("/", indexRouter);
 app.use("/admin", adminRouter);
+app.use(
+    "/express-admin",
+    (req, res, next) => {
+        req.session.destroy();
+        next();
+    },
+    mongoAdminRouter(adminOpt)
+);
 app.use("/users", usersRouter);
 app.use("/communities", communityRouter);
 app.use("/messages", messageRouter);

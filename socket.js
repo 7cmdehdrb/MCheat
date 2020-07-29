@@ -12,8 +12,6 @@ module.exports = (io) => {
             // 귓속말
             const { to, from, from_email, message } = data;
 
-            console.log(`Socket - ${from} >> ${to} : ${message}`);
-
             await InstantMessage.create({
                 to: sanitize(to),
                 from: sanitize(from),
@@ -24,6 +22,7 @@ module.exports = (io) => {
                     if (instant == null) {
                         throw Error();
                     } else {
+                        console.log(`Socket - ${from} >> ${to} : ${message}`);
                         io.emit("instantMessage", {
                             to: sanitize(to),
                             from: sanitize(from),
@@ -46,7 +45,6 @@ module.exports = (io) => {
         socket.on("groupMessage", async (data) => {
             // 그룹 체팅
             const { room, from, from_email, message } = data;
-            console.log(`Socket - ${from} >> ${room} : ${message}`);
 
             await GroupMessage.create({
                 room: sanitize(room),
@@ -58,6 +56,7 @@ module.exports = (io) => {
                     if (newMessage == null) {
                         throw Error();
                     } else {
+                        console.log(`Socket - ${from} >> ${room} : ${message}`);
                         io.to(room).emit("groupMessage", {
                             room: sanitize(room),
                             from: sanitize(from),

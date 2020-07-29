@@ -27,8 +27,8 @@ router.get("/instantMessage", async (req, res, next) => {
                 },
             },
             {
-                from_mail: {
-                    $eq: session.user.nickname,
+                from_email: {
+                    $eq: session.user.email,
                 },
             },
         ],
@@ -168,7 +168,6 @@ router.get("/joinGroupList", async (req, res, next) => {
         {}
     )
         .then((rooms) => {
-            console.log(rooms);
             res.render("message/groupList", { session: session, rooms: rooms, show: show, message: message });
         })
         .catch((err) => {
@@ -251,8 +250,6 @@ router.post("/joinGroup", async (req, res, next) => {
             console.log(err);
         });
 
-    console.log(room);
-
     if (room == null) {
         req.flash("show", "true");
         req.flash("message", "비밀번호가 일치하지 않습니다");
@@ -303,6 +300,103 @@ router.post("/joinGroup", async (req, res, next) => {
     }
 
     res.redirect("/messages/groupMessage");
+});
+
+// 그룹 나가기
+
+router.get("/leaveGroup", async (req, res, next) => {
+    const { session } = req;
+    const { room } = req.query;
+
+    if (!session.user) {
+        res.redirect("/users/login");
+        return;
+    }
+
+    if (!room) {
+        res.redirect("/messages/groupMessage");
+        return;
+    }
+
+    await GroupMessageRoom.updateOne(
+        {
+            $and: [
+                {
+                    _id: sanitize(room),
+                },
+                {
+                    "roomMember.user": session.user.email,
+                },
+                {
+                    masterEmail: {
+                        $ne: session.user.email,
+                    },
+                },
+            ],
+        },
+        {
+            $pull: {
+                roomMember: {
+                    user: session.user.email,
+                },
+            },
+        }
+    )
+        .then((updateOne) => {
+            if (updateOne.nModified == 1) {
+                res.render("message/leaveGroup", { session: session, room: room });
+            } else {
+                throw Error();
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+            req.flash("show", "true");
+            req.flash("message", "실패하였습니다");
+            res.redirect("/messages/groupMessage");
+        });
+});
+
+// 그룹 삭제
+
+router.get("/deleteGroup", async (req, res, next) => {
+    const { session } = req;
+    const { room } = req.query;
+
+    if (!session.user) {
+        res.redirect("/users/login");
+        return;
+    }
+
+    if (!room) {
+        res.redirect("/messages/groupMessage");
+        return;
+    }
+
+    await GroupMessageRoom.deleteOne({
+        $and: [
+            {
+                _id: sanitize(room),
+            },
+            {
+                masterEmail: session.user.email,
+            },
+        ],
+    })
+        .then((deleteOne) => {
+            console.log(deleteOne);
+            if (deleteOne.deletedCount == 1) {
+                res.render("message/deleteGroup", { room: room });
+            } else {
+                throw Error();
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+            req.flash("show", "true");
+            req.flash("message", "삭제에 실패하였습니다");
+            res.redirect("/messages/groupMessage");
+        });
 });
 
 // 그룹 체팅방
@@ -369,10 +463,10 @@ router.get("/groupMessageRoom", async (req, res, next) => {
     })
         .select(
             `
-    from
-    from_email
-    message
-    `
+        from
+        from_email
+        message
+        `
         )
         .populate(
             "user",

@@ -13,20 +13,20 @@
             <table class="table table-striped table-hover">
                 <thead class="text-center">
                     <tr>
-                        <th style="width: 70%;" class="">체팅방 이름</th>
-                        <th style="width: 15%;" class="">방장</th>
-                        <th style="width: 15%;" class="">참여자</th>
+                        <th style="width: 60%;" class="">체팅방 이름</th>
+                        <th style="width: 20%;" class="">방장</th>
+                        <th style="width: 20%;" class="">참여자</th>
                     </tr>
                 </thead>
 
                 <% rooms.docs.forEach(room => { %>
 
                 <tr class="w-full">
-                    <td class="break-words" style="width: 70%; cursor: pointer;" onclick="javascript: location.href='/messages/joinGroup?room=<%= room._id %>'">
+                    <td class="break-words" style="width: 60%; cursor: pointer;" onclick="javascript: location.href='/messages/joinGroup?room=<%= room._id %>'">
                         <strong><%= room.name %></strong>
                     </td>
-                    <td class="text-center" style="width: 15%;"><%= room.master.nickname %></td>
-                    <td class="text-center" style="width: 15%;"><%= room.roomMember.length %>명</td>
+                    <td class="text-center" style="width: 20%;"><%= room.master.nickname %></td>
+                    <td class="text-center" style="width: 20%;"><%= room.roomMember.length %>명</td>
                 </tr>
 
                 <% }); %>

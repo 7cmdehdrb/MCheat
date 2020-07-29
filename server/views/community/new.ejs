@@ -10,6 +10,7 @@
             <h1 class="text-4xl text-center">새 글쓰기</h1>
             <form method="POST" enctype="multipart/form-data" class="mt-10">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                <input type="hidden" name="writerEmail" value="<%= session.user.email %>" />
                 <div class="form-row">
                     <div class="form-group col-md-4">
                         <select class="form-control" name="tag">

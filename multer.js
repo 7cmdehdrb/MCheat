@@ -19,17 +19,3 @@ export const upload = multer({
         },
     }),
 });
-
-// req.body {
-//     writerEmail: '7cmdehdrb@naver.com',
-//     tag: '자유',
-//     title: 'asd',
-//     content: 'asd'
-//   }
-// file
-// {
-//     fieldname: 'inputFile',
-//     originalname: '1.PNG',
-//     encoding: '7bit',
-//     mimetype: 'image/png'
-//   }

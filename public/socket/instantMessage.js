@@ -1,6 +1,6 @@
 const socket = io();
 const chatIcon = document.querySelector(".my_chat_icon");
-const chatIconColors = ["#f1f1f1", "#fffde1"];
+const chatIconColors = ["#f1f1f1", "#F3FF34"];
 let getNewMessageInterval;
 
 getNewMessage = () => {
