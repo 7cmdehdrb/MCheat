@@ -41,7 +41,7 @@
 
     [o] SQL Injection
     [o] CrossSite Scripting
-    [ ] CSRF
+    [o] CSRF
 
 # CHEAT
 

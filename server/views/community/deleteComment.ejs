@@ -4,27 +4,17 @@
         <% include ../partial/head %>
     </head>
     <body>
-        <h1>삭제중입니다...</h1>
+        <h1>설정을 변경하는 중입니다...</h1>
 
         <form method="POST" class="js_form">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-            <input type="hidden" name="room" value="<%= room %>" />
+            <input type="hidden" name="id" value="<%= id %>" />
         </form>
 
-        <!-- Socket.io -->
-
-        <script src="/socket.io/socket.io.js"></script>
         <script>
-            const socket = io();
             const form = document.querySelector(".js_form");
-            const deleteRoom = "<%= room %>";
 
             init = () => {
-                socket.emit("event", {
-                    status: "delete",
-                    target: deleteRoom,
-                });
-
                 setTimeout(() => {
                     form.submit();
                 }, 100);

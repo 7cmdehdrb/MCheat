@@ -379,9 +379,27 @@ router.post("/updatePost", csrfProtection, async (req, res, next) => {
 
 // 글 삭제
 
-router.get("/deletePost", async (req, res, next) => {
+router.get("/deletePost", csrfProtection, (req, res, next) => {
     const { session } = req;
     const { id } = req.query;
+    const csrfToken = req.csrfToken();
+
+    if (!session.user) {
+        res.redirect("/users/login");
+        return;
+    }
+
+    if (!id) {
+        res.redirect("/communities/list");
+        return;
+    }
+
+    res.render("community/deletePost", { id: id, csrfToken: csrfToken });
+});
+
+router.post("/deletePost", csrfProtection, async (req, res, next) => {
+    const { session } = req;
+    const { id } = req.body;
 
     if (!session.user) {
         res.redirect("/users/login");
@@ -556,9 +574,27 @@ router.post("/newComment", csrfProtection, async (req, res, next) => {
 
 // 댓글 삭제(수정)
 
-router.get("/deleteComment", async (req, res, next) => {
+router.get("/deleteComment", csrfProtection, (req, res, next) => {
     const { session } = req;
     const { id } = req.query;
+    const csrfToken = req.csrfToken();
+
+    if (!session.user) {
+        res.redirect("/users/login");
+        return;
+    }
+
+    if (!id) {
+        res.redirect("/communities/list");
+        return;
+    }
+
+    res.render("community/deleteComment", { id: id, csrfToken: csrfToken });
+});
+
+router.post("/deleteComment", csrfProtection, async (req, res, next) => {
+    const { session } = req;
+    const { id } = req.body;
 
     if (!session.user) {
         res.redirect("/users/login");

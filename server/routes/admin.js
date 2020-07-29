@@ -138,7 +138,7 @@ router.get("/prohibitIp", csrfProtection, async (req, res, next) => {
 
 // 차단 유저 등록
 
-router.post("/newProhibition", async (req, res, next) => {
+router.post("/newProhibition", csrfProtection, async (req, res, next) => {
     const { session } = req;
     const { ip } = req.body;
 
@@ -175,9 +175,29 @@ router.post("/newProhibition", async (req, res, next) => {
 
 // 차단 유저 해제
 
-router.get("/removeProhibition", async (req, res, next) => {
+router.get("/removeProhibition", csrfProtection, (req, res, next) => {
     const { session } = req;
     const { id } = req.query;
+    const csrfToken = req.csrfToken();
+
+    if (!session.user) {
+        res.redirect("/users/login");
+        return;
+    }
+
+    if (session.user.is_admin == false) {
+        req.flash("show", "true");
+        req.flash("message", "관리자 전용 기능입니다");
+        res.redirect("/");
+        return;
+    }
+
+    res.render("admin/removeProhibition", { id: id, csrfToken: csrfToken });
+});
+
+router.post("/removeProhibition", csrfProtection, async (req, res, next) => {
+    const { session } = req;
+    const { id } = req.body;
 
     if (!session.user) {
         res.redirect("/users/login");
@@ -278,6 +298,8 @@ router.get("/allUsers", async (req, res, next) => {
         });
 });
 
+// 프로필 변경
+
 router.get("/editProfile", csrfProtection, async (req, res, next) => {
     const { session } = req;
     const { id } = req.query;
@@ -372,9 +394,31 @@ router.post("/editProfile", csrfProtection, async (req, res, next) => {
         });
 });
 
-router.get("/changeActivation", async (req, res, next) => {
+// 유저 (비)활성화
+
+router.get("/changeActivation", csrfProtection, (req, res, next) => {
     const { session } = req;
     const { id, status } = req.query;
+    const csrfToken = req.csrfToken();
+
+    if (!session.user) {
+        res.redirect("/users/login");
+        return;
+    }
+
+    if (session.user.is_admin == false) {
+        req.flash("show", "true");
+        req.flash("message", "관리자 전용 기능입니다");
+        res.redirect("/");
+        return;
+    }
+
+    res.render("admin/changeActivation", { id: id, status: status, csrfToken: csrfToken });
+});
+
+router.post("/changeActivation", csrfProtection, async (req, res, next) => {
+    const { session } = req;
+    const { id, status } = req.body;
 
     if (!session.user) {
         res.redirect("/users/login");
@@ -422,9 +466,31 @@ router.get("/changeActivation", async (req, res, next) => {
         });
 });
 
-router.get("/deleteUser", async (req, res, next) => {
+// 유저 완전 삭제
+
+router.get("/deleteUser", csrfProtection, (req, res, next) => {
     const { session } = req;
     const { id } = req.query;
+    const csrfToken = req.csrfToken();
+
+    if (!session.user) {
+        res.redirect("/users/login");
+        return;
+    }
+
+    if (session.user.is_admin == false) {
+        req.flash("show", "true");
+        req.flash("message", "관리자 전용 기능입니다");
+        res.redirect("/");
+        return;
+    }
+
+    res.render("admin/deleteUser", { id: id, csrfToken: csrfToken });
+});
+
+router.post("/deleteUser", csrfProtection, async (req, res, next) => {
+    const { session } = req;
+    const { id } = req.body;
 
     if (!session.user) {
         res.redirect("/users/login");

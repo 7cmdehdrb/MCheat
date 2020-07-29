@@ -96,6 +96,8 @@ router.get("/logout", (req, res, next) => {
     res.render("user/logout", { user: user });
 });
 
+// 회원가입
+
 router.get("/signup", csrfProtection, (req, res, next) => {
     const { session } = req;
     const csrfToken = req.csrfToken();
@@ -110,8 +112,6 @@ router.get("/signup", csrfProtection, (req, res, next) => {
 
     res.render("user/signup", { session: session, show: show, message: message, csrfToken: csrfToken });
 });
-
-// 회원가입
 
 router.post("/signup", csrfProtection, async (req, res, next) => {
     const { session } = req;

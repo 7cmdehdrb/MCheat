@@ -6,11 +6,17 @@
     <body>
         <h1>나가는 중입니다...</h1>
 
+        <form method="POST" class="js_form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <input type="hidden" name="room" value="<%= room %>" />
+        </form>
+
         <!-- Socket.io -->
 
         <script src="/socket.io/socket.io.js"></script>
         <script>
             const socket = io();
+            const form = document.querySelector(".js_form");
 
             init = () => {
                 socket.emit("groupMessage", {
@@ -20,7 +26,7 @@
                     message: "<%= session.user.nickname %>님이 체팅방을 나가셨습니다",
                 });
                 setTimeout(() => {
-                    location.href = "/messages/groupMessage";
+                    form.submit();
                 }, 100);
             };
 

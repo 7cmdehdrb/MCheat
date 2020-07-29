@@ -42,6 +42,7 @@
 
                 
             <form class="w-full lg:w-2/3 mx-auto my-5" method="POST" action="/admin/newProhibition">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                 <div class="form-row">
                     <div class="form-group col-md-10">       
                         <input type="text" class="form-control" name="ip" placeholder="IP ADDRESS" required />

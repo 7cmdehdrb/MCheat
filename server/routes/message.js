@@ -4,6 +4,7 @@ import { csrfProtection } from "../../middleware";
 import { hashFunction } from "../../utils";
 import sanitize from "mongo-sanitize";
 import { InstantMessage, GroupMessage, GroupMessageRoom } from "../models/messages";
+import { doc } from "sriracha/lib/controllers/main";
 
 router.get("/", (req, res, next) => {
     res.redirect("/");
@@ -189,7 +190,9 @@ router.get("/joinGroupList", async (req, res, next) => {
         {}
     )
         .then((rooms) => {
-            res.render("message/groupList", { session: session, rooms: rooms, show: show, message: message });
+            let { docs, totalPages, page } = rooms;
+            docs = docs.filter((element) => element.master != null);
+            res.render("message/groupList", { session: session, docs: docs, total_page: totalPages, current_page: page, show: show, message: message });
         })
         .catch((err) => {
             console.log(err);
@@ -324,10 +327,29 @@ router.post("/joinGroup", async (req, res, next) => {
 });
 
 // 그룹 나가기
+// CSRF 인증
 
-router.get("/leaveGroup", async (req, res, next) => {
+router.get("/leaveGroup", csrfProtection, (req, res, next) => {
     const { session } = req;
     const { room } = req.query;
+    const csrfToken = req.csrfToken();
+
+    if (!session.user) {
+        res.redirect("/users/login");
+        return;
+    }
+
+    if (!room) {
+        res.redirect("/messages/groupMessage");
+        return;
+    }
+
+    res.render("message/leaveGroup", { session: session, room: room, csrfToken: csrfToken });
+});
+
+router.post("/leaveGroup", csrfProtection, async (req, res, next) => {
+    const { session } = req;
+    const { room } = req.body;
 
     if (!session.user) {
         res.redirect("/users/login");
@@ -365,7 +387,7 @@ router.get("/leaveGroup", async (req, res, next) => {
     )
         .then((updateOne) => {
             if (updateOne.nModified == 1) {
-                res.render("message/leaveGroup", { session: session, room: room });
+                res.redirect("/messages/groupMessage");
             } else {
                 throw Error();
             }
@@ -379,10 +401,29 @@ router.get("/leaveGroup", async (req, res, next) => {
 });
 
 // 그룹 삭제
+// CSRF 인증
 
-router.get("/deleteGroup", async (req, res, next) => {
+router.get("/deleteGroup", csrfProtection, (req, res, next) => {
     const { session } = req;
     const { room } = req.query;
+    const csrfToken = req.csrfToken();
+
+    if (!session.user) {
+        res.redirect("/users/login");
+        return;
+    }
+
+    if (!room) {
+        res.redirect("/messages/groupMessage");
+        return;
+    }
+
+    res.render("message/deleteGroup", { room: room, csrfToken: csrfToken });
+});
+
+router.post("/deleteGroup", csrfProtection, async (req, res, next) => {
+    const { session } = req;
+    const { room } = req.body;
 
     if (!session.user) {
         res.redirect("/users/login");
@@ -405,9 +446,8 @@ router.get("/deleteGroup", async (req, res, next) => {
         ],
     })
         .then((deleteOne) => {
-            console.log(deleteOne);
             if (deleteOne.deletedCount == 1) {
-                res.render("message/deleteGroup", { room: room });
+                res.redirect("/messages/groupMessage");
             } else {
                 throw Error();
             }
@@ -479,7 +519,7 @@ router.get("/groupMessageRoom", async (req, res, next) => {
         return;
     }
 
-    const messages = await GroupMessage.find({
+    let messages = await GroupMessage.find({
         room: sanitize(room),
     })
         .select(
@@ -501,6 +541,8 @@ router.get("/groupMessageRoom", async (req, res, next) => {
         .catch((err) => {
             console.log(err);
         });
+
+    messages = messages.filter((element) => element.user != null);
 
     res.render("message/groupMessageRoom", { session: session, group: group, messages: messages });
 });

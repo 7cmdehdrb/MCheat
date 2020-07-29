@@ -19,7 +19,7 @@
                     </tr>
                 </thead>
 
-                <% rooms.docs.forEach(room => { %>
+                <% docs.forEach(room => { %>
 
                 <tr class="w-full">
                     <td class="break-words" style="width: 60%; cursor: pointer;" onclick="javascript: location.href='/messages/joinGroup?room=<%= room._id %>'">
@@ -42,12 +42,12 @@
             <div>
                 <nav aria-label="Page navigation mx-auto my-5">
                     <ul class="pagination justify-content-center">
-                        <li style="cursor: pointer;" class="page-item <%= rooms.page == 1 ? "disabled" : "" %>">
-                            <a class="page-link" onclick="setUrl('<%= rooms.page -1 %>')">Prev</a>
+                        <li style="cursor: pointer;" class="page-item <%= current_page == 1 ? "disabled" : "" %>">
+                            <a class="page-link" onclick="setUrl('<%= current_page -1 %>')">Prev</a>
                         </li>
-                        <li class="page-item"><a class="page-link"><%= rooms.page %> / <%= rooms.totalPages %></a></li>
-                        <li style="cursor: pointer;" class="page-item <%= rooms.page == rooms.totalPages ? "disabled" : "" %>">
-                            <a class="page-link" onclick="setUrl('<%= rooms.page + 1 %>')">Next</a>
+                        <li class="page-item"><a class="page-link"><%= current_page %> / <%= total_page %></a></li>
+                        <li style="cursor: pointer;" class="page-item <%= current_page == total_page ? "disabled" : "" %>">
+                            <a class="page-link" onclick="setUrl('<%= current_page + 1 %>')">Next</a>
                         </li>
                     </ul>
                 </nav>
