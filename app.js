@@ -21,9 +21,10 @@ import { bannedIps, getBannedIps } from "./server/models/ips";
 import { rateLimitModule, timeoutModule } from "./middleware";
 
 import indexRouter from "./server/routes/index";
-import usersRouter from "./server/routes/users";
+import usersRouter from "./server/routes/user";
 import communityRouter from "./server/routes/community";
 import messageRouter from "./server/routes/message";
+import cheatRouter from "./server/routes/cheat";
 import adminRouter from "./server/routes/admin";
 import mongoAdminRouter from "sriracha";
 
@@ -77,18 +78,13 @@ app.use(
 app.use(flash());
 app.use(express.static(path.join(__dirname, "public"), { maxAge: process.env.DEBUG == "true" ? 0 : 1000 * 60 * 60 }));
 
-app.use(function (err, req, res, next) {
-    console.log(err);
-    if (err.code !== "EBADCSRFTOKEN") return next(err);
-
-    // handle CSRF token errors here
-    res.status(403);
-    res.send("form tampered with");
-});
-
 // URL Pattern
 
 app.use("/", indexRouter);
+app.use("/users", usersRouter);
+app.use("/communities", communityRouter);
+app.use("/messages", messageRouter);
+app.use("/cheat", cheatRouter);
 app.use("/admin", adminRouter);
 app.use(
     "/express-admin",
@@ -98,9 +94,6 @@ app.use(
     },
     mongoAdminRouter(adminOpt)
 );
-app.use("/users", usersRouter);
-app.use("/communities", communityRouter);
-app.use("/messages", messageRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -110,6 +103,7 @@ app.use(function (req, res, next) {
 // error handler
 app.use(function (err, req, res, next) {
     // set locals, only providing error in development
+
     res.locals.message = err.message;
     res.locals.error = process.env.DEBUG == "true" ? err : {};
 

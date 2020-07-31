@@ -125,18 +125,21 @@
             <!-- Search Field End -->
 
             <!-- Paginator -->
-
-            <nav aria-label="Page navigation mx-auto my-5">
-                <ul class="pagination justify-content-center">
-                    <li style="cursor: pointer;" class="page-item <%= current_page == 1 ? "disabled" : "" %>">
-                        <a class="page-link" onclick="setUrl('<%= current_page -1 %>')">Prev</a>
-                    </li>
-                    <li class="page-item"><a class="page-link"><%= current_page %> / <%= total_page %></a></li>
-                    <li style="cursor: pointer;" class="page-item <%= current_page == total_page ? "disabled" : "" %>">
-                        <a class="page-link" onclick="setUrl('<%= current_page + 1 %>')">Next</a>
-                    </li>
-                </ul>
-            </nav>
+            <form method="GET">
+                <nav aria-label="Page navigation mx-auto my-5">
+                    <ul class="pagination justify-content-center">
+                        <li style="cursor: pointer;" class="page-item <%= current_page == 1 ? "disabled" : "" %>">
+                            <a class="page-link" onclick="setUrl('<%= current_page -1 %>')">Prev</a>
+                        </li>
+                        <li class="page-item">
+                            <input class="page-link text-center w-16" type="number" min="1" name="page" value="<%= current_page %>" >
+                        </li>
+                        <li style="cursor: pointer;" class="page-item <%= current_page == total_page ? "disabled" : "" %>">
+                            <a class="page-link" onclick="setUrl('<%= current_page + 1 %>')">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </form>
 
             <!-- Paginator End -->
         </div>

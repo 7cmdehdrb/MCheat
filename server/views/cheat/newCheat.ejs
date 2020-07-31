@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <% include ../partial/header %>
+
+        <div class="container w-full lg:w-2/3 mx-auto my-5">
+            <h1 class="text-center text-4xl mx-auto my-5">피해등록</h1>
+
+            <form class="mx-auto w-full" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputTag">태그</label>
+                        <select id="inputTag" class="form-control" name="tag" required>
+                            <option selected value="대리작">대리작 사기</option>
+                            <option value="파티">파티 사기</option>
+                            <option value="사칭">사칭 사기</option>
+                            <option value="캐시">캐시 사기</option>
+                            <option value="물통">물통 사기</option>
+                            <option value="계정">계정 사기</option>
+                            <option value="기타">기타 사기</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-8">
+                        <label for="inputTitle">제목</label>
+                        <input type="text" class="form-control js_title" id="inputTitle" name="title" placeholder="(최대 30자)" required />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="inputDate">피해일</label>
+                        <input type="date" class="form-control" id="inputDate" name="date" required />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="inpitMoney">피해금액</label>
+                        <input type="number" class="form-control js_money" id="inpitMoney" name="money" onkeyup="numberToKorean()" placeholder="정확하지 않아도 대략적으로 작성해주세요" required />
+                        <small class="js_money_ko"></small>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="inputType">금액단위</label>
+                        <select id="inputType" class="form-control js_money_type" name="money_type" onchange="numberToKorean()" required>
+                            <option selected value="메소">메소</option>
+                            <option value="원">원</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="inputNickname">사기꾼 닉네임</label>
+                        <input type="text" class="form-control js_nickname1" id="inputNickname" name="nickname" required />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="inputNickname">사기꾼 본캐릭 닉네임</label>
+                        <input type="text" class="form-control js_nickname2" id="inputNickname" name="main_nickname" />
+                        <small class="text-red-500">알고 있을 경우에만 작성해주세요</small>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="inputServer">서버</label>
+                        <input type="text" class="form-control js_server" id="inputServer " name="server" placeholder="캐릭터 찾기를 해주세요" readonly />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="inputGuild">길드</label>
+                        <input type="text" class="form-control js_guild" id="inputGuild " name="guild" placeholder="캐릭터 찾기를 해주세요" readonly />
+                        <small class="text-red-500">본캐릭의 길드가 우선됩니다</small>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="inputFarm">농장명</label>
+                        <input type="text" class="form-control" id="inputFarm" name="farm" placeholder="(선택)" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="searchChar">찾기</label>
+                        <input type="button" class="form-control btn btn-secondary" id="searchChar" value="캐릭터 찾기" onclick="checkNickname()" />
+                        <small class="text-red-500">본/부캐릭 동시에 조회됩니다</small>
+                    </div>
+                </div>
+
+                <div class="text-gray-600 my-4" onclick="openPhone()">
+                    <span class="js_info_phone" style="cursor: pointer;">+ 추가정보 입력 : 휴대폰 번호</span>
+                </div>
+                <div class="form-row js_phone_form" style="display: none;">
+                    <label for="inputPhone">휴대폰 번호</label>
+                    <input type="tel" pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}" class="form-control" id="inputPhone" name="phone" placeholder="-를 포함하여 기입해주세요" />
+                </div>
+
+                <div class="text-gray-600 my-4" onclick="openAccout()">
+                    <span class="js_info_account" style="cursor: pointer;">+ 추가정보 입력 : 계좌 번호</span>
+                </div>
+                <div class="form-row js_bank_form" style="display: none;">
+                    <div class="form-group col-md-4">
+                        <label for="inputBankType">은행</label>
+                        <select id="inputBankType" class="form-control js_account_type" name="account_type" required>
+                            <option value="NOBANK" selected>은행선택...</option>
+                            <option value="KB국민은행">KB국민은행</option>
+                            <option value="우리은행">우리은행</option>
+                            <option value="신한은행">신한은행</option>
+                            <option value="하나은행">하나은행</option>
+                            <option value="카카오뱅크">카카오뱅크</option>
+                            <option value="케이뱅크">케이뱅크</option>
+                            <option value="SC제일은행">SC제일은행</option>
+                            <option value="한국씨티은행">한국씨티은행</option>
+                            <option value="BNK부산은행">BNK부산은행</option>
+                            <option value="BNK경남은행">BNK경남은행</option>
+                            <option value="광주은행">광주은행</option>
+                            <option value="DBG대구은행">DBG대구은행</option>
+                            <option value="전북은행">전북은행</option>
+                            <option value="제주은행">제주은행</option>
+                            <option value="농협">농협</option>
+                            <option value="수협">수협</option>
+                            <option value="신협">신협</option>
+                            <option value="산림조합">산림조합</option>
+                            <option value="상호저축은행">상호저축은행</option>
+                            <option value="새마을금고">새마을금고</option>
+                            <option value="기타">기타</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-8">
+                        <label for="inputAccout">계좌번호</label>
+                        <input type="text" class="form-control js_account" id="inputAccout" name="account" placeholder="- 여부 무관" />
+                    </div>
+                </div>
+                <div class="form-group mt-4">
+                    <label for="inputTextarea">상세 설명</label>
+                    <textarea class="form-control" id="inputTextarea" rows="5" name="content" required></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <label for="inputImage1">스크린샷1</label>
+                        <input type="file" class="form-control-file" id="inputImage1" name="images" accept="image/*" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="inputImage2">스크린샷2</label>
+                        <input type="file" class="form-control-file" id="inputImage2" name="images" accept="image/*" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="inputImage3">스크린샷3</label>
+                        <input type="file" class="form-control-file" id="inputImage3" name="images" accept="image/*" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="inputImage4">스크린샷4</label>
+                        <input type="file" class="form-control-file" id="inputImage4" name="images" accept="image/*" />
+                    </div>
+                </div>
+                <div class="form-group flex justify-end my-3">
+                    <button type="submit" class="btn btn-primary px-4">제출하기</button>
+                </div>
+            </form>
+        </div>
+
+        <script src="/javascripts/newCheat.js"></script>
+        <% include ../partial/foot %>
+        <!--  -->
+        <% include ../partial/footer %>
+    </body>
+</html>

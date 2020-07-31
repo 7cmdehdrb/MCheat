@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <% include ../partial/header %>
+
+        <div class="container w-full lg:w-2/3 mx-auto my-5">
+        <% if(show == "true"){ %> <% include ../partial/toast %> <% } %> 
+            <h1 class="text-center text-4xl mx-auto my-5">메이플 블랙리스트</h1>
+
+            <div class="mx-auto">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="width: 55%;">제목</th>
+                            <th scope="col" style="width: 25%;">사기꾼</th>
+                            <th scope="col" style="width: 20%;">제보자</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if(cheats.docs.length == 0){ %>
+                        <tr>
+                            <td colspan="3" class="text-center">
+                                <i class="fas fa-exclamation-triangle text-red-600"></i>
+                                검색 결과가 없습니다
+                            </td>
+                        </tr>
+                        <% } %> <% cheats.docs.forEach(cheat => { %>
+                        <tr class="break-all">
+                            <td style="width: 55%; cursor: pointer;" onclick="javascript: location.href='/cheat/detail?id=<%= cheat._id %>'"><strong>[<%= cheat.tag %>]</strong> <%= cheat.title %></td>
+                            <td style="width: 25%;">
+                                <%= cheat.subCharacter %>
+                                <!--  -->
+                                <% if(Boolean(cheat.mainCharacter)){ %>
+                                <br class="my_mobile_appear" />
+                                (<%= cheat.mainCharacter %>)
+                                <!--  -->
+                                <% } %>
+                            </td>
+                            <td style="width: 20%;"><%= cheat.writer.nickname %></td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+
+                <!-- Paginator -->
+
+                <form class="mx-auto my-2">
+                    <nav aria-label="Page navigation mx-auto my-5">
+                        <ul class="pagination justify-content-center">
+                            <li style="cursor: pointer;" class="page-item <%= cheats.page == 1 ? "disabled" : "" %>">
+                                <a class="page-link" onclick="setUrl('<%= cheats.page -1 %>')">Prev</a>
+                            </li>
+                            <li class="page-item">
+                                <input class="page-link text-center w-16" type="number" min="1" name="page" value="<%= cheats.page %>" >
+                            </li>
+                            <li style="cursor: pointer;" class="page-item <%= cheats.page == cheats.totalPages ? "disabled" : "" %>">
+                                <a class="page-link" onclick="setUrl('<%= cheats.page + 1 %>')">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </form>
+
+                <!-- Paginator End -->
+
+                <!-- Action -->
+
+                <% if(session.user){ %>
+
+                <div class="w-full flex justify-end">
+                    <button type="button" class="btn btn-outline-danger px-5" onclick="javascript: location.href='/cheat/newCheat'">피해등록</button>
+                </div>
+
+                <!-- Action End -->
+
+                <% } %>
+            </div>
+        </div>
+
+        <% include ../partial/foot %>
+        <!--  -->
+        <% include ../partial/footer %>
+    </body>
+</html>

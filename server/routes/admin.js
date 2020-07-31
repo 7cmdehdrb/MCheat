@@ -287,8 +287,12 @@ router.get("/allUsers", async (req, res, next) => {
         {}
     )
         .then((users) => {
-            const { docs, page, totalPages } = users;
-            res.render("admin/adminAllUsers", { session: session, users: docs, current_page: page, total_page: totalPages, show: show, message: message });
+            const { docs, page: current_page, totalPages } = users;
+            if (page > totalPages) {
+                res.redirect(`/admin/allUsers?page=${totalPages}`);
+            } else {
+                res.render("admin/adminAllUsers", { session: session, users: docs, current_page: current_page, total_page: totalPages, show: show, message: message });
+            }
         })
         .catch((err) => {
             console.log(err);

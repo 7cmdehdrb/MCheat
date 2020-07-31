@@ -20,7 +20,14 @@
                     </tr>
                 </thead>
 
-                <% rooms.forEach(room => { %>
+                <% if(rooms.length == 0){ %>
+                <tr class="w-full text-center">
+                    <td colspan="4">
+                        <i class="fas fa-exclamation-triangle text-red-600"></i>
+                        검색 결과가 없습니다
+                    </td>
+                </tr>
+                <% } %> <% rooms.forEach(room => { %>
 
                 <tr class="w-full">
                     <td class="break-words" style="width: 40%; cursor: pointer;" onclick="openRoom('<%= room._id %>')">

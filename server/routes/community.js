@@ -135,7 +135,11 @@ router.get("/list", async (req, res, next) => {
             console.log(err);
         });
 
-    res.render("community/list", { session: session, show: show, message: message, alerts: newAlerts, communities: newCommunities, current_page: currnetPage, total_page: totalPages });
+    if (currnetPage > totalPages) {
+        res.redirect(`/communities/list?page=${totalPages}`);
+    } else {
+        res.render("community/list", { session: session, show: show, message: message, alerts: newAlerts, communities: newCommunities, current_page: currnetPage, total_page: totalPages });
+    }
 });
 
 // 새 글쓰기

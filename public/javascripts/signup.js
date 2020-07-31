@@ -28,7 +28,13 @@ document.addEventListener("submit", (ev) => {
     }
 });
 
+nicknameInput.addEventListener("click", () => {
+    check = false;
+    nicknameInput.removeAttribute("readonly");
+});
+
 checkNickname = () => {
+    nicknameInput.setAttribute("readonly", "readonly");
     check = false;
 
     const nickname = nicknameInput.value;

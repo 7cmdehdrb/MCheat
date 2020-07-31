@@ -10,6 +10,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/stylesheets/styles.css" />
 <LINK REL="SHORTCUT ICON" HREF="/images/favicon.ico" />
+<script type="text/javascript">
+    window.onload = function () {
+        var isIE = /*@cc_on!@*/ false || !!document.documentMode;
+        if (isIE) {
+            alert("이 웹사이트는 인터넷 익스플로러에서는 사용하실 수 없습니다. 다른 브라우저를 사용해주세요");
+            window.close();
+        }
+    };
+</script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <style>
     body {

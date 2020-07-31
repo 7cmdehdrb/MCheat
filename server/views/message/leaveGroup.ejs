@@ -4,7 +4,7 @@
         <% include ../partial/head %>
     </head>
     <body>
-        <h1>나가는 중입니다...</h1>
+        <% include ../partial/loading %>
 
         <form method="POST" class="js_form">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>" />

@@ -28,12 +28,12 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="inputPassword4">비밀번호</label>
-                            <input type="password" class="form-control" id="inputPassword4" name="password" onKeyUp="checkPasswordStrength()" required />
+                            <input type="password" class="form-control" id="inputPassword4" name="password" onKeyUp="checkPasswordStrength()" required autocomplete="new-password" />
                             <small class="text-red-500">비밀번호는 영어, 숫자, 특수문자를 포함한 8자리 이상이여야 합니다</small>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="inputPasswordConfirm">비밀번호 확인</label>
-                            <input type="password" class="form-control" id="inputPasswordConfirm" name="passwordConfirm" onKeyUp="checkPasswordConfirm()" required />
+                            <input type="password" class="form-control" id="inputPasswordConfirm" name="passwordConfirm" onKeyUp="checkPasswordConfirm()" required autocomplete="new-password" />
                         </div>
                     </div>
                     <div class="alert alert-danger" id="password-strength-status" role="alert">

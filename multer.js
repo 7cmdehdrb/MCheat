@@ -19,3 +19,26 @@ export const upload = multer({
         },
     }),
 });
+
+export const cheatUpload = multer({
+    storage: multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, "public/cheatUploads/");
+        },
+        filename: function (req, file, cb) {
+            const {
+                session: {
+                    user: { email },
+                },
+            } = req;
+            const { mimetype, originalname } = file;
+
+            const dateFormat = newDatetimeFormat();
+            const fileType = mimetype.split("/")[1];
+
+            const newFileName = `${dateFormat}_${email}_${originalname}.${fileType}`;
+
+            cb(null, newFileName);
+        },
+    }),
+});

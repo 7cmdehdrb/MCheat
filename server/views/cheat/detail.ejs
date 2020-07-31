@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+        <style>
+            a:hover{
+                text-decoration: none;
+            }
+        </style>
+    </head>
+    <body>
+        <% include ../partial/header %>
+        <div class="container w-full lg:w-2/3 mx-auto my-5">
+            <div class="w-full mb-5">
+                <div class="flex py-2 text-center text-lg rounded-lg bg-gray-400">
+                    <div class="flex-1">
+                        작성자 : <%= detail.writer.nickname %>
+                    </div>
+                    <div class="flex-1">피해일 : <span class="js_datetime"><%= detail.date %></span></div>
+                </div>
+                <div class="border-gray-200 border-2 rounded-lg">
+                    <!-- Title -->
+                    <div class="py-10 text-center text-2xl text-black">
+                        <i><strong>[<%= detail.tag %>]</strong> <%= detail.title %></i>
+                    </div>
+                    <!-- Title End -->
+                    <div class="py-10 text-lg text-gray-800">
+                        <!-- Content -->
+                        <div class="mb-10 px-10">
+                            <p>
+                                <%= detail.content %>
+                            </p>
+                        </div>
+                        <!-- Content End -->
+
+                        <!-- Data -->
+
+                        
+                        <h1 class="mx-auto text-center text-2xl my-2 mb-4"><i>사기내역</i></h1>
+                        <table class="table table-hover table-striped table-bordered text-center w-11/12 mx-auto ">
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="width: 30%;">분류</th>
+                                    <th scope="col" style="width: 70%;">내용</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th style="width: 30%;">닉네임</th>
+                                    <td style="width: 70%;">
+                                        <div class="inline-block">
+                                            <a href="https://maple.gg/u/<%= detail.subCharacter  %>" target="_blank"><%= detail.subCharacter %></a>
+                                        </div>
+                                        <img class="inline-block" src="/images/server/<%= detail.server %>.png" alt="<%= detail.server %>" />
+                                    </td>
+                                </tr>
+                                <% if(detail.mainCharacter){ %>
+                                <tr>
+                                    <th style="width: 30%;">본캐릭터</th>
+                                    <td style="width: 70%;">
+                                        <a href="https://maple.gg/u/<%= detail.mainCharacter  %>" target="_blank"><%= detail.mainCharacter %></a>
+                                    </td>
+                                </tr>
+                                <% } %>
+                                <tr>
+                                    <th style="width: 30%;">길드</th>
+                                    <td style="width: 70%;">
+                                        <a class="toop_tip" data-toggle="tooltip" data-placement="top" data-html="true" 
+                                            title="<div class='text-xs text-red-300'><i class='fas fa-exclamation-triangle'></i>등록 당시 길드로,<br>현재 길드와 다를 수 있습니다</div>"
+                                        >
+                                            <%= detail.guild %>
+                                        </a>
+                                    </th>
+                                </tr>
+                                <% if(detail.farm){ %>
+                                    <tr>
+                                        <th style="width: 30%;">농장명</th>
+                                        <td style="width: 70%;">
+                                            <%= detail.farm %>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                                <tr>
+                                    <th style="width: 30%;">피해금액</th>
+                                    <td style="width: 70%;">
+                                        <%= detail.money %> <%= detail.money_type %> 
+                                    </td>
+                                </tr>
+                                <% if(detail.phone){ %>
+                                    <tr>
+                                        <th style="width: 30%;">농장명</th>
+                                        <td style="width: 70%;">
+                                            <span class="js_phone_hidden"><%= detail.phone %></span>
+                                        </td>
+                                        <script>
+                                            const js_phone = document.querySelector(".js_phone_hidden");
+                                            
+                                            function phone_init(){
+                                                let index = 0;
+                                                const phone_divide = js_phone.innerText.split("");
+                                                const new_phone = `${phone_divide[0]}${phone_divide[1]}${phone_divide[2]}-****-${phone_divide[7]}${phone_divide[8]}${phone_divide[9]}${phone_divide[10]}`;
+                                                
+                                                js_phone.innerText = new_phone;
+                                            }
+
+                                            phone_init();
+                                        </script>
+                                    </tr>
+                                <% } %>
+                                <% if(Boolean(detail.account)){ %>
+                                    <tr>
+                                        <th style="width: 30%;">계좌번호</th>
+                                        <td style="width: 70%;">
+                                            [<%= detail.account_type %>] <span class="js_account_hidden"><%= detail.account  %></span>
+                                        </td>
+                                        <script>
+                                            const js_account = document.querySelector(".js_account_hidden");
+
+                                            function account_init(){
+                                                let new_account = "";
+                                                const account_divide = js_account.innerText.split("");
+                                                
+                                                for (let index = 0; index < account_divide.length; index++) {
+                                                    if(index >= account_divide.length - 5){
+                                                        new_account += account_divide[index];
+                                                    }else if(index < 3){
+                                                        new_account += account_divide[index];
+                                                    }
+                                                    else{
+                                                        new_account += "*";
+                                                    }
+                                                }
+
+                                                js_account.innerText = new_account;
+                                            }
+
+                                            account_init();
+                                        </script>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                        <!-- Data End -->
+
+                        <!-- Images -->
+                        <% detail.files.forEach(file => { %>
+                        <div class="w-full lg:w-5/6 mx-auto px-1 mb-10">
+                            <img class="w-full" src="/cheatUploads/<%= file %>" alt="첨부한 사진" />
+                        </div>
+                        <% }); %>
+                        <!-- Images End -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="/javascripts/cheatDetail.js"></script>
+        <% include ../partial/foot %>
+        <!--  -->
+        <% include ../partial/footer %>
+    </body>
+</html>
