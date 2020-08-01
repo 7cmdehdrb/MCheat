@@ -1,36 +1,39 @@
-"use strict";
+const searchForm = document.querySelector(".js_searchForm");
+const searchInput = searchForm.querySelector(".js_searchInput2");
+const paginator = document.querySelector(".js_paginator");
+const paginator_value = document.querySelector(".js_paginator_value");
 
-var searchForm = document.querySelector(".js_searchForm");
-var searchInput = searchForm.querySelector(".js_searchInput2");
-var paginator = document.querySelector(".js_paginator");
-var paginator_value = document.querySelector(".js_paginator_value");
-
-deleteUser = function deleteUser(userEmail) {
-  var confirm = prompt("\uC720\uC800\uB97C \uC644\uC804\uD788 \uC0AD\uC81C\uD558\uBA70, \uBCF5\uAD6C\uD560 \uC218 \uC5C6\uC73C\uBA70, \uC608\uC0C1\uCE58 \uBABB\uD55C \uC624\uB958\uB97C \uC57C\uAE30\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4\n\uC2DC\uC2A4\uD15C\uC0C1 \uC774\uC0C1\uC774 \uBC1C\uC0DD\uD55C \uACBD\uC6B0\uAC00 \uC544\uB2C8\uB77C\uBA74 \uC808\uB300 \uC0AD\uC81C\uD558\uC9C0 \uB9C8\uC2ED\uC2DC\uC624\n\uC815\uB9D0 \uC0AD\uC81C\uD558\uB824\uBA74 \n<".concat(userEmail, ">\uC744(\uB97C) \uC644\uC804\uD788 \uC0AD\uC81C\uD569\uB2C8\uB2E4.> \uB77C\uACE0 \uC785\uB825\uD574\uC8FC\uC138\uC694"));
-
-  if (confirm == "".concat(userEmail, "\uC744(\uB97C) \uC644\uC804\uD788 \uC0AD\uC81C\uD569\uB2C8\uB2E4.")) {
-    location.href = "/admin/deleteUser?id=".concat(userEmail);
-  }
+deleteUser = (userEmail) => {
+    let confirm = prompt(
+        `유저를 완전히 삭제하며, 복구할 수 없으며, 예상치 못한 오류를 야기할 수 있습니다\n시스템상 이상이 발생한 경우가 아니라면 절대 삭제하지 마십시오\n정말 삭제하려면 \n<${userEmail}>을(를) 완전히 삭제합니다.> 라고 입력해주세요`
+    );
+    if (confirm == `${userEmail}을(를) 완전히 삭제합니다.`) {
+        location.href = `/admin/deleteUser?id=${userEmail}`;
+    }
 };
 
-searchSubmit = function searchSubmit() {
-  if (searchInput.value == "") {
-    alert("내용을 입력해주세요");
-  } else {
-    searchForm.submit();
-  }
+searchSubmit = () => {
+    if (searchInput.value == "") {
+        alert("내용을 입력해주세요");
+    } else {
+        searchForm.submit();
+    }
 };
 
-setUrl = function setUrl(index) {
-  var current_url = new URL(window.location.href);
-  var search_query = current_url.searchParams;
-  search_query.set("page", index);
-  current_url.search = search_query.toString();
-  var new_url = current_url.toString();
-  location.href = new_url;
+setUrl = (index) => {
+    let current_url = new URL(window.location.href);
+    let search_query = current_url.searchParams;
+
+    search_query.set("page", index);
+
+    current_url.search = search_query.toString();
+
+    let new_url = current_url.toString();
+
+    location.href = new_url;
 };
 
-paginator.addEventListener("submit", function (ev) {
-  ev.preventDefault();
-  setUrl(paginator_value.value);
+paginator.addEventListener("submit", (ev) => {
+    ev.preventDefault();
+    setUrl(paginator_value.value);
 });

@@ -7,11 +7,15 @@ var _mongoose = _interopRequireDefault(require("mongoose"));
 require("./env");
 
 if (process.env.DEBUG == "true") {
+  console.log("USE LOCAL MONGODB...");
+
   _mongoose["default"].connect(process.env.DB, {
     useNewUrlParser: true,
     useUnifiedTopology: true
   });
 } else {
+  console.log("USE WEB MONGODB...");
+
   _mongoose["default"].connect("mongodb://".concat(process.env.DB_USER, ":").concat(process.env.DB_PW, "@ds163226.mlab.com:63226/heroku_qgv38qmv"), {
     useNewUrlParser: true,
     useUnifiedTopology: true
