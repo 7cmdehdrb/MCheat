@@ -12,7 +12,7 @@ if (process.env.DEBUG == "true") {
     useUnifiedTopology: true
   });
 } else {
-  _mongoose["default"].connect("mongodb://".concat(process.env.DB_USER, ":").concat(process.env.DB_PW, "@host1:port1,host2:port2/MCheat"), {
+  _mongoose["default"].connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
   });

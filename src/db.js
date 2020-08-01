@@ -7,7 +7,7 @@ if (process.env.DEBUG == "true") {
         useUnifiedTopology: true,
     });
 } else {
-    mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PW}@host1:port1,host2:port2/MCheat`, {
+    mongoose.connect(process.env.MONGODB_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     });
