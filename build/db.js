@@ -12,7 +12,7 @@ if (process.env.DEBUG == "true") {
     useUnifiedTopology: true
   });
 } else {
-  _mongoose["default"].connect(process.env.MONGODB_URI, {
+  _mongoose["default"].connect("mongodb://".concat(process.env.DB_USER, ":").concat(process.env.DB_PW, "@ds163226.mlab.com:63226/heroku_qgv38qmv"), {
     useNewUrlParser: true,
     useUnifiedTopology: true
   });
