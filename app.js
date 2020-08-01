@@ -120,4 +120,4 @@ const server = app.listen(app.get("port"), function () {
 const io = socketIo(server);
 socketEvent(io);
 
-// module.exports = app;
+module.exports = app;
