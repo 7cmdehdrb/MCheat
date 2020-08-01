@@ -1,4 +1,5 @@
 let check = false;
+let check_interval = true;
 let passwordValid = false;
 let passwordConfirm = false;
 
@@ -30,10 +31,18 @@ document.querySelector(".js_signupForm").addEventListener("submit", (ev) => {
 
 nicknameInput.addEventListener("click", () => {
     check = false;
+    check_interval = true;
     nicknameInput.removeAttribute("readonly");
 });
 
 checkNickname = () => {
+    if (check_interval == false) {
+        alert("잠시 후에 이용해주세요");
+        return;
+    }
+
+    check_interval = false;
+
     nicknameInput.setAttribute("readonly", "readonly");
     check = false;
 
@@ -48,9 +57,21 @@ checkNickname = () => {
             profileInput.value = json.profile;
             if (json.server != "캐릭터를 찾을 수 없습니다") {
                 check = true;
+                setTimeout(() => {
+                    check_interval = true;
+                }, 1000 * 10);
+            } else {
+                setTimeout(() => {
+                    check_interval = true;
+                }, 1000 * 1);
             }
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+            console.log(err);
+            setTimeout(() => {
+                check_interval = true;
+            }, 1000 * 1);
+        });
 };
 
 agree = () => {

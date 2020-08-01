@@ -47,14 +47,14 @@
 
                     <% messages.forEach(message => { %>
 
-                    <!-- 내 체팅 -->
+                    <!-- 내 채팅 -->
                     <% if(message.user.email == session.user.email){ %>
                     <div class="flex justify-end my-2 text-right text-gray-700">
                         <div class="w-2/3 break-all">
                             <%= message.message %> << 나
                         </div>
                     </div>
-                    <!-- 받은 체팅 -->
+                    <!-- 받은 채팅 -->
                     <% }else{ %>
                     <div class="flex justify-start my-2 text-left text-gray-700">
                         <div class="w-2/3 break-all">

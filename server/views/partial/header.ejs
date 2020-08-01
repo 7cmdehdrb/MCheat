@@ -34,7 +34,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/messages/groupMessage"
-                    ><span class="navbar-brand"><i class="fas fa-users"></i> 그룹체팅</span></a
+                    ><span class="navbar-brand"><i class="fas fa-users"></i> 그룹채팅</span></a
                 >
             </li>
             <% if(session.user){ %>
@@ -67,7 +67,7 @@
             <% } %>
         </ul>
         <form method="GET" action="/cheat/search" class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="블랙리스트 검색" name="search" aria-label="Search" />
+            <input class="form-control mr-sm-2" type="search" placeholder="블랙리스트 검색" name="search" required aria-label="Search" />
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">검색</button>
         </form>
     </div>

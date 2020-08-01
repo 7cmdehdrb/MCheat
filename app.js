@@ -117,7 +117,7 @@ const server = app.listen(app.get("port"), function () {
     console.log(`SERVER START AT http://localhost:${server.address().port}/`);
 });
 
-export const io = socketIo(server);
+const io = socketIo(server);
 socketEvent(io);
 
-module.exports = app;
+// module.exports = app;

@@ -16,6 +16,13 @@ router.get("/search", async (req, res, next) => {
         page = 1;
     }
 
+    if (!search) {
+        req.flash("show", "true");
+        req.flash("message", "올바르지 않은 접근입니다");
+        res.redirect("/");
+        return;
+    }
+
     search = getPlaneString(search);
     let totalPages = 1;
 
@@ -176,14 +183,14 @@ router.post("/newCheat", cheatUpload.array("images"), csrfProtection, async (req
             if (newCheat == null) {
                 throw Error();
             }
+            res.redirect(`/cheat/detail?id=${newCheat._id}`); // 목록으로 리다이렉트
         })
         .catch((err) => {
             console.log(err);
             req.flash("show", "true");
             req.flash("message", "등록에 실패하였습니다");
+            res.redirect("/");
         });
-
-    res.redirect("/cheat/cheatList"); // 목록으로 리다이렉트
 });
 
 // 사기 내용 디테일
@@ -211,14 +218,15 @@ router.get("/detail", csrfProtection, async (req, res, next) => {
     if (cheatDetail == null) {
         req.flash("show", "true");
         req.flash("message", "정보를 불러올 수 없습니다");
-        res.redirect("/cheat/cheatList");
+        res.redirect("/");
         return;
     } else if (cheatDetail.writer == null) {
         req.flash("show", "true");
         req.flash("message", "삭제된 유저입니다");
-        res.redirect("/cheat/cheatList");
+        res.redirect("/");
         return;
     }
+
     if (cheatDetail.account) {
         cheatDetail.account = account_transfer(cheatDetail.account);
     }
@@ -269,9 +277,9 @@ module.exports = router;
 //         .then((cheats) => {
 //             cheats.docs = cheats.docs.filter((element) => element.writer != null);
 //             if (page > cheats.totalPages) {
-//                 res.redirect(`/cheat/cheatList?page=${cheats.totalPages}`);
+//                 res.redirect(`/?page=${cheats.totalPages}`);
 //             } else {
-//                 res.render("cheat/cheatList", { session: session, cheats: cheats, show: show, message: message });
+//                 res.render("", { session: session, cheats: cheats, show: show, message: message });
 //             }
 //         })
 //         .catch((err) => {

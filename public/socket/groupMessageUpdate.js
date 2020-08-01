@@ -14,7 +14,7 @@ init = () => {
         room: socket_group_id,
         from: socket_nickname,
         from_email: socket_email,
-        message: `${socket_nickname}님이 체팅방에 들어왔습니다`,
+        message: `${socket_nickname}님이 채팅방에 들어왔습니다`,
     });
     setTimeout(() => {
         $(document).scrollTop($(document).height());

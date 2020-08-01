@@ -14,6 +14,7 @@ const account_form = document.querySelector(".js_bank_form");
 const phone_info = document.querySelector(".js_info_phone");
 const account_info = document.querySelector(".js_info_account");
 let char_check = false;
+let check_interval = true;
 
 function numberToKorean() {
     const number = money.value;
@@ -45,6 +46,11 @@ document.querySelector(".js_cheatForm").addEventListener("submit", (ev) => {
 
     if (!check) {
         ev.preventDefault();
+        return;
+    }
+
+    if (title.value.length > 30) {
+        alert("제목은 최대 30자까지 작성 가능합니다");
         return;
     }
 
@@ -114,20 +120,21 @@ nick2.addEventListener("click", () => {
 });
 
 checkNickname = async () => {
+    if (check_interval == false) {
+        alert("잠시 후에 이용해주세요");
+        return;
+    }
+
     nick1.setAttribute("readonly", "readonly");
     nick2.setAttribute("readonly", "readonly");
     char_check = false;
+    check_interval = false;
 
     server.value = "로딩중...";
     guild.value = "로딩중...";
 
     if (nick1.value == "") {
         alert("닉네임을 작성해주세요");
-        return;
-    }
-
-    if (title.value.length > 30) {
-        alert("제목은 최대 30자까지 작성 가능합니다");
         return;
     }
 
@@ -138,9 +145,7 @@ checkNickname = async () => {
 
         server.value = data.server;
         guild.value = data.guild;
-    }
-
-    if (nick1.value != "" && nick2.value != "") {
+    } else if (nick1.value != "" && nick2.value != "") {
         const sub = await fetch(`/users/searchNickname?id=${nick1.value}`)
             .then((Response) => Response.json())
             .catch((err) => console.log(err));
@@ -160,6 +165,13 @@ checkNickname = async () => {
 
     if (server.value != "캐릭터를 찾을 수 없습니다") {
         char_check = true;
+        setInterval(() => {
+            check_interval = true;
+        }, 1000 * 10);
+    } else {
+        setInterval(() => {
+            check_interval = true;
+        }, 1000 * 1);
     }
 
     document.getElementById("inputTextarea").focus();
