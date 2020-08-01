@@ -8,6 +8,8 @@ if (process.env.DEBUG == "true") {
     });
 } else {
     mongoose.connect(process.env.MONGODB_URI, {
+        user: process.env.DB_USER,
+        pass: process.env.DB_PW,
         useNewUrlParser: true,
         useUnifiedTopology: true,
     });
