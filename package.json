@@ -4,8 +4,6 @@
     "private": true,
     "scripts": {
         "start": "node build/app.js",
-        "stop": "pm2 delete ./build/app.js",
-        "test": "nodemon --exec babel-node ./build/app.js",
         "server": "nodemon --exec babel-node src/app.js",
         "build": "babel src -d build",
         "css": "gulp"

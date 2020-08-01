@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 import "./env";
 
-console.log(process.env.DEBUG);
-
 if (process.env.DEBUG == "true") {
     mongoose.connect(process.env.DB, {
         useNewUrlParser: true,
