@@ -25,6 +25,10 @@
                     from_email: "<%= session.user.email %>",
                     message: "<%= session.user.nickname %>님이 체팅방을 나가셨습니다",
                 });
+                socket.emit("event", {
+                    status: "delete",
+                    target: "<%= room %>",
+                });
                 setTimeout(() => {
                     form.submit();
                 }, 100);

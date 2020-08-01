@@ -94,7 +94,7 @@ const cheatSchema = new mongoose.Schema(
             required: false,
             validate: {
                 validator: function (v) {
-                    if (Boolean(Number(v))) {
+                    if (Boolean(Number(v)) || v == null) {
                         return true;
                     } else {
                         return false;
@@ -122,11 +122,12 @@ const cheatSchema = new mongoose.Schema(
             required: false,
             validate: {
                 validator: function (v) {
-                    if (v != null && v != "") {
-                        if (v.length < 11) {
+                    if (v == null) {
+                        return true;
+                    } else {
+                        if (v.length < 10) {
                             return false;
-                        }
-                        if (Boolean(Number(v))) {
+                        } else if (Boolean(Number(v))) {
                             return true;
                         } else {
                             return false;

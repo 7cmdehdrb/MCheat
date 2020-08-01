@@ -19,7 +19,7 @@
                     </tr>
                 </thead>
 
-                <% if(docs.length == 0){ %>
+                <% if(groups.docs.length == 0){ %>
                     <tr class="w-full text-center">
                         <td colspan="3">
                             <i class="fas fa-exclamation-triangle text-red-600"></i>
@@ -28,14 +28,14 @@
                     </tr>
                 <% } %> 
 
-                <% docs.forEach(room => { %>
+                <% groups.docs.forEach(groups => { %>
 
                 <tr class="w-full">
-                    <td class="break-words" style="width: 50%; cursor: pointer;" onclick="javascript: location.href='/messages/joinGroup?room=<%= room._id %>'">
-                        <strong><%= room.name %></strong>
+                    <td class="break-words" style="width: 50%; cursor: pointer;" onclick="javascript: location.href='/messages/joinGroup?room=<%= groups._id %>'">
+                        <strong><%= groups.name %></strong>
                     </td>
-                    <td class="text-center" style="width: 30%;"><%= room.master.nickname %></td>
-                    <td class="text-center" style="width: 20%;"><%= room.roomMember.length %>명</td>
+                    <td class="text-center" style="width: 30%;"><a href="/users/userProfile?id=<%= groups.master.email %>"><%= groups.master.nickname %></a></td>
+                    <td class="text-center" style="width: 20%;"><%= groups.roomMember.length %>명</td>
                 </tr>
 
                 <% }); %>
@@ -48,19 +48,23 @@
 
             <!-- Paginator -->
 
-            <div>
-                <nav aria-label="Page navigation mx-auto my-5">
-                    <ul class="pagination justify-content-center">
-                        <li style="cursor: pointer;" class="page-item <%= current_page == 1 ? "disabled" : "" %>">
-                            <a class="page-link" onclick="setUrl('<%= current_page -1 %>')">Prev</a>
-                        </li>
-                        <li class="page-item"><a class="page-link"><%= current_page %> / <%= total_page %></a></li>
-                        <li style="cursor: pointer;" class="page-item <%= current_page == total_page ? "disabled" : "" %>">
-                            <a class="page-link" onclick="setUrl('<%= current_page + 1 %>')">Next</a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+            <form method="GET" class="js_paginator">
+                <div>
+                    <nav aria-label="Page navigation mx-auto my-5">
+                        <ul class="pagination justify-content-center">
+                            <li style="cursor: pointer;" class="page-item <%= groups.page == 1 ? "disabled" : "" %>">
+                                <a class="page-link" onclick="setUrl('<%= groups.page -1 %>')">Prev</a>
+                            </li>
+                            <li class="page-item">
+                                <input class="page-link text-center w-16 js_paginator_value" type="number" min="1" name="page" value="<%= groups.page %>" >
+                            </li>
+                            <li style="cursor: pointer;" class="page-item <%= groups.page == groups.totalPages ? "disabled" : "" %>">
+                                <a class="page-link" onclick="setUrl('<%= groups.page + 1 %>')">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </form>
 
             <!-- Paginator End -->
 

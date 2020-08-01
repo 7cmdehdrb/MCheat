@@ -6,7 +6,6 @@ commentSubmit = () => {
     if (commentInput.value == "") {
         alert("댓글 내용을 작성해주세요");
     } else if (commentInput.value.length > 300) {
-        ("");
         alert("댓글작성은 최대 300자까지 가능합니다");
     } else {
         commentForm.submit();
@@ -33,17 +32,23 @@ deletePost = (id) => {
     }
 };
 
-likePost = async (id) => {
-    await fetch(`/communities/recommendPost?id=${id}`)
+likePost = async (id, like) => {
+    await fetch(`/communities/recommendPost?id=${id}&like=${like}`)
         .then((Response) => Response.json())
         .then((json) => {
-            if (json.success == true) {
-                likecnt.innerHTML = json.count;
-                if (json.increase == true) {
-                    alert("추천하였습니다!");
+            if (json.success == false) {
+                alert("(비)추천에 실패하였습니다");
+            } else {
+                if (json.method == "pull") {
+                    alert("취소하였습니다");
                 } else {
-                    alert("추천을 취소했습니다");
+                    if (like == "true") {
+                        alert("추천했습니다");
+                    } else {
+                        alert("비추천했습니다");
+                    }
                 }
+                location.reload();
             }
         })
         .catch((err) => {
@@ -51,10 +56,13 @@ likePost = async (id) => {
         });
 };
 
-init = () => {
+changeDate = () => {
     const documentDate = document.querySelector(".js_datetime");
     const newDate = new Date(documentDate.innerText);
-    const year = newDate.getFullYear();
+    const year = newDate.getFullYear() + "";
+
+    const twoYear = year.split("");
+
     let month = newDate.getMonth() + 1;
     if (month < 10) {
         month = "0" + month;
@@ -63,8 +71,13 @@ init = () => {
     if (date < 10) {
         date = "0" + date;
     }
-    const newDateFormat = `${year}-${month}-${date}`;
+
+    const newDateFormat = `${twoYear[2]}${twoYear[3]}${month}${date}`;
     documentDate.innerText = newDateFormat;
+};
+
+init = () => {
+    changeDate();
 };
 
 init();

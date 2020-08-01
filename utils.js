@@ -198,3 +198,46 @@ export const datetimeToString = (date) => {
     const day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
     return `${month}${day}`;
 };
+
+export const getPlaneString = (str) => {
+    return str.replace(/[&\/\\#,+()$~%.'":*?<>{}-]/g, "");
+};
+
+export const phone_transfer = (phone) => {
+    const phone_divide = phone.split("");
+    const new_phone = `${phone_divide[0]}${phone_divide[1]}${phone_divide[2]}-****-${phone_divide[7]}${phone_divide[8]}${phone_divide[9]}${phone_divide[10]}`;
+
+    return new_phone;
+};
+
+export const account_transfer = (account) => {
+    let new_account = "";
+    const account_divide = account.split("");
+
+    for (let index = 0; index < account_divide.length; index++) {
+        if (index >= account_divide.length - 5) {
+            new_account += account_divide[index];
+        } else if (index < 3) {
+            new_account += account_divide[index];
+        } else {
+            new_account += "*";
+        }
+    }
+
+    return new_account;
+};
+
+export const date_transfer = (data) => {
+    const newDate = new Date(data);
+    const year = newDate.getFullYear();
+    let month = newDate.getMonth() + 1;
+    if (month < 10) {
+        month = "0" + month;
+    }
+    let date = newDate.getDate();
+    if (date < 10) {
+        date = "0" + date;
+    }
+    const newDateFormat = `${year}-${month}-${date}`;
+    return newDateFormat;
+};

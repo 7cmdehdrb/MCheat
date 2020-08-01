@@ -156,14 +156,14 @@
 
             <!-- Paginator -->
 
-            <form method="GET">
+            <form method="GET" class="js_paginator">
             <nav aria-label="Page navigation mx-auto">
                 <ul class="pagination justify-content-center">
                     <li class="page-item <%= (current_page == 1) ? "disabled" : "" %> ">
                         <a class="page-link" onclick="setUrl('<%= current_page - 1 %>')">Prev</a>
                     </li>
                     <li class="page-item">
-                        <input class="page-link text-center w-16" type="number" min="1" name="page" value="<%= current_page %>" >
+                        <input class="page-link text-center w-16 js_paginator_value" type="number" min="1" name="page" value="<%= current_page %>" >
                     </li>
                     <li class="page-item <%= (current_page == total_page) ? "disabled" : "" %>">
                         <a class="page-link" onclick="setUrl('<%= current_page + 1 %>')">Next</a>
@@ -176,7 +176,9 @@
 
         </div>
 
-        <% include ../partial/foot %> <% include ../partial/footer %>
+        <% include ../partial/foot %>
+        <!--  -->
+        <% include ../partial/footer %>
         <script src="/javascripts/adminAllUsers.js"></script>
     </body>
 </html>

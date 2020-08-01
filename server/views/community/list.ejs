@@ -31,30 +31,28 @@
             <table class="table table-striped table-hover">
                 <thead class="text-center">
                     <tr>
-                        <th style="width: 40%;" class="">제목</th>
-                        <th style="width: 20%;" class="">글쓴이</th>
-                        <th style="width: 20%;" class="">날짜</th>
-                        <th style="width: 20%;" class="">추천</th>
+                        <th style="width: 40%;">제목</th>
+                        <th style="width: 20%;">글쓴이</th>
+                        <th style="width: 25%;">날짜</th>
+                        <th style="width: 15%;">추천</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <% alerts.forEach(element => { %>
+                    <% alerts.forEach(alert => { %>
                         <tr class="w-full table-danger">
-                            <td class="break-words" onclick="javascript: location.href='/communities/detail?id=<%= element.origin._id %>'" style="width: 40%; cursor: pointer;"><strong>[공지]</strong> <%= element.origin.title %></td>
+                            <td class="break-words" onclick="javascript: location.href='/communities/detail?id=<%= alert._id %>'" style="width: 40%; cursor: pointer;"><strong>[공지]</strong> <%= alert.title %></td>
                             <td class="break-words text-center" style="width: 20%;">
-                                <a style="text-decoration: none;" href="/users/userProfile?id=<%= element.origin.writer.email %>">
-                                <%= element.origin.writer.nickname %>
-                                <% if(element.origin.writer.is_admin == true){ %>
-                                    <span class="badge badge-pill badge-success">ADMIN</span>
-                                <% } %>
+                                <a style="text-decoration: none;" href="/users/userProfile?id=<%= alert.writer.email %>">
+                                <%= alert.writer.nickname %>
+                                <span class="badge badge-pill badge-success">ADMIN</span>
                                 </a>
                             </td>
-                            <td class="text-center" style="width: 20%;"><%= element.newTime %></td>
-                            <td class="text-center" style="width: 20%;"><%= element.origin.recommends.length %></td>
+                            <td class="text-center js_timeset" style="width: 25%;"><%= alert.time %></td>
+                            <td class="text-center" style="width: 15%;"><%= alert.recommends.length %></td>
                         </tr>
                     <% }); %> 
 
-                    <% if(communities.length == 0){ %>
+                    <% if(communities.docs.length == 0){ %>
                     <tr class="w-full text-center">
                         <td colspan="4">
                             <i class="fas fa-exclamation-triangle text-red-600"></i>
@@ -65,20 +63,18 @@
 
                     <!-- List -->
 
-                    <% communities.forEach(element => { %>
+                    <% communities.docs.forEach(community => { %>
                     <tr class="w-full">
-                        <td style="width: 40%; cursor: pointer;" onclick="javascript: location.href='/communities/detail?id=<%= element.origin._id %>'">
-                            <strong>[<%= element.origin.tag %>]</strong> <%= element.origin.title %>
+                        <td style="width: 40%; cursor: pointer;" onclick="javascript: location.href='/communities/detail?id=<%= community._id %>'">
+                            <strong>[<%= community.tag %>]</strong> <%= community.title %>
                         </td>        
                         <td class="break-words text-center" style="width: 20%;">
-                            <a style="text-decoration: none;" href="/users/userProfile?id=<%= element.origin.writer.email %>">
-                            <%= element.origin.writer.nickname %> <% if(element.origin.writer.is_admin == true){ %>
-                            <span class="badge badge-pill badge-success">ADMIN</span>
-                            <% } %>
+                            <a style="text-decoration: none;" href="/users/userProfile?id=<%= community.writer.email %>">
+                            <%= community.writer.nickname %>
                             </a>
                         </td>
-                        <td class="text-center" style="width: 20%;"><%= element.newTime %></td>
-                        <td class="text-center" style="width: 20%;"><%= element.origin.recommends.length %></td>
+                        <td class="text-center js_timeset" style="width: 20%;"><%= community.time %></td>
+                        <td class="text-center" style="width: 20%;"><%= community.recommends.length %></td>
                     </tr>
                     <% }); %>
 
@@ -125,17 +121,17 @@
             <!-- Search Field End -->
 
             <!-- Paginator -->
-            <form method="GET">
+            <form method="GET" class="js_paginator">
                 <nav aria-label="Page navigation mx-auto my-5">
                     <ul class="pagination justify-content-center">
-                        <li style="cursor: pointer;" class="page-item <%= current_page == 1 ? "disabled" : "" %>">
-                            <a class="page-link" onclick="setUrl('<%= current_page -1 %>')">Prev</a>
+                        <li style="cursor: pointer;" class="page-item <%= communities.page == 1 ? "disabled" : "" %>">
+                            <a class="page-link" onclick="setUrl('<%= communities.page -1 %>')">Prev</a>
                         </li>
                         <li class="page-item">
-                            <input class="page-link text-center w-16" type="number" min="1" name="page" value="<%= current_page %>" >
+                            <input class="page-link text-center w-16 js_paginator_value" type="number" min="1" name="page" value="<%= communities.page %>" >
                         </li>
-                        <li style="cursor: pointer;" class="page-item <%= current_page == total_page ? "disabled" : "" %>">
-                            <a class="page-link" onclick="setUrl('<%= current_page + 1 %>')">Next</a>
+                        <li style="cursor: pointer;" class="page-item <%= communities.page == communities.totalPages ? "disabled" : "" %>">
+                            <a class="page-link" onclick="setUrl('<%= communities.page + 1 %>')">Next</a>
                         </li>
                     </ul>
                 </nav>
@@ -144,7 +140,9 @@
             <!-- Paginator End -->
         </div>
 
-        <% include ../partial/footer %> <% include ../partial/foot %>
+        <% include ../partial/footer %>
+        <!--  -->
+        <% include ../partial/foot %>
         <script src="/javascripts/list.js"></script>
     </body>
 </html>

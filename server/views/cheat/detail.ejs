@@ -14,7 +14,7 @@
             <div class="w-full mb-5">
                 <div class="flex py-2 text-center text-lg rounded-lg bg-gray-400">
                     <div class="flex-1">
-                        작성자 : <%= detail.writer.nickname %>
+                        작성자 : <a href="/users/userProfile?id=<%= detail.writer.email %>"><%= detail.writer.nickname %></a>
                     </div>
                     <div class="flex-1">피해일 : <span class="js_datetime"><%= detail.date %></span></div>
                 </div>
@@ -83,28 +83,24 @@
                                 <tr>
                                     <th style="width: 30%;">피해금액</th>
                                     <td style="width: 70%;">
-                                        <%= detail.money %> <%= detail.money_type %> 
+                                        <span class="js_money_comma"><%= detail.money %></span> <%= detail.money_type %> 
                                     </td>
+                                    <script>
+                                        const money_comma = document.querySelector(".js_money_comma");
+
+                                        function numberWithCommas(x) {
+                                            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                        }
+
+                                        money_comma.innerText = numberWithCommas(money_comma.innerText);                                        
+                                    </script>
                                 </tr>
                                 <% if(detail.phone){ %>
                                     <tr>
-                                        <th style="width: 30%;">농장명</th>
+                                        <th style="width: 30%;">휴대폰 번호</th>
                                         <td style="width: 70%;">
                                             <span class="js_phone_hidden"><%= detail.phone %></span>
                                         </td>
-                                        <script>
-                                            const js_phone = document.querySelector(".js_phone_hidden");
-                                            
-                                            function phone_init(){
-                                                let index = 0;
-                                                const phone_divide = js_phone.innerText.split("");
-                                                const new_phone = `${phone_divide[0]}${phone_divide[1]}${phone_divide[2]}-****-${phone_divide[7]}${phone_divide[8]}${phone_divide[9]}${phone_divide[10]}`;
-                                                
-                                                js_phone.innerText = new_phone;
-                                            }
-
-                                            phone_init();
-                                        </script>
                                     </tr>
                                 <% } %>
                                 <% if(Boolean(detail.account)){ %>
@@ -113,29 +109,6 @@
                                         <td style="width: 70%;">
                                             [<%= detail.account_type %>] <span class="js_account_hidden"><%= detail.account  %></span>
                                         </td>
-                                        <script>
-                                            const js_account = document.querySelector(".js_account_hidden");
-
-                                            function account_init(){
-                                                let new_account = "";
-                                                const account_divide = js_account.innerText.split("");
-                                                
-                                                for (let index = 0; index < account_divide.length; index++) {
-                                                    if(index >= account_divide.length - 5){
-                                                        new_account += account_divide[index];
-                                                    }else if(index < 3){
-                                                        new_account += account_divide[index];
-                                                    }
-                                                    else{
-                                                        new_account += "*";
-                                                    }
-                                                }
-
-                                                js_account.innerText = new_account;
-                                            }
-
-                                            account_init();
-                                        </script>
                                     </tr>
                                 <% } %>
                             </tbody>
@@ -151,9 +124,29 @@
                         <!-- Images End -->
                     </div>
                 </div>
+
+                <!-- Menu -->
+
+                <div class="w-full flex my-5 justify-between">
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        <button type="button" class="btn btn-secondary text-sm lg:text-lg" onclick="javascript: location.href='/cheat/cheatList'">전체목록</button>
+                        <button type="button" class="btn btn-secondary text-sm lg:text-lg" onclick="javascript: history.back()">뒤로가기</button>
+                    </div>
+
+                    <% if(session.user){ %>
+                        <div>
+                            <% if(session.user.is_admin == true){ %> 
+                                <button type="button" class="btn btn-outline-secondary text-sm lg:text-lg" onclick="deleteCheat('<%= detail._id %>')"><i class="far fa-trash-alt"></i> 삭제하기</button>
+                            <% } %> 
+                            <button type="button" class="btn btn-outline-danger text-sm lg:text-lg" onclick="report('<%= detail._id %>')"><i class="far fa-thumbs-down"></i> 신고하기</button>
+                        </div>
+                    <% } %>
+                </div>
+
             </div>
         </div>
 
+        <script src="/javascripts/makeReport.js"></script>
         <script src="/javascripts/cheatDetail.js"></script>
         <% include ../partial/foot %>
         <!--  -->

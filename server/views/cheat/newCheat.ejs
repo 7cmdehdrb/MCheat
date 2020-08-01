@@ -9,7 +9,7 @@
         <div class="container w-full lg:w-2/3 mx-auto my-5">
             <h1 class="text-center text-4xl mx-auto my-5">피해등록</h1>
 
-            <form class="mx-auto w-full" method="POST" enctype="multipart/form-data">
+            <form class="mx-auto w-full js_cheatForm" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                 <div class="form-row">
                     <div class="form-group col-md-4">
@@ -84,7 +84,7 @@
                 </div>
                 <div class="form-row js_phone_form" style="display: none;">
                     <label for="inputPhone">휴대폰 번호</label>
-                    <input type="tel" pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}" class="form-control" id="inputPhone" name="phone" placeholder="-를 포함하여 기입해주세요" />
+                    <input type="text" class="form-control js_input_phone" id="inputPhone" name="phone" placeholder="- 여부 무관" />
                 </div>
 
                 <div class="text-gray-600 my-4" onclick="openAccout()">

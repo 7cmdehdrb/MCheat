@@ -12,23 +12,23 @@
             <% if(show == "true"){ %> <% include ../partial/toast %> <% } %>
             <h1 class="text-4xl">SIGN UP</h1>
             <div>
-                <form class="my-10" method="POST">
+                <form class="my-10 js_signupForm" method="POST">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="inputEmail4">이메일</label>
-                            <input type="email" class="form-control" id="inputEmail4" name="email" required />
+                            <input type="email" class="form-control" id="inputEmail4" name="email" required autocomplete="off" />
                             <small class="text-red-500">이메일 인증 진행 및 로그인에 사용됩니다</small>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="inputFarm">농장 이름</label>
-                            <input type="text" class="form-control" id="inputFarm" name="farm" placeholder="(농장 미생성시 미입력)" />
+                            <input type="text" class="form-control" id="inputFarm" name="farm" placeholder="(농장 미생성시 미입력)" autocomplete="off" />
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="inputPassword4">비밀번호</label>
-                            <input type="password" class="form-control" id="inputPassword4" name="password" onKeyUp="checkPasswordStrength()" required autocomplete="new-password" />
+                            <input type="password" class="form-control" id="inputPassword4" name="password" onKeyUp="checkPasswordStrength()" required autocomplete="off" />
                             <small class="text-red-500">비밀번호는 영어, 숫자, 특수문자를 포함한 8자리 이상이여야 합니다</small>
                         </div>
                         <div class="form-group col-md-6">

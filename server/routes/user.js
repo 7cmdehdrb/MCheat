@@ -4,6 +4,8 @@ import sanitize from "mongo-sanitize";
 import { User } from "../models/users";
 import { getGuild, hashFunction, createUUID, sendMail, sendResetMail } from "../../utils";
 import { csrfProtection } from "../../middleware";
+import { Cheat } from "../models/cheat";
+import { Community } from "../models/communities";
 
 /* GET users listing. */
 router.get("/", async (req, res, next) => {
@@ -163,14 +165,11 @@ router.get("/userProfile", async (req, res, next) => {
     const show = req.flash("show");
     const message = req.flash("message");
 
-    let targetUser;
-
-    if (!id) {
-        targetUser = await User.findOne({
-            email: session.user.email,
-        })
-            .select(
-                `
+    const user = await User.findOne({
+        email: id || session.user.email,
+    })
+        .select(
+            `
             email
             nickname
             server
@@ -182,43 +181,49 @@ router.get("/userProfile", async (req, res, next) => {
             is_admin
             is_activated
             `
-            )
-            .exec()
-            .catch((err) => {
-                console.log(err);
-                res.redirect("/");
-            });
-    } else {
-        targetUser = await User.findOne({
-            email: sanitize(id),
-        })
-            .select(
-                `
-                email
-                nickname
-                server
-                guild
-                farm
-                profile
-                bio
-                email_valid
-                is_admin
-                is_activated
-                `
-            )
-            .exec()
-            .catch((err) => {
-                console.log(err);
-                res.redirect("/");
-            });
-    }
+        )
+        .exec()
+        .catch((err) => {
+            console.log(err);
+        });
 
-    if (targetUser === null) {
+    if (user == null) {
         res.redirect("/");
         return;
     }
 
-    res.render("user/detail", { session: session, user: targetUser, show: show, message: message });
+    // 사기등록 = 15점
+
+    const cheatPoint = await Cheat.count({
+        writerEmail: id || session.user.email,
+    }).catch((err) => {
+        console.log(err);
+    });
+
+    // 게시글 작성 = 3점
+
+    const communityPoint = await Community.count({
+        writerEmail: id || session.user.email,
+    }).catch((err) => {
+        console.log(err);
+    });
+
+    // 댓글 작성 = 1점
+
+    const commentPoint = await Community.count({
+        writerEmail: id || session.user.email,
+    }).catch((err) => {
+        console.log(err);
+    });
+
+    const point = {
+        cheat: cheatPoint || 0,
+        community: commentPoint || 0,
+        comment: commentPoint || 0,
+        total: (cheatPoint || 0) * 15 + (communityPoint || 0) * 3 + (commentPoint || 0),
+    };
+
+    res.render("user/detail", { session: session, user: user, point: point, show: show, message: message });
 });
 
 // 개인정보 수정

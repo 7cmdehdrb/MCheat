@@ -3,56 +3,125 @@ var router = express.Router();
 import { Cheat } from "../models/cheat";
 import sanitize from "mongo-sanitize";
 import { csrfProtection } from "../../middleware";
+import { getPlaneString, phone_transfer, account_transfer } from "../../utils";
 import { cheatUpload } from "../../multer";
 
-// 사기 리스트
+// 검색
 
-router.get("/cheatList", async (req, res, next) => {
+router.get("/search", async (req, res, next) => {
     const { session } = req;
-    const { page } = req.query;
+    let { search, page } = req.query;
 
-    const show = req.flash("show");
-    const message = req.flash("message");
+    if (!page) {
+        page = 1;
+    }
 
-    let query = {};
+    search = getPlaneString(search);
+    let totalPages = 1;
 
-    await Cheat.paginate(query, {
-        select: `
-            writerEmail
-            tag
-            title
-            subCharacter
-            mainCharacter
-            server
-            date
-            `,
+    const charQuery = {
+        $or: [
+            {
+                subCharacter: {
+                    $regex: `.*${sanitize(search)}.*`,
+                },
+            },
+            {
+                mainCharacter: {
+                    $regex: `.*${sanitize(search)}.*`,
+                },
+            },
+            {
+                farm: {
+                    $regex: `.*${sanitize(search)}.*`,
+                },
+            },
+        ],
+    };
+
+    let byCharacter = await Cheat.paginate(charQuery, {
         page: page || 1,
-        limit: 20,
+        limit: 50,
+        select: "_id subCharacter mainCharacter farm writerEmail",
         sort: "-createdDate",
         populate: {
             path: "writer",
-            select: `
-            _id
-            email
-            nickname
-            server
-            `,
             model: "User",
+            select: "_id nickname email",
+        },
+    }).then((characters) => {
+        characters.docs = characters.docs.filter((element) => element.writer != null);
+        totalPages = characters.totalPages;
+        return characters.docs;
+    });
+
+    const phoneQuery = {
+        phone: {
+            $regex: `.*${sanitize(search)}.*`,
+        },
+    };
+
+    let byPhone = await Cheat.paginate(phoneQuery, {
+        page: page || 1,
+        limit: 50,
+        select: "_id phone writerEmail",
+        sort: "-createdDate",
+        populate: {
+            path: "writer",
+            model: "User",
+            select: "_id nickname email",
         },
     })
-        .then((cheats) => {
-            if (page > cheats.totalPages) {
-                res.redirect(`/cheat/cheatList?page=${cheats.totalPages}`);
-            } else {
-                res.render("cheat/cheatList", { session: session, cheats: cheats, show: show, message: message });
+        .then((phones) => {
+            phones.docs = phones.docs.filter((element) => element.writer != null);
+            if (phones.totalPages > totalPages) {
+                totalPages = phones.totalPages;
             }
+            return phones.docs;
         })
         .catch((err) => {
             console.log(err);
-            req.flash("show", "true");
-            req.flash("message", "목록을 불러오는데 실패했습니다");
-            res.redirect("/");
         });
+
+    byPhone.forEach((phone) => {
+        let temp = phone;
+        temp.phone = phone_transfer(phone.phone);
+    });
+
+    const accountQuery = {
+        account: {
+            $regex: `.*${sanitize(search)}.*`,
+        },
+    };
+
+    let byAccout = await Cheat.paginate(accountQuery, {
+        page: page || 1,
+        limit: 50,
+        select: "_id account account_type writerEmail",
+        sort: "-createdDate",
+        populate: {
+            path: "writer",
+            model: "User",
+            select: "_id nickname email",
+        },
+    })
+        .then((accounts) => {
+            accounts.docs = accounts.docs.filter((element) => element.writer != null);
+            if (accounts.totalPages > totalPages) {
+                totalPages = accounts.totalPages;
+            }
+            return accounts.docs;
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+
+    byAccout.forEach((account) => {
+        let temp = account;
+        temp.account = account_transfer(account.account);
+    });
+
+    res.render("cheat/searchCheat", { session: session, character: byCharacter, account: byAccout, phone: byPhone, page: page, totalPages: totalPages });
 });
 
 // 새 사기 등록
@@ -144,9 +213,71 @@ router.get("/detail", csrfProtection, async (req, res, next) => {
         req.flash("message", "정보를 불러올 수 없습니다");
         res.redirect("/cheat/cheatList");
         return;
+    } else if (cheatDetail.writer == null) {
+        req.flash("show", "true");
+        req.flash("message", "삭제된 유저입니다");
+        res.redirect("/cheat/cheatList");
+        return;
+    }
+    if (cheatDetail.account) {
+        cheatDetail.account = account_transfer(cheatDetail.account);
+    }
+    if (cheatDetail.phone) {
+        cheatDetail.phone = phone_transfer(cheatDetail.phone);
     }
 
     res.render("cheat/detail", { session: session, detail: cheatDetail, id: id, csrfToken: csrfToken });
 });
 
 module.exports = router;
+
+// 사기 리스트
+
+// router.get("/cheatList", async (req, res, next) => {
+//     const { session } = req;
+//     const { page } = req.query;
+
+//     const show = req.flash("show");
+//     const message = req.flash("message");
+
+//     const query = {};
+
+//     await Cheat.paginate(query, {
+//         select: `
+//             writerEmail
+//             tag
+//             title
+//             subCharacter
+//             mainCharacter
+//             server
+//             date
+//             `,
+//         page: page || 1,
+//         limit: 20,
+//         sort: "-createdDate",
+//         populate: {
+//             path: "writer",
+//             select: `
+//             _id
+//             email
+//             nickname
+//             server
+//             `,
+//             model: "User",
+//         },
+//     })
+//         .then((cheats) => {
+//             cheats.docs = cheats.docs.filter((element) => element.writer != null);
+//             if (page > cheats.totalPages) {
+//                 res.redirect(`/cheat/cheatList?page=${cheats.totalPages}`);
+//             } else {
+//                 res.render("cheat/cheatList", { session: session, cheats: cheats, show: show, message: message });
+//             }
+//         })
+//         .catch((err) => {
+//             console.log(err);
+//             req.flash("show", "true");
+//             req.flash("message", "목록을 불러오는데 실패했습니다");
+//             res.redirect("/");
+//         });
+// });

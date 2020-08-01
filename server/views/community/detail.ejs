@@ -13,6 +13,8 @@
                     <% if(session.user) { if(session.user.email == detail.writer.email){ %> 
                         <button type="button" class="btn btn-secondary text-sm lg:text-lg" onclick="javascript: location.href='/communities/updatePost?id=<%= detail._id %>'">수정하기</button>
                         <button type="button" class="btn btn-secondary text-sm lg:text-lg" onclick="deletePost('<%= detail._id %>')">삭제하기</button>
+                    <% }else{ %> 
+                        <button type="button" class="btn btn-secondary text-sm lg:text-lg" onclick="report('<%= detail._id %>')">신고하기</button>
                     <% }} %> 
                 </div>
             </div>
@@ -22,13 +24,13 @@
             <div class="w-full mb-5">
                 <div class="flex py-2 text-center text-lg rounded-lg bg-gray-400">
                     <div class="flex-1">
-                        작성자 : <%= detail.writer.nickname %>
+                        작성자 : <a href="/users/userProfile?id=<%= detail.writer.email %>"><%= detail.writer.nickname %></a>
                     </div>
                     <div class="flex-1 js_datetime">
                         <%= detail.time %>
                     </div>
                     <div class="flex-1">
-                        추천수 : <span class="js_likecnt"><%= detail.recommends.length %></span>
+                        추천 : <span class="js_likecnt"><%= like.length %>/<%= dislike.length %></span>
                     </div>
                 </div>
                 <div class="border-gray-200 border-2 rounded-lg">
@@ -81,19 +83,19 @@
 
             <!-- Buttons -->
 
-            <% if(session.user){ %>
-                <div class="w-full flex my-5 justify-between">
-                    <div class="btn-group" role="group" aria-label="Basic example">
-                        <button type="button" class="btn btn-secondary text-sm lg:text-lg" onclick="javascript: location.href='/communities/list'">전체목록</button>
-                        <button type="button" class="btn btn-secondary text-sm lg:text-lg" onclick="javascript: history.back()">뒤로가기</button>
-                    </div>
-                    
-                    <div>
-                        <button type="button" class="btn btn-outline-success text-sm lg:text-lg" onclick="likePost('<%= detail._id %>')"><i class="far fa-thumbs-up"></i> 추천하기</button>
-                        <button type="button" class="btn btn-outline-danger text-sm lg:text-lg" onclick="javascript: alert('Comming Soon...')"><i class="far fa-thumbs-down"></i> 신고하기</button>
-                    </div>
+            <div class="w-full flex my-5 justify-between">
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <button type="button" class="btn btn-secondary text-sm lg:text-lg" onclick="javascript: location.href='/communities/list'">전체목록</button>
+                    <button type="button" class="btn btn-secondary text-sm lg:text-lg" onclick="javascript: history.back()">뒤로가기</button>
                 </div>
-            <% } %>
+                
+                <% if(session.user){ %>
+                    <div>
+                        <button type="button" class="btn btn-outline-success text-sm lg:text-lg" onclick="likePost('<%= detail._id %>', 'true')"><i class="far fa-thumbs-up"></i> 좋아요</button>
+                        <button type="button" class="btn btn-outline-danger text-sm lg:text-lg" onclick="likePost('<%= detail._id %>', 'false')"><i class="far fa-thumbs-down"></i> 싫어요</button>
+                    </div>
+                <% } %>
+            </div>
 
             <!-- Buttions End -->
 
@@ -151,7 +153,10 @@
 
         </div>
 
-        <% include ../partial/foot %> <% include ../partial/footer %>
         <script src="/javascripts/postDetail.js"></script>
+        <script src="/javascripts/makeReport.js"></script>
+        <% include ../partial/foot %>
+        <!--  -->
+        <% include ../partial/footer %>
     </body>
 </html>

@@ -13,7 +13,6 @@ setUrl = (index) => {
 
     location.href = new_url;
 };
-
 paginator.addEventListener("submit", (ev) => {
     ev.preventDefault();
     setUrl(paginator_value.value);

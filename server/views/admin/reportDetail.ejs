@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <% include ../partial/header %>
+
+        <div class="container w-full lg:w-2/3 mx-auto my-5">
+            <h1 class="text-center text-4xl my-5">신고 내역</h1>
+            <table class="table-auto w-full text-center mx-auto my-4">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">분류</th>
+                        <th class="px-4 py-2">내용</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="border px-4 py-2">신고자</td>
+                        <td class="border px-4 py-2"><a href="/users/userProfile?id=<%= report.writer.email %>"><%= report.writer.nickname %></a></td>
+                    </tr>
+                    <tr>
+                        <td class="border px-4 py-2">신고글</td>
+                        <td class="border px-4 py-2"><a target="_blank" href="<%= report.url %>">바로가기</a></td>
+                    </tr>
+                    <tr>
+                        <td class="border px-4 py-2">제목</td>
+                        <td class="border px-4 py-2"><%= report.title %></td>
+                    </tr>
+                    <tr>
+                        <td class="border px-4 py-2">신고일</td>
+                        <td class="border px-4 py-2"><%= report.date %></td>
+                    </tr>
+                    <tr>
+                        <td class="border px-4 py-2">신고분류</td>
+                        <td class="border px-4 py-2">
+                            <% report.catagory.forEach(cg => { %>
+                            <span><%= cg %>,</span>
+                            <% }); %>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="border px-4 py-2">처리여부</td>
+                        <td class="border px-4 py-2">
+                            <% if(report.is_finished == true){ %>
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <% }else{ %>
+                            <i class="fas fa-times-circle text-red-500"></i>
+                            <% } %>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="flex justify-end">
+                <% if(report.is_finished == false){ %>
+                <div class="text-gray-500 mx-2"><a href="/admin/completeReport?id=<%= report._id %>" style="cursor: pointer;">처리완료</a></div>
+                <% } %>
+                <div class="text-gray-500 mx-2"><span style="cursor: pointer;" onclick="javascript: history.back()">뒤로가기</span></div>
+            </div>
+        </div>
+
+        <% include ../partial/foot %>
+        <!--  -->
+        <% include ../partial/footer %>
+    </body>
+</html>

@@ -9,6 +9,7 @@ const money_to_ko = document.querySelector(".js_money_ko");
 const account = document.querySelector(".js_account");
 const accout_type = document.querySelector(".js_account_type");
 const phone_form = document.querySelector(".js_phone_form");
+const phone = document.querySelector(".js_input_phone");
 const account_form = document.querySelector(".js_bank_form");
 const phone_info = document.querySelector(".js_info_phone");
 const account_info = document.querySelector(".js_info_account");
@@ -39,23 +40,37 @@ function numberToKorean() {
     money_to_ko.innerText = `${resultString} ${money_type.value}`;
 }
 
-document.addEventListener("submit", (ev) => {
-    const check = confirm("해당 유저를 신고하시겠습니까? 허위 신고는 경고 없이 계정이 정지될 수 있습니다");
+document.querySelector(".js_cheatForm").addEventListener("submit", (ev) => {
+    const check = confirm("해당 유저를 등록하시겠습니까? 허위 신고는 경고 없이 계정이 정지될 수 있으며, 신고 내용은 삭제 및 변경할 수 없습니다");
 
     if (!check) {
         ev.preventDefault();
         return;
     }
 
-    if (account.value != "" || account.value < 11) {
-        if (!Boolean(Number(account.value.replace(/-/gi, "")))) {
+    if (phone.value != "") {
+        if (Boolean(Number(phone.value.replace(/-/gi, "")))) {
+            if (phone.value.replace(/-/gi, "").length != 11) {
+                ev.preventDefault();
+                alert("휴대폰 번호는 - 제외 11개의 숫자로 이루어져야 합니다");
+                return;
+            }
+        } else {
             ev.preventDefault();
-            alert("계좌번호가 올바르지 않습니다");
+            alert("휴대폰 번호는 숫자와 -만 입력할 수 있습니다");
             return;
         }
     }
 
-    if (account.value != "" && accout_type.value == "NOBANK") {
+    if (accout_type.value != "NOBANK" && account.value < 11) {
+        if (!Boolean(Number(account.value.replace(/-/gi, "")))) {
+            ev.preventDefault();
+            alert("올바른 계좌번호를 입력하거나, 은행 선택을 취소해주세요");
+            return;
+        }
+    }
+
+    if (accout_type.value == "NOBANK" && account.value != "") {
         ev.preventDefault();
         alert("금융사를 선택해주세요");
         return;

@@ -13,10 +13,10 @@
             <table class="table table-striped table-hover">
                 <thead class="text-center">
                     <tr>
-                        <th style="width: 45%;" class="">체팅방 이름</th>
-                        <th style="width: 30%;" class="">방장</th>
-                        <th style="width: 20%;" class="">참여자</th>
-                        <th style="width: 5%;" class=""></th>
+                        <th style="width: 45%;">체팅방 이름</th>
+                        <th style="width: 30%;">방장</th>
+                        <th style="width: 20%;">참여자</th>
+                        <th style="width: 5%;"></th>
                     </tr>
                 </thead>
 
@@ -33,7 +33,7 @@
                     <td class="break-words" style="width: 40%; cursor: pointer;" onclick="openRoom('<%= room._id %>')">
                         <strong><%= room.name %></strong>
                     </td>
-                    <td class="text-center" style="width: 30%;"><%= room.master.nickname %></td>
+                    <td class="text-center" style="width: 30%;"><a href="/users/userProfile?id=<%= room.master.email %>"><%= room.master.nickname %></a></td>
                     <td class="text-center" style="width: 20%;"><%= room.roomMember.length %>명</td>
                     <td class="text-center" style="width: 5%;">
                         <% if(room.master.email == session.user.email){ %>

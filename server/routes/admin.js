@@ -3,8 +3,11 @@ var router = express.Router();
 import sanitize from "mongo-sanitize";
 import { User } from "../models/users";
 import { IP, getBannedIps } from "../models/ips";
-import { csrfProtection } from "../../middleware";
+import { Cheat } from "../models/cheat";
+import { Report } from "../models/report";
 import "../../env";
+import { csrfProtection } from "../../middleware";
+import { date_transfer } from "../../utils";
 
 // 메뉴
 
@@ -103,7 +106,7 @@ router.get("/prohibitIp", csrfProtection, async (req, res, next) => {
         return;
     }
 
-    if (session.user.is_admin == false) {
+    if (session.user.is_admin != true) {
         req.flash("show", "true");
         req.flash("message", "관리자 전용 기능입니다");
         res.redirect("/");
@@ -147,7 +150,7 @@ router.post("/newProhibition", csrfProtection, async (req, res, next) => {
         return;
     }
 
-    if (session.user.is_admin == false) {
+    if (session.user.is_admin != true) {
         req.flash("show", "true");
         req.flash("message", "관리자 전용 기능입니다");
         res.redirect("/");
@@ -185,7 +188,7 @@ router.get("/removeProhibition", csrfProtection, (req, res, next) => {
         return;
     }
 
-    if (session.user.is_admin == false) {
+    if (session.user.is_admin != true) {
         req.flash("show", "true");
         req.flash("message", "관리자 전용 기능입니다");
         res.redirect("/");
@@ -204,7 +207,7 @@ router.post("/removeProhibition", csrfProtection, async (req, res, next) => {
         return;
     }
 
-    if (session.user.is_admin == false) {
+    if (session.user.is_admin != true) {
         req.flash("show", "true");
         req.flash("message", "관리자 전용 기능입니다");
         res.redirect("/");
@@ -243,7 +246,7 @@ router.get("/allUsers", async (req, res, next) => {
         return;
     }
 
-    if (session.user.is_admin == false) {
+    if (session.user.is_admin != true) {
         req.flash("show", "true");
         req.flash("message", "관리자 전용 기능입니다");
         res.redirect("/");
@@ -314,7 +317,7 @@ router.get("/editProfile", csrfProtection, async (req, res, next) => {
         return;
     }
 
-    if (session.user.is_admin == false) {
+    if (session.user.is_admin != true) {
         req.flash("show", "true");
         req.flash("message", "관리자 전용 기능입니다");
         res.redirect("/");
@@ -359,7 +362,7 @@ router.post("/editProfile", csrfProtection, async (req, res, next) => {
         return;
     }
 
-    if (session.user.is_admin == false) {
+    if (session.user.is_admin != true) {
         req.flash("show", "true");
         req.flash("message", "관리자 전용 기능입니다");
         res.redirect("/");
@@ -410,7 +413,7 @@ router.get("/changeActivation", csrfProtection, (req, res, next) => {
         return;
     }
 
-    if (session.user.is_admin == false) {
+    if (session.user.is_admin != true) {
         req.flash("show", "true");
         req.flash("message", "관리자 전용 기능입니다");
         res.redirect("/");
@@ -429,7 +432,7 @@ router.post("/changeActivation", csrfProtection, async (req, res, next) => {
         return;
     }
 
-    if (session.user.is_admin == false) {
+    if (session.user.is_admin != true) {
         req.flash("show", "true");
         req.flash("message", "관리자 전용 기능입니다");
         res.redirect("/");
@@ -482,7 +485,7 @@ router.get("/deleteUser", csrfProtection, (req, res, next) => {
         return;
     }
 
-    if (session.user.is_admin == false) {
+    if (session.user.is_admin != true) {
         req.flash("show", "true");
         req.flash("message", "관리자 전용 기능입니다");
         res.redirect("/");
@@ -501,7 +504,7 @@ router.post("/deleteUser", csrfProtection, async (req, res, next) => {
         return;
     }
 
-    if (session.user.is_admin == false) {
+    if (session.user.is_admin != true) {
         req.flash("show", "true");
         req.flash("message", "관리자 전용 기능입니다");
         res.redirect("/");
@@ -525,6 +528,255 @@ router.post("/deleteUser", csrfProtection, async (req, res, next) => {
             req.flash("show", "true");
             req.flash("message", "알 수 없는 오류가 발생하였습니다");
             res.redirect("/admin/allUsers");
+        });
+});
+
+// 사기 제보 삭제
+
+router.get("/deleteCheat", csrfProtection, (req, res, next) => {
+    const { session } = req;
+    const { id } = req.query;
+    const csrfToken = req.csrfToken();
+
+    if (!session.user) {
+        res.redirect("/users/login");
+        return;
+    }
+
+    if (!id) {
+        res.redirect("/");
+        return;
+    }
+
+    if (session.user.is_admin != true) {
+        req.flash("show", "true");
+        req.flash("message", "관리자 전용 기능입니다");
+        res.redirect("/");
+        return;
+    }
+
+    res.render("admin/deleteCheat", { session: session, id: id, csrfToken: csrfToken });
+});
+
+router.post("/deleteCheat", async (req, res, next) => {
+    const { session } = req;
+    const { id } = req.body;
+
+    if (!session.user) {
+        res.redirect("/users/login");
+        return;
+    }
+
+    if (!id) {
+        res.redirect("/");
+        return;
+    }
+
+    if (session.user.is_admin != true) {
+        req.flash("show", "true");
+        req.flash("message", "관리자 전용 기능입니다");
+        res.redirect("/");
+        return;
+    }
+
+    await Cheat.deleteOne({
+        _id: sanitize(id),
+    })
+        .then((deleteOne) => {
+            if (deleteOne.deletedCount == 1) {
+                // TO DO: redirect to report list
+                res.redirect("/");
+            } else {
+                throw Error();
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+            req.flash("show", "true");
+            req.flash("message", "제보 삭제에 실패하였습니다");
+            res.redirect("/");
+        });
+});
+
+// 신고 조회
+
+router.get("/report", async (req, res, next) => {
+    const { session } = req;
+    const { page, finish } = req.query;
+
+    if (!session.user) {
+        res.redirect("/users/login");
+        return;
+    }
+
+    if (session.user.is_admin != true) {
+        req.flash("show", "true");
+        req.flash("message", "관리자 전용 기능입니다");
+        res.redirect("/");
+        return;
+    }
+
+    const show = req.flash("show");
+    const message = req.flash("message");
+
+    let query = {};
+
+    if (finish) {
+        query = {
+            is_finished: true,
+        };
+    } else {
+        query = {
+            is_finished: false,
+        };
+    }
+
+    await Report.paginate(
+        query,
+        {
+            page: page || 1,
+            limit: 20,
+            select: `
+            writerEmail    
+            title
+            date
+            is_finished
+            `,
+            sort: "-date",
+            populate: {
+                path: "writer",
+                select: `
+                _id
+                email
+                nickname
+                `,
+                model: "User",
+            },
+        },
+        {}
+    )
+        .then((reports) => {
+            reports.docs = reports.docs.filter((element) => element.writer != null);
+            if (page > reports.totalPages) {
+                res.redirect("/admin/report?page=1");
+            } else {
+                res.render("admin/reports", { session: session, reports: reports, show: show, message: message });
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+            req.flash("show", "true");
+            req.flash("message", "신고 목록을 불러오는데 실패했습니다");
+            req.redirect("/");
+        });
+});
+
+router.get("/reportDetail", async (req, res, next) => {
+    const { session } = req;
+    const { id } = req.query;
+
+    if (!session.user) {
+        res.redirect("/users/login");
+        return;
+    }
+
+    if (session.user.is_admin != true) {
+        req.flash("show", "true");
+        req.flash("message", "관리자 전용 기능입니다");
+        res.redirect("/");
+        return;
+    }
+
+    if (!id) {
+        res.redirect("/admin/report");
+        return;
+    }
+
+    await Report.findOne({
+        _id: sanitize(id),
+    })
+        .populate(
+            "writer",
+            `
+        _id
+        nickname
+        email
+    `
+        )
+        .exec()
+        .then((report) => {
+            if (report == null) {
+                throw Error();
+            } else {
+                if (report.writer == null) {
+                    req.flash("show", "true");
+                    req.flash("message", "삭제된 유저입니다");
+                    res.redirect("/admin/report");
+                } else {
+                    res.render("admin/reportDetail", { session: session, report: report });
+                }
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+            req.flash("show", "true");
+            req.flash("message", "신고를 찾을 수 없습니다");
+            res.redirect("/admin/report");
+        });
+});
+
+router.get("/completeReport", async (req, res, next) => {
+    const { session } = req;
+    const { id } = req.query;
+
+    if (!session.user) {
+        res.redirect("/users/login");
+        return;
+    }
+
+    if (session.user.is_admin != true) {
+        req.flash("show", "true");
+        req.flash("message", "관리자 전용 기능입니다");
+        res.redirect("/");
+        return;
+    }
+
+    if (!id) {
+        res.redirect("/admin/report");
+        return;
+    }
+
+    await Report.updateOne(
+        {
+            $and: [
+                {
+                    _id: sanitize(id),
+                },
+                {
+                    is_finished: false,
+                },
+            ],
+        },
+        {
+            $set: {
+                is_finished: true,
+            },
+        }
+    )
+        .then((updateOne) => {
+            if (updateOne.nModified == 1) {
+                req.flash("show", "true");
+                req.flash("message", "처리에 성공하였습니다");
+                res.redirect("/admin/report");
+            } else {
+                throw Error();
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+            req.flash("show", "true");
+            req.flash("message", "처리에 실패하였습니다");
+            res.redirect("/admin/report");
         });
 });
 

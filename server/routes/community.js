@@ -14,8 +14,7 @@ router.get("/", async (req, res, next) => {
 
 router.get("/list", async (req, res, next) => {
     const { session } = req;
-    const { page, tag } = req.query;
-    let { key, value } = req.query;
+    const { page, tag, key, value } = req.query;
 
     const show = req.flash("show");
     const message = req.flash("message");
@@ -25,9 +24,6 @@ router.get("/list", async (req, res, next) => {
             $ne: "공지",
         },
     };
-    let currnetPage, totalPages;
-    let newCommunities = [];
-    let newAlerts = [];
 
     if (tag) {
         // 태그 조건
@@ -56,7 +52,7 @@ router.get("/list", async (req, res, next) => {
 
     // 검색
 
-    await Community.paginate(
+    const communities = await Community.paginate(
         query,
         {
             select: "_id writerEmail tag title time recommends",
@@ -77,24 +73,26 @@ router.get("/list", async (req, res, next) => {
         },
         {}
     )
-        .then(async (communities) => {
-            let { docs } = communities;
-            currnetPage = communities.page;
-            totalPages = communities.totalPages;
+        .then((communities) => {
+            communities.docs = communities.docs.filter((element) => {
+                let idx = 0;
+                element.recommends.forEach((element) => {
+                    if (element.like == false) {
+                        idx++;
+                    }
+                });
+
+                element.recommends = element.recommends.filter((element) => element.like == true);
+
+                return element.writer != null && idx < 20;
+            });
 
             if (key == "nickname") {
-                docs = docs.filter((element) => element.writer.nickname.includes(sanitize(value)));
+                communities.docs = communities.docs.filter((element) => element.writer.nickname.includes(sanitize(value)));
             } else if (key == "email") {
-                docs = docs.filter((element) => element.writer.email.includes(sanitize(value)));
+                communities.docs = communities.docs.filter((element) => element.writer.email.includes(sanitize(value)));
             }
-
-            docs.forEach((element) => {
-                let temp = {
-                    origin: element,
-                    newTime: datetimeToString(element.time),
-                };
-                newCommunities.push(temp);
-            });
+            return communities;
         })
         .catch((err) => {
             console.log(err);
@@ -102,7 +100,7 @@ router.get("/list", async (req, res, next) => {
 
     // 공지 찾기
 
-    await Community.find({
+    const alerts = await Community.find({
         tag: {
             $eq: "공지",
         },
@@ -123,22 +121,17 @@ router.get("/list", async (req, res, next) => {
         .sort("-time")
         .exec()
         .then((alerts) => {
-            alerts.forEach((element) => {
-                let temp2 = {
-                    origin: element,
-                    newTime: datetimeToString(element.time),
-                };
-                newAlerts.push(temp2);
-            });
+            alerts = alerts.filter((element) => element.writer != null);
+            return alerts;
         })
         .catch((err) => {
             console.log(err);
         });
 
-    if (currnetPage > totalPages) {
-        res.redirect(`/communities/list?page=${totalPages}`);
+    if (page > communities.totalPages) {
+        res.redirect(`/communities/list?page=${communities.totalPages}`);
     } else {
-        res.render("community/list", { session: session, show: show, message: message, alerts: newAlerts, communities: newCommunities, current_page: currnetPage, total_page: totalPages });
+        res.render("community/list", { session: session, communities: communities, alerts: alerts, show: show, message: message });
     }
 });
 
@@ -234,10 +227,6 @@ router.get("/detail", csrfProtection, async (req, res, next) => {
         .exec()
         .catch((err) => {
             console.log(err);
-            req.flash("show", "true");
-            req.flash("message", "알 수 없는 오류가 발생했습니다");
-            res.redirect("/communities/list");
-            return;
         });
 
     if (detail == null) {
@@ -246,6 +235,9 @@ router.get("/detail", csrfProtection, async (req, res, next) => {
         res.redirect("/communities/list");
         return;
     }
+
+    const like = detail.recommends.filter((element) => element.like == true);
+    const dislike = detail.recommends.filter((element) => element.like == false);
 
     const more = await Community.find({
         $and: [
@@ -270,10 +262,6 @@ router.get("/detail", csrfProtection, async (req, res, next) => {
         .exec()
         .catch((err) => {
             console.log(err);
-            req.flash("show", "true");
-            req.flash("message", "알 수 없는 오류가 발생했습니다");
-            res.redirect("/communities/list");
-            return;
         });
 
     const comments = await Comment.find({
@@ -291,17 +279,15 @@ router.get("/detail", csrfProtection, async (req, res, next) => {
         )
         .sort("time")
         .exec()
+        .then((comment) => {
+            comment = comment.filter((element) => element.writer != null);
+            return comment;
+        })
         .catch((err) => {
             console.log(err);
-            req.flash("show", "true");
-            req.flash("message", "알 수 없는 오류가 발생했습니다");
-            res.redirect("/communities/list");
-            return;
         });
 
-    const newTime = datetimeToString(detail.time);
-
-    res.render("community/detail", { session: session, detail: detail, time: newTime, more: more, comments: comments, csrfToken: csrfToken });
+    res.render("community/detail", { session: session, detail: detail, more: more, like: like, dislike: dislike, comments: comments, csrfToken: csrfToken });
 });
 
 // 글 수정
@@ -446,19 +432,19 @@ router.post("/deletePost", csrfProtection, async (req, res, next) => {
 
 router.get("/recommendPost", async (req, res, next) => {
     const { session } = req;
-    const { id } = req.query;
-
-    if (!session.user || !id) {
-        res.json({
-            success: false,
-        });
-        return;
-    }
+    const { id, like } = req.query;
 
     let action;
     let success = false;
-    let count = 0;
-    let increase = false;
+    let method = null;
+
+    if (!session.user || !id || !like) {
+        res.json({
+            success,
+            method,
+        });
+        return;
+    }
 
     const recommendPost = await Community.findOne({
         $and: [
@@ -477,18 +463,19 @@ router.get("/recommendPost", async (req, res, next) => {
         });
 
     if (recommendPost == null) {
-        // 추천 이력 없음
-        increase = true;
+        // 지금까지 한 적 없음
+        method = "push";
         action = {
             $push: {
                 recommends: {
                     recommender: session.user.email,
+                    like: like == "true" ? true : false,
                 },
             },
         };
     } else {
-        // 추천 이력 있음
-        increase = false;
+        // 한 적 있음
+        method = "pull";
         action = {
             $pull: {
                 recommends: {
@@ -510,33 +497,21 @@ router.get("/recommendPost", async (req, res, next) => {
     )
         .then((updatedPost) => {
             if (updatedPost.nModified == 1) {
-                success = true;
-            }
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-
-    await Community.findOne({
-        _id: sanitize(id),
-    })
-        .select("recommends")
-        .exec()
-        .then((rec) => {
-            if (rec == null) {
+                res.json({
+                    success: true,
+                    method: method,
+                });
+            } else {
                 throw Error();
             }
-            count = rec.recommends.length;
         })
         .catch((err) => {
             console.log(err);
+            res.json({
+                success: false,
+                method: method,
+            });
         });
-
-    res.json({
-        success: success,
-        count: count,
-        increase: increase,
-    });
 });
 
 // 댓글쓰기

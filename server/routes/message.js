@@ -69,10 +69,11 @@ router.get("/groupMessage", async (req, res, next) => {
         `
         )
         .sort("-time") // 최근이 위
-        .populate("master", "nickname")
+        .populate("master", "_id email nickname")
         .exec()
         .then((rooms) => {
-            res.render("message/groupMessageList", { session: session, rooms: rooms, show: show, message: message });
+            const newRooms = rooms.filter((element) => element.master != null);
+            res.render("message/groupMessageList", { session: session, rooms: newRooms, show: show, message: message });
         })
         .catch((err) => {
             console.log(err);
@@ -166,7 +167,7 @@ router.get("/joinGroupList", async (req, res, next) => {
         };
     }
 
-    await GroupMessageRoom.paginate(
+    const groups = await GroupMessageRoom.paginate(
         query,
         {
             select: `
@@ -189,10 +190,9 @@ router.get("/joinGroupList", async (req, res, next) => {
         },
         {}
     )
-        .then((rooms) => {
-            let { docs, totalPages, page } = rooms;
-            docs = docs.filter((element) => element.master != null);
-            res.render("message/groupList", { session: session, docs: docs, total_page: totalPages, current_page: page, show: show, message: message });
+        .then((groups) => {
+            groups.docs = groups.docs.filter((element) => element.master != null);
+            return groups;
         })
         .catch((err) => {
             console.log(err);
@@ -200,6 +200,8 @@ router.get("/joinGroupList", async (req, res, next) => {
             req.flash("message", "알 수 없는 오류가 발생했습니다");
             res.redirect("/");
         });
+
+    res.render("message/groupList", { session: session, groups: groups, show: show, message: message });
 });
 
 // 그룹 가입
@@ -240,8 +242,9 @@ router.get("/joinGroup", csrfProtection, async (req, res, next) => {
         .then((findRoom) => {
             if (findRoom == null) {
                 throw Error();
+            } else {
+                res.render("message/joinGroup", { session: session, room: findRoom, csrfToken: csrfToken });
             }
-            res.render("message/joinGroup", { session: session, room: findRoom, csrfToken: csrfToken });
         })
         .catch((err) => {
             console.log(err);
@@ -476,7 +479,7 @@ router.get("/groupMessageRoom", async (req, res, next) => {
         return;
     }
 
-    const group = await GroupMessageRoom.findOne({
+    let group = await GroupMessageRoom.findOne({
         $and: [
             {
                 "roomMember.user": session.user.email,
@@ -495,14 +498,10 @@ router.get("/groupMessageRoom", async (req, res, next) => {
         `
         )
         .populate(
-            "member",
-            `email
-        nickname`
-        )
-        .populate(
             "master",
             `email
-        nickname`
+            nickname
+        `
         )
         .exec()
         .catch((err) => {
@@ -515,6 +514,11 @@ router.get("/groupMessageRoom", async (req, res, next) => {
         });
 
     if (group == null) {
+        res.redirect("/messages/groupMessage");
+        return;
+    }
+
+    if (group.master == null) {
         res.redirect("/messages/groupMessage");
         return;
     }

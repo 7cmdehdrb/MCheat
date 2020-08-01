@@ -67,6 +67,7 @@ const communitySchema = new mongoose.Schema(
         recommends: [
             {
                 recommender: { type: String, unique: false, required: false },
+                like: { type: Boolean, unique: false, required: false, default: true },
             },
         ],
     },

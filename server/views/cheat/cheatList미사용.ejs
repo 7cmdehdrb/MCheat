@@ -8,7 +8,7 @@
 
         <div class="container w-full lg:w-2/3 mx-auto my-5">
         <% if(show == "true"){ %> <% include ../partial/toast %> <% } %> 
-            <h1 class="text-center text-4xl mx-auto my-5">메이플 블랙리스트</h1>
+            <h1 class="text-center text-4xl mx-auto my-5">신규 블랙리스트</h1>
 
             <div class="mx-auto">
                 <table class="table table-striped">
@@ -39,15 +39,27 @@
                                 <!--  -->
                                 <% } %>
                             </td>
-                            <td style="width: 20%;"><%= cheat.writer.nickname %></td>
+                            <td style="width: 20%;"><a href="/users/userProfile?id=<%= cheat.writer.email %>"><%= cheat.writer.nickname %></a></td>
                         </tr>
                         <% }); %>
                     </tbody>
                 </table>
 
+                <!-- Action -->
+
+                <% if(session.user){ %>
+
+                <div class="w-full flex justify-end">
+                    <button type="button" class="btn btn-outline-danger px-5" onclick="javascript: location.href='/cheat/newCheat'">피해등록</button>
+                </div>
+
+                <!-- Action End -->
+
+                <% } %>
+
                 <!-- Paginator -->
 
-                <form class="mx-auto my-2">
+                <form class="mx-auto my-4">
                     <nav aria-label="Page navigation mx-auto my-5">
                         <ul class="pagination justify-content-center">
                             <li style="cursor: pointer;" class="page-item <%= cheats.page == 1 ? "disabled" : "" %>">
@@ -65,17 +77,22 @@
 
                 <!-- Paginator End -->
 
-                <!-- Action -->
+                <!-- Search -->
 
-                <% if(session.user){ %>
-
-                <div class="w-full flex justify-end">
-                    <button type="button" class="btn btn-outline-danger px-5" onclick="javascript: location.href='/cheat/newCheat'">피해등록</button>
+                <div class="w-full lg:w-1/2 mx-auto mt-5 text-center">
+                    <form action="/cheat/search" method="GET">
+                        <div class="form-row">
+                            <div class="form-group col-md-10">
+                                <input type="text" class="js_searchInput3 form-control" name="search" placeholder="닉네임/농장/휴대폰/계좌번호" required />
+                            </div>
+                            <div class="form-group col-md-2">
+                                <input type="submit" class="form-control btn btn-primary" value="검색" />
+                            </div>
+                        </div>
+                    </form>
                 </div>
 
-                <!-- Action End -->
-
-                <% } %>
+                <!-- Search End -->
             </div>
         </div>
 

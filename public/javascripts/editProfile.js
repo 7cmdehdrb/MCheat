@@ -18,6 +18,8 @@ document.addEventListener("submit", (ev) => {
         alert("한줄소개는 최대 50자까지 작성 가능합니다");
         return;
     }
+
+    alert("개인정보가 변경되어 로그아웃 합니다");
 });
 
 nicknameInput.addEventListener("click", () => {

@@ -64,7 +64,7 @@ app.use(
         key: process.env.SESSION_KEY,
         secret: process.env.SESSION_SECRET,
         resave: false,
-        saveUninitialized: true,
+        saveUninitialized: false,
         store: new MongoStore({
             url: process.env.DB,
             collection: "sessions",

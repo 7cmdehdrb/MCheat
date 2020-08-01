@@ -5,7 +5,7 @@
     </head>
     <body>
         <% include ../partial/header %>
-        <div class="container w-full my-5 text-center">
+        <div class="w-full my-5 text-center">
             <% if(show == "true"){ %> <% include ../partial/toast %> <% } %>
 
             <!-- Main -->
@@ -128,7 +128,45 @@
                                                 <% } %>
                                             </div>
                                             <div class="tab-pane fade" id="connectedServices" role="tabpanel" aria-labelledby="ConnectedServices-tab">
-                                                Comming soon...
+                                                <div class="row pt-3 pb-2">
+                                                    <div class="col-sm-3 col-md-2 col-5">
+                                                        <label style="font-weight: bold;">사기등록</label>
+                                                    </div>
+                                                    <div class="col-md-8 col-6">
+                                                        <%= point.cheat %> 건
+                                                    </div>
+                                                </div>
+                                                <hr />
+
+                                                <div class="row pt-3 pb-2">
+                                                    <div class="col-sm-3 col-md-2 col-5">
+                                                        <label style="font-weight: bold;">게시글등록</label>
+                                                    </div>
+                                                    <div class="col-md-8 col-6">
+                                                        <%= point.community %> 개
+                                                    </div>
+                                                </div>
+                                                <hr />
+
+                                                <div class="row pt-3 pb-2">
+                                                    <div class="col-sm-3 col-md-2 col-5">
+                                                        <label style="font-weight: bold;">댓글작성</label>
+                                                    </div>
+                                                    <div class="col-md-8 col-6">
+                                                        <%= point.comment %> 번
+                                                    </div>
+                                                </div>
+                                                <hr />
+
+                                                <div class="row pt-3 pb-2">
+                                                    <div class="col-sm-3 col-md-2 col-5">
+                                                        <label style="font-weight: bold;">활동점수</label>
+                                                    </div>
+                                                    <div class="col-md-8 col-6">
+                                                        <%= point.total %> 점
+                                                    </div>
+                                                </div>
+                                                <hr />
                                             </div>
                                         </div>
                                     </div>
@@ -153,13 +191,30 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Buttons -->
+
+                        <div class="w-full flex my-5 justify-between">
+                            <div class="btn-group" role="group" aria-label="Basic example">
+                                <button type="button" class="btn btn-secondary text-sm lg:text-lg" onclick="javascript: history.back()">뒤로가기</button>
+                            </div>
+
+                        <% if(session.user){ %>
+                            <div>
+                                <button type="button" class="btn btn-outline-danger text-sm lg:text-lg" onclick="report('<%= user._id %>')"><i class="far fa-thumbs-down"></i> 신고하기</button>
+                            </div>
+                        <% } %>
                     </div>
+
+                    <!-- Buttons End -->
+
                 </div>
             </div>
 
             <!-- Main End -->
         </div>
 
+        <script src="/javascripts/makeReport.js"></script>
         <% include ../partial/foot %>
         <!--  -->
         <% include ../partial/footer %>

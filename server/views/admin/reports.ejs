@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <% include ../partial/header %>
+
+        <div class="container w-full lg:w-2/3 mx-auto my-5">
+            <% if(show == "true"){ %> <% include ../partial/toast %> <% } %>   
+            <h1 class="text-center text-4xl">신고목록</h1>
+            <table class="table-auto text-center mx-auto mt-5">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">제목</th>
+                        <th class="px-4 py-2">작성자</th>
+                        <th class="px-4 py-2">신고일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!--  -->
+                    <% reports.docs.forEach(element => { %>
+                    <tr>
+                        <td class="border px-4 py-2" style="cursor: pointer;" onclick="javascript: location.href='/admin/reportDetail?id=<%= element._id %>'"><%= element.title %></td>
+                        <td class="border px-4 py-2"><a href="/users/userProfile?id=<%= element.writer.email %>"><%= element.writer.nickname %></a></td>
+                        <td class="border px-4 py-2"><%= element.date %></td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+
+            <!-- Opt -->
+
+            <div class="flex justify-end text-gray-500 mx-auto mt-2 mb-5 ">
+                <a class="mx-1" href="/admin/report?page=<%= reports.page %>">미완료 신고보기</a>
+                <a class="mx-1" href="/admin/report?page=<%= reports.page %>&finish=yes">완료 신고보기</a>
+            </div>
+
+            <!-- Paginator -->
+
+            <form method="GET" class="js_paginator">
+                <nav aria-label="Page navigation mx-auto">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item <%= (reports.page == 1) ? "disabled" : "" %> ">
+                            <a class="page-link" onclick="setUrl('<%= reports.page - 1 %>')">Prev</a>
+                        </li>
+                        <li class="page-item">
+                            <input class="page-link text-center w-16 js_paginator_value" type="number" min="1" name="page" value="<%= reports.page %>" >
+                        </li>
+                        <li class="page-item <%= (reports.page == reports.totalPages) ? "disabled" : "" %>">
+                            <a class="page-link" onclick="setUrl('<%= reports.page + 1 %>')">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </form>
+
+            <!-- Paginator End -->
+
+        </div>
+
+        <script src="/javascripts/adminReports.js"></script>
+        <% include ../partial/foot %>
+        <!--  -->
+        <% include ../partial/footer %>
+    </body>
+</html>
