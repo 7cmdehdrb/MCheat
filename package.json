@@ -3,16 +3,12 @@
     "version": "0.0.0",
     "private": true,
     "scripts": {
-        "start": "node app.js",
+        "start": "babel-node app.js",
         "server": "nodemon --exec babel-node app.js",
         "css": "gulp"
     },
     "dependencies": {
-        "@babel/core": "^7.10.5",
-        "@babel/node": "^7.10.5",
-        "@babel/preset-env": "^7.10.4",
         "axios": "^0.19.2",
-        "babel-cli": "^6.26.0",
         "body-parser": "^1.19.0",
         "cheerio": "^1.0.0-rc.3",
         "compression": "^1.7.4",
@@ -50,6 +46,10 @@
     "devDependencies": {
         "autoprefixer": "^9.8.5",
         "gulp": "^4.0.2",
-        "nodemon": "^2.0.4"
+        "nodemon": "^2.0.4",
+        "@babel/cli": "^7.10.4",
+        "@babel/core": "^7.10.4",
+        "@babel/node": "^7.10.4",
+        "@babel/preset-env": "^7.10.4"
     }
 }
