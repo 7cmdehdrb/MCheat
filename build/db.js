@@ -6,21 +6,19 @@ var _mongoose = _interopRequireDefault(require("mongoose"));
 
 require("./env");
 
-console.log(process.env.DEBUG);
-
 if (process.env.DEBUG == "true") {
-  _mongoose["default"].connect(process.env.DB, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  });
+    _mongoose["default"].connect(process.env.DB, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
 } else {
-  _mongoose["default"].connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  });
+    _mongoose["default"].connect(process.env.MONGODB_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    });
 }
 
 var db = _mongoose["default"].connection;
 db.once("open", function () {
-  console.log("MongoDB Connect!");
+    console.log("MongoDB Connect!");
 });

@@ -59,22 +59,24 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.SESSION_SECRET));
+
 app.use(
     session({
         key: process.env.SESSION_KEY,
         secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
-        store: new MongoStore({
-            url: process.env.DB,
-            collection: "sessions",
-        }),
+        // store: new MongoStore({
+        //     url: process.env.DB,
+        //     collection: "sessions",
+        // }),
         cookie: {
             maxAge: 1000 * 60 * 60, // 쿠키 유효기간 1시간
             httpOnly: true,
         },
     })
 );
+
 app.use(flash());
 app.use(express.static(path.join(__dirname, "public"), { maxAge: process.env.DEBUG == "true" ? 0 : 1000 * 60 * 60 }));
 
