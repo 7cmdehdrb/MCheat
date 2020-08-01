@@ -1,0 +1,70 @@
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+    crossorigin="anonymous"
+/>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
+<link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/stylesheets/styles.css" />
+<LINK REL="SHORTCUT ICON" HREF="/images/favicon.ico" />
+<script type="text/javascript">
+    window.onload = function () {
+        var isIE = /*@cc_on!@*/ false || !!document.documentMode;
+        if (isIE) {
+            alert("이 웹사이트는 인터넷 익스플로러에서는 사용하실 수 없습니다. 다른 브라우저를 사용해주세요");
+            window.close();
+        }
+    };
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<style>
+    body {
+        font-family: "Jua", sans-serif;
+    }
+
+    @media (min-width: 0px) {
+        .my_mobile_disappear {
+            display: none;
+        }
+        .my_mobile_appear {
+            display: block;
+        }
+
+        .my_chat_icon {
+            position: fixed;
+            width: 10%;
+            padding-top: 10%;
+            right: 5%;
+            bottom: 5%;
+            background-color: #f1f1f1;
+            background-image: url("/images/chat.png");
+            background-size: cover;
+            resize: both;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .my_mobile_disappear {
+            display: block;
+        }
+        .my_mobile_appear {
+            display: none;
+        }
+
+        .my_chat_icon {
+            position: fixed;
+            width: 5%;
+            padding-top: 5%;
+            right: 2%;
+            bottom: 2%;
+            background-color: #f1f1f1;
+            background-image: url("/images/chat.png");
+            background-size: cover;
+            resize: both;
+        }
+    }
+</style>
+<title>MCheat</title>

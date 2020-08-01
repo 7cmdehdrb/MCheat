@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <div class="container w-11/12 mx-auto my-5">
+            <h1 class="text-center text-4xl">신고하기</h1>
+            <form method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                <input type="hidden" name="id" value="<%= id %>" />
+                <div class="form-row my-4">
+                    <label for="inputTitle">제목</label>
+                    <input type="text" class="form-control" id="inputTitle" name="title" required />
+                </div>
+                <div class="form-row my-4">
+                    <label for="inputURL">URL</label>
+                    <input type="url" class="form-control" id="inputURL" name="url" placeholder="신고할 게시글 URL" required />
+                </div>
+                <h1>신고사유</h1>
+                <div class="text-center text-lg mx-auto my-4">
+                    <div>
+                        <input class="form-check-input" type="checkbox" name="check1" value="허위 사실 기재" id="check1" />
+                        <label class="form-check-label" for="check1">
+                            허위 사실 기재
+                        </label>
+                    </div>
+                    <div>
+                        <input class="form-check-input" type="checkbox" name="check2" value="명의 도용" id="check2" />
+                        <label class="form-check-label" for="check2">
+                            명의 도용
+                        </label>
+                    </div>
+                    <div>
+                        <input class="form-check-input" type="checkbox" name="check3" value="스팸, 사기, 혹은 현혹적인 콘텐츠" id="check3" />
+                        <label class="form-check-label" for="check3">
+                            스팸, 사기, 혹은 현혹적인 콘텐츠
+                        </label>
+                    </div>
+                    <div>
+                        <input class="form-check-input" type="checkbox" name="check4" value="유해하거나 위험한 콘텐츠" id="check4" />
+                        <label class="form-check-label" for="check4">
+                            유해하거나 위험한 콘텐츠
+                        </label>
+                    </div>
+                    <div>
+                        <input class="form-check-input" type="checkbox" name="check5" value="증오적, 폭력적 콘텐츠" id="check5" />
+                        <label class="form-check-label" for="check5">
+                            증오적, 폭력적 콘텐츠
+                        </label>
+                    </div>
+                    <div>
+                        <input class="form-check-input" type="checkbox" name="check6" value="노골적, 성적 콘텐츠" id="check6" />
+                        <label class="form-check-label" for="check6">
+                            노골적, 성적 콘텐츠
+                        </label>
+                    </div>
+                    <div>
+                        <input class="form-check-input" type="checkbox" name="check7" value="기타" id="check7" />
+                        <label class="form-check-label" for="check7">
+                            기타 사유 (신고 내용에 상세 기재)
+                        </label>
+                    </div>
+                </div>
+                <div class="form-row my-4">
+                    <label for="inputContent">신고내용</label>
+                    <textarea class="form-control" id="inputContent" rows="3" name="content"></textarea>
+                </div>
+                <div class="form-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required />
+                        <label class="form-check-label" for="invalidCheck"> <strong class="text-red-500">[필수]</strong> 위의 내용에는 허위 사실이 없으며, 위의 내용으로 신고합니다 </label>
+                    </div>
+                </div>
+                <div class="form-row my-4">
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">제출하기</button>
+                </div>
+                <div class="form-row flex justify-end my-4">
+                    <span class="text-gray-600 text-center" style="cursor: pointer;" onclick="javascript: window.close()">취소하기</span>
+                </div>
+            </form>
+        </div>
+
+        <script src="/javascripts/report.js"></script>
+        <% include ../partial/foot %>
+    </body>
+</html>

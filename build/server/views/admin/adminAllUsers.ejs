@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <% include ../partial/header %>
+
+        <div class="container w-10/12 mx-auto my-10">
+            <% if(show == "true"){ %> <% include ../partial/toast %> <% } %>
+            <h1 class="text-4xl text-center">USER LIST</h1>
+
+            <!-- Search Field -->
+
+            <form class="js_searchForm w-full lg:w-1/2 mx-auto my-5 text-center" method="GET">
+                <input type="hidden" name="page" value="1">
+                <div class="form-row">
+                    <div class="form-group col-md-4">       
+                        <select class="form-control" name="key">
+                            <option value="email" selected>이메일</option>
+                            <option value="nickname" >닉네임</option>
+                            <option value="farm" >농장명</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">       
+                        <input type="text" class="js_searchInput2 form-control" name="value" placeholder="검색내용" required />
+                    </div>
+                    <div class="form-group col-md-2">
+                        <input type="button" class="form-control btn btn-primary" value="찾기" onclick="searchSubmit()" />
+                    </div>
+                </div>
+            </form>
+
+            <!-- Search Field End -->
+
+            <table class="my_mobile_disappear table-auto mx-auto my-4 text-center">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">email</th>
+                        <th class="px-4 py-2">nickname</th>
+                        <th class="px-4 py-2">server</th>
+                        <th class="px-4 py-2">guild</th>
+                        <th class="px-4 py-2">farm</th>
+                        <th class="px-4 py-2">email_secret</th>
+                        <th class="px-4 py-2">email_valid</th>
+                        <th class="px-4 py-2">is_admin</th>
+                        <th class="px-4 py-2">is_activated</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <% if(users.length == 0){ %> 
+                    <tr>
+                        <td class="border px-4 py-2" colspan="9">
+                            <i class="fas fa-exclamation-triangle text-red-600"></i>
+                            검색 결과가 없습니다
+                        </td>
+                    </tr>
+                    <% } %> 
+
+                    <% users.forEach(element => { %>
+                    <tr>
+                        <td class="border px-4 py-2"><a href="/users/userProfile?id=<%= element.email %>"><%= element.email %></a></td>
+                        <td class="border px-4 py-2"><%= element.nickname %></td>
+                        <td class="border px-4 py-2"><%= element.server %></td>
+                        <td class="border px-4 py-2"><%= element.guild %></td>
+                        <td class="border px-4 py-2"><%= (element.farm == "") ? "농장없음" : element.farm %></td>
+                        <td class="border px-4 py-2"><%= element.email_secret %></td>
+                        <td class="border px-4 py-2">
+                            <% if(element.email_valid){ %>
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <% }else{ %>
+                            <i class="fas fa-times-circle text-red-500"></i>
+                            <% } %>
+                        </td>
+                        <td class="border px-4 py-2">
+                            <% if(element.is_admin){ %>
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <% }else{ %>
+                            <i class="fas fa-times-circle text-red-500"></i>
+                            <% } %>
+                        </td>
+                        <td class="border px-4 py-2">
+                            <% if(element.is_activated){ %>
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <% }else{ %>
+                            <i class="fas fa-times-circle text-red-500"></i>
+                            <% } %>
+                        </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+
+            <!-- Mobile List -->
+
+            <div class="my_mobile_appear mx-auto">
+
+            <% if(users.length == 0){ %> 
+                <div class="w-10/12 mx-auto text-center">
+                    <div class="my-4">
+                        <i class="fas fa-exclamation-triangle text-6xl text-red-600"></i>
+                    </div>
+                    <div class="my-4">
+                        <strong class="text-xl">검색 결과가 없습니다</strong>
+                    </div>
+                </div>
+            <% } %> 
+
+            <% users.forEach(element => { %>
+
+                <div class="card mx-auto my-3" style="width: 18rem;">
+                    <img src="<%= element.profile %>" class="card-img-top" alt="profile">
+                    <div class="card-body" onclick="javascript: location.href='/users/userProfile?id=<%= element.email %>'">
+                    <h5 class="card-title text-2xl"><%= element.nickname %>
+                    <img class="inline-block" src="/images/server/<%= element.server %>.png" alt="<%= element.server %>" />
+                    <% if(element.is_admin == true){ %>
+                        <span class="badge badge-pill badge-success">ADMIN</span>
+                    <% } %>
+                    </h5>
+                    <small><%= element.email %></small>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Guild : <%= element.guild %></li>
+                    <li class="list-group-item">Farm : <%= (element.farm == "") ? "농장없음" : element.farm %></li>
+                    <li class="list-group-item">Email Secret : <%= element.email_secret %></li>
+                    <li class="list-group-item">Is_Admin : 
+                        <% if(element.is_admin){ %>
+                            <i class="fas fa-check-circle text-green-500"></i>
+                        <% }else{ %>
+                            <i class="fas fa-times-circle text-red-500"></i>
+                        <% } %>
+                    </li>
+                    <li class="list-group-item">Is_Activate : 
+                        <% if(element.is_activated){ %>
+                            <i class="fas fa-check-circle text-green-500"></i>
+                        <% }else{ %>
+                            <i class="fas fa-times-circle text-red-500"></i>
+                        <% } %>
+                    </li>
+                    </ul>
+                    <% if(element.email != session.user.email){ %> 
+                    <div class="card-body">
+                        <a href="/admin/editProfile?id=<%= element.email %>" class="card-link">수정</a>
+                        <a href="/admin/changeActivation?id=<%= element.email %>&status=<%= (element.is_activated == true) ? `activate` : `unactivate` %>" class="card-link">(비)활성화</a>
+                        <a class="card-link" onclick="deleteUser(`<%= element.email %>`)">완전삭제</a>
+                    </div>
+                    <% } %> 
+                </div>
+
+                <% }) %> 
+
+            </div>
+
+            <!-- Mobile List End -->
+
+            <!-- Paginator -->
+
+            <form method="GET" class="js_paginator">
+            <nav aria-label="Page navigation mx-auto">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item <%= (current_page == 1) ? "disabled" : "" %> ">
+                        <a class="page-link" onclick="setUrl('<%= current_page - 1 %>')">Prev</a>
+                    </li>
+                    <li class="page-item">
+                        <input class="page-link text-center w-16 js_paginator_value" type="number" min="1" name="page" value="<%= current_page %>" >
+                    </li>
+                    <li class="page-item <%= (current_page == total_page) ? "disabled" : "" %>">
+                        <a class="page-link" onclick="setUrl('<%= current_page + 1 %>')">Next</a>
+                    </li>
+                </ul>
+            </nav>
+            </form>
+
+            <!-- Paginator End -->
+
+        </div>
+
+        <% include ../partial/foot %>
+        <!--  -->
+        <% include ../partial/footer %>
+        <script src="/javascripts/adminAllUsers.js"></script>
+    </body>
+</html>

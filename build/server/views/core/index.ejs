@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+        <style>
+            .list-group-item {
+                cursor: pointer;
+            }
+            .css_main{
+                background: rgb(247,250,252);
+                background: linear-gradient(180deg, rgba(247,250,252,1) 0%, rgba(0,99,201,0.8547794117647058) 20%, rgba(38,0,129,1) 100%);   
+            }
+            input:focus{
+                outline: none;
+            }
+        </style>
+    </head>
+    <body>
+        <% include ../partial/header %>
+        <% if(show == "true"){ %> <% include ../partial/toast %> <% } %>
+
+        <!-- Main Search -->
+        <div class="my_mobile_disappear">
+            <div class="css_main py-64">
+                <form method="GET" action="/cheat/search" class="w-1/2 mx-auto">
+                    <h1 class="text-white text-center text-5xl my-4">사기 피해 조회</h1>
+                    <input type="text" name="search" class="w-2/3 text-center py-2 rounded-lg border-gray-600 border-2" placeholder="닉네임/농장/휴대폰/계좌번호" required autocomplete="off" />
+                    <input type="submit" value="검색" class="w-1/4 py-2 rounded-lg bg-gray-400 hover:bg-gray-500" />
+                </form>
+            </div>
+
+            <div class="my-10 bg-white">
+                <div class="flex w-2/3 mx-auto py-5 text-center border-8 border-gray-500">
+                    <div class="flex-1 mx-5">
+                        <h1 class="text-3xl">회원수</h1>
+                        <h2 class="text-xl"><i><%= count.user %> 명</i></h2>
+                    </div>
+                    <div class="flex-1 mx-5">
+                        <h1 class="text-3xl">사기신고</h1>
+                        <h2 class="text-xl"><i><%= count.cheat %> 건</i></h2>
+                    </div>
+                    <div class="flex-1 mx-5">
+                        <h1 class="text-3xl">안전거래</h1>
+                        <h2 class="text-xl"><i>준비중...</i></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Main Search End -->
+
+        <!-- Mobile Menu -->
+
+        <div class="my_mobile_appear w-11/12 mx-auto text-center my-10">
+
+            <div class="mx-auto mb-5">
+                <form action="/cheat/search">
+                    <div class="form-group text-center">
+                      <label for="inputSearch" class="text-2xl">사기 피해 조회</label>
+                      <input type="text" class="form-control py-3" id="inputSearch" name="search" placeholder="닉네임/농장/휴대폰/계좌번호" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">검색</button>
+                </form>
+            </div>
+
+            <ul class="list-group">
+                <li class="list-group-item" onclick="javascript: location.href='/cheat/newCheat'"><i class="far fa-frown"></i> 피해등록</li>
+                <li class="list-group-item text-gray-500" onclick="javascript: alert('준비중입니다!')"><i class="fas fa-store-alt"></i> 안심경매</li>
+                <li class="list-group-item" onclick="javascript: location.href='/communities/list'"><i class="far fa-comments"></i> 커뮤니티</span></li>
+                <li class="list-group-item" onclick="javascript: location.href='/messages/groupMessage'"><i class="fas fa-users"></i> 그룹체팅</span></li>
+                <% if(session.user){ %>
+                    <li class="list-group-item" onclick="javascript: location.href='/users/userProfile'">
+                        <%= session.user.nickname %>의 페이지
+                        <% if(session.user.is_admin == true){ %>
+                        <span class="badge badge-secondary">ADMIN</span>
+                        <% } %> 
+                    </li>
+                    <% if(session.user.is_admin == true){ %>
+                        <li class="list-group-item" onclick="javascript: location.href='/admin'"><i class="fas fa-users-cog"></i> 관리자모드</li>
+                    <% } %> 
+                    <li class="list-group-item" onclick="javascript: location.href='/users/logout'"><i class="fas fa-sign-out-alt"></i> 로그아웃</li>
+                <% }else{ %>
+                    <li class="list-group-item" onclick="javascript: location.href='/users/login'"><i class="fas fa-sign-in-alt"></i> 로그인</li>
+                    <li class="list-group-item" onclick="javascript: location.href='/users/signup'"><i class="fas fa-user-check"></i> 회원가입</li>
+                <% } %>  
+            </ul>
+        </div>
+
+        <!-- Mobile Menu End -->
+  
+        <!--  -->
+        <% include ../partial/footer %>
+        <!--  -->
+        <% include ../partial/foot %>
+    </body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <% include ../partial/loading %>
+
+        <!-- Socket.io -->
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            const socket = io();
+            const user = "<%= user %>";
+            socket.emit("event", {
+                status: "logout",
+                target: user,
+            });
+            setTimeout(() => {
+                location.href = "/";
+            }, 100);
+        </script>
+    </body>
+</html>

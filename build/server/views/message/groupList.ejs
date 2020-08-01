@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <% include ../partial/header %>
+
+        <div class="container mx-auto my-5 w-full lg:w-2/3">
+            <% if(show == "true"){ %> <% include ../partial/toast %> <% } %>
+            <h1 class="text-center text-4xl my-5">참여 가능한 채팅방</h1>
+
+            <table class="table table-striped table-hover">
+                <thead class="text-center">
+                    <tr>
+                        <th style="width: 50%;" class="">채팅방 이름</th>
+                        <th style="width: 30%;" class="">방장</th>
+                        <th style="width: 20%;" class="">참여자</th>
+                    </tr>
+                </thead>
+
+                <% if(groups.docs.length == 0){ %>
+                    <tr class="w-full text-center">
+                        <td colspan="3">
+                            <i class="fas fa-exclamation-triangle text-red-600"></i>
+                            검색 결과가 없습니다
+                        </td>
+                    </tr>
+                <% } %> 
+
+                <% groups.docs.forEach(groups => { %>
+
+                <tr class="w-full">
+                    <td class="break-words" style="width: 50%; cursor: pointer;" onclick="javascript: location.href='/messages/joinGroup?room=<%= groups._id %>'">
+                        <strong><%= groups.name %></strong>
+                    </td>
+                    <td class="text-center" style="width: 30%;"><a href="/users/userProfile?id=<%= groups.master.email %>"><%= groups.master.nickname %></a></td>
+                    <td class="text-center" style="width: 20%;"><%= groups.roomMember.length %>명</td>
+                </tr>
+
+                <% }); %>
+            </table>
+
+            <div class="w-full flex justify-end my-4">
+                <button type="button" class="btn btn-secondary" onclick="javascript: location.href='/messages/groupMessage'">내 채팅방으로</button>
+            </div>
+
+
+            <!-- Paginator -->
+
+            <form method="GET" class="js_paginator">
+                <div>
+                    <nav aria-label="Page navigation mx-auto my-5">
+                        <ul class="pagination justify-content-center">
+                            <li style="cursor: pointer;" class="page-item <%= groups.page == 1 ? "disabled" : "" %>">
+                                <a class="page-link" onclick="setUrl('<%= groups.page -1 %>')">Prev</a>
+                            </li>
+                            <li class="page-item">
+                                <input class="page-link text-center w-16 js_paginator_value" type="number" min="1" name="page" value="<%= groups.page %>" >
+                            </li>
+                            <li style="cursor: pointer;" class="page-item <%= groups.page == groups.totalPages ? "disabled" : "" %>">
+                                <a class="page-link" onclick="setUrl('<%= groups.page + 1 %>')">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </form>
+
+            <!-- Paginator End -->
+
+            <!-- Search Field -->
+
+            <div class="w-full lg:w-1/2 mx-auto mt-5 text-center">
+                <form method="GET">
+                    <div class="form-row">
+                        <div class="form-group col-md-10">
+                            <input type="text" class="form-control" name="search" placeholder="채팅방 이름" autocomplete="off" required />
+                        </div>
+                        <div class="form-group col-md-2">
+                            <input type="submit" class="form-control btn btn-primary" value="검색"  />
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Search Field End -->
+
+        </div>
+
+        <script src="/javascripts/groupList.js"></script>
+        <% include ../partial/foot %>
+        <!--  -->
+        <% include ../partial/footer %>
+    </body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <% include ../partial/loading %>
+
+        <form method="POST" class="js_form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <input type="hidden" name="id" value="<%= id %>" />
+        </form>
+
+        <script>
+            const form = document.querySelector(".js_form");
+
+            init = () => {
+                setTimeout(() => {
+                    form.submit();
+                }, 100);
+            };
+
+            init();
+        </script>
+    </body>
+</html>

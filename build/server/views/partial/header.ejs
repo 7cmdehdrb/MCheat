@@ -1,0 +1,78 @@
+<style>
+    .nav-item {
+        cursor: pointer;
+    }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/"
+                    ><strong class="navbar-brand mb-0 h1"><i class="fas fa-home"></i> 홈</strong></a
+                >
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="javascript: location.href='/cheat/newCheat'"
+                    ><span class="navbar-brand"><i class="far fa-frown"></i> 피해등록</span></a
+                >
+            </li>
+            <!-- <li class="nav-item">
+                <a class="nav-link" onclick="javascript: alert('준비중입니다!')"
+                    ><span class="navbar-brand"><i class="far fa-laugh-wink"></i> 화이트리스트</span></a
+                >
+            </li> -->
+            <li class="nav-item">
+                <a class="nav-link" onclick="javascript: alert('준비중입니다!')"
+                    ><span class="navbar-brand"><i class="fas fa-store-alt"></i> 안심경매</span></a
+                >
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/communities/list"
+                    ><span class="navbar-brand"><i class="far fa-comments"></i> 커뮤니티</span></a
+                >
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/messages/groupMessage"
+                    ><span class="navbar-brand"><i class="fas fa-users"></i> 그룹채팅</span></a
+                >
+            </li>
+            <% if(session.user){ %>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="navbar-brand">사용자 관리</span>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/users/userProfile"
+                        ><%= session.user.nickname %>의 페이지 <% if(session.user.is_admin == true){ %>
+                        <span class="badge badge-secondary">ADMIN</span>
+                        <% } %>
+                    </a>
+                    <a class="dropdown-item" href="/users/logout">로그아웃</a>
+                    <% if(session.user.is_admin == true){ %>
+                    <a class="dropdown-item" href="/admin">관리자모드</a>
+                    <% } %>
+                </div>
+            </li>
+            <% }else{ %>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="navbar-brand">로그인/가입</span>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="/users/login">로그인</a>
+                    <a class="dropdown-item" href="/users/signup">회원가입</a>
+                </div>
+            </li>
+            <% } %>
+        </ul>
+        <form method="GET" action="/cheat/search" class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="블랙리스트 검색" name="search" required aria-label="Search" />
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">검색</button>
+        </form>
+    </div>
+</nav>
+
+<div class="my_mobile_appear w-10/12 mx-auto">
+    <img class="mx-auto" src="/images/MCheat.png" alt="" srcset="" style="width: 90%;" onclick="javascript: location.href='/'" />
+</div>

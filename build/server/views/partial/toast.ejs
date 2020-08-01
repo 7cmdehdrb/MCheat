@@ -1,0 +1,26 @@
+<div class="js_toast" aria-live="polite" aria-atomic="true" style="position: absolute; width: 50%; top: 80px; right: 0; min-height: 200px; z-index: 999;">
+    <div class="toast" data-autohide="false" style="position: absolute; top: 10px; right: 10px;">
+        <div class="toast-header">
+            <img src="/images/favicon.ico" class="rounded mr-2" alt="MCheat" />
+            <strong class="mr-auto">MCheat</strong>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body">
+            <%= message %>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $(".toast").toast("show");
+    });
+    setTimeout(() => {
+        $(".toast").toast("hide");
+    }, 5000);
+    setTimeout(() => {
+        document.querySelector(".js_toast").style.display = "none";
+    }, 5100);
+</script>

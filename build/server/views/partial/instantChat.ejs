@@ -1,0 +1,22 @@
+<% if(session.user){ %>
+
+<!-- Socket.io -->
+
+<script src="/socket.io/socket.io.js"></script>
+
+<!-- Setting -->
+
+<script>
+    const session_email = "<%= session.user.email %>";
+    const session_nickname = "<%= session.user.nickname %>";
+</script>
+
+<!-- Buttion -->
+
+<div class="my_chat_icon rounded-full shadow-md hover:bg-gray-200" style="cursor: pointer;" onclick="openInstantChat()">
+    <!--  -->
+</div>
+
+<script src="/socket/instantMessage.js"></script>
+
+<% } %>

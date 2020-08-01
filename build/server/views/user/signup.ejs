@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <% include ../partial/header %>
+
+        <!-- Main -->
+
+        <div class="container w-full lg:w-1/2 my-5 text-center">
+            <% if(show == "true"){ %> <% include ../partial/toast %> <% } %>
+            <h1 class="text-4xl">SIGN UP</h1>
+            <div>
+                <form class="my-10 js_signupForm" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inputEmail4">이메일</label>
+                            <input type="email" class="form-control" id="inputEmail4" name="email" required autocomplete="off" />
+                            <small class="text-red-500">이메일 인증 진행 및 로그인에 사용됩니다</small>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputFarm">농장 이름</label>
+                            <input type="text" class="form-control" id="inputFarm" name="farm" placeholder="(농장 미생성시 미입력)" autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="inputPassword4">비밀번호</label>
+                            <input type="password" class="form-control" id="inputPassword4" name="password" onKeyUp="checkPasswordStrength()" required autocomplete="off" />
+                            <small class="text-red-500">비밀번호는 영어, 숫자, 특수문자를 포함한 8자리 이상이여야 합니다</small>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="inputPasswordConfirm">비밀번호 확인</label>
+                            <input type="password" class="form-control" id="inputPasswordConfirm" name="passwordConfirm" onKeyUp="checkPasswordConfirm()" required autocomplete="new-password" />
+                        </div>
+                    </div>
+                    <div class="alert alert-danger" id="password-strength-status" role="alert">
+                        사용할 수 없는 비밀번호입니다
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="inputNickname">메이플 닉네임</label>
+                            <input type="text" class="form-control js_nickname" id="inputNickname" name="nickname" placeholder="(대소문자 구분)" required />
+                            <small class="text-red-500">타인의 캐릭터를 사용할 경우, 경고없이 계정이 정지될 수 있습니다</small>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="inputServer">서버</label>
+                            <input type="text" class="form-control js_server" id="inputServer" value="닉네임 찾기를 해주세요" name="server" readonly />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="inputGuild">길드</label>
+                            <input type="text" class="form-control js_guild" id="inputGuild" value="닉네임 찾기를 해주세요" name="guild" readonly />
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label for="inputSearchNickname">캐릭터 찾기</label>
+                            <input type="button" class="form-control btn btn-primary" id="inputSearchNickname" value="캐릭터 찾기" onclick="checkNickname()" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input js_agree" type="checkbox" id="gridCheck" required />
+                            <label class="form-check-label" for="gridCheck">
+                                <strong class="text-red-400">[필수]</strong> <a data-toggle="modal" data-target="#agreementModal" style="cursor: pointer; text-decoration: underline;">이용약관</a>에
+                                동의합니다
+                            </label>
+                        </div>
+                    </div>
+                    <input type="hidden" class="js_profile" name="profile" />
+                    <button type="submit" class="btn btn-primary">회원가입</button>
+                </form>
+                이미 가입하셨다면
+                <a href="/users/login"
+                    ><i><strong>로그인</strong></i></a
+                >하세요!
+            </div>
+        </div>
+
+        <!-- Main -->
+
+        <% include ../partial/agreement %>
+        <!--  -->
+        <% include ../partial/foot %>
+        <!--  -->
+        <% include ../partial/footer %>
+        <script src="/javascripts/signup.js"></script>
+    </body>
+</html>

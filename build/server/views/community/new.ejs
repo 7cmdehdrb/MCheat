@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <% include ../partial/header %>
+
+        <div class="container w-full lg:w-1/2 my-5">
+            <h1 class="text-4xl text-center">새 글쓰기</h1>
+            <form method="POST" enctype="multipart/form-data" class="mt-10">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                <input type="hidden" name="writerEmail" value="<%= session.user.email %>" />
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <select class="form-control" name="tag">
+                            <option value="자유" selected>[자유]</option>
+                            <option value="정보">[정보]</option>
+                            <option value="모임">[모임]</option>
+                            <option value="건의">[건의]</option>
+                            <% if(session.user.is_admin == true){ %>
+                            <option value="공지">[공지]</option>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-8">
+                        <input type="text" class="form-control js_titleInput" id="inputTitle" placeholder="제목을 입력하세요(최대 20자)" name="title" required />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="contentArea">내용</label>
+                        <textarea class="form-control" id="contentArea" rows="10" name="content" required></textarea>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="inputFile">사진첨부(png, jpg, gif)</label>
+                        <input type="file" accept="image/*" class="form-control-file js_inputFile" id="inputFile" name="inputFile" />
+                    </div>
+                </div>
+                <div class="form-row w-full lg:w-1/2 mx-auto">
+                    <button class="btn btn-primary btn-lg btn-block">글쓰기</button>
+                </div>
+            </form>
+        </div>
+
+        <% include ../partial/foot %>
+        <!--  -->
+        <% include ../partial/footer %>
+        <script src="/javascripts/newPost.js"></script>
+    </body>
+</html>

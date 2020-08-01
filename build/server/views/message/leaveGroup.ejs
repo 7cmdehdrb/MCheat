@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <% include ../partial/head %>
+    </head>
+    <body>
+        <% include ../partial/loading %>
+
+        <form method="POST" class="js_form">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <input type="hidden" name="room" value="<%= room %>" />
+        </form>
+
+        <!-- Socket.io -->
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            const socket = io();
+            const form = document.querySelector(".js_form");
+
+            init = () => {
+                socket.emit("groupMessage", {
+                    room: "<%= room %>",
+                    from: "<%= session.user.nickname %>",
+                    from_email: "<%= session.user.email %>",
+                    message: "<%= session.user.nickname %>님이 채팅방을 나가셨습니다",
+                });
+                socket.emit("event", {
+                    status: "delete",
+                    target: "<%= room %>",
+                });
+                setTimeout(() => {
+                    form.submit();
+                }, 100);
+            };
+
+            init();
+        </script>
+    </body>
+</html>
