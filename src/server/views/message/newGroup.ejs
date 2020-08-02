@@ -16,7 +16,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="inputGroup">그룹이름</label>
-                        <input type="text" class="form-control" name="name" id="inputGroup" required placeholder="그룹명" value="<%= session.user.nickname %>의 그룹채팅" />
+                        <input type="text" class="form-control" name="name" id="inputGroup" required maxlength="30" placeholder="그룹명(최대 30자)" value="<%= session.user.nickname %>의 그룹채팅" />
                     </div>
                     <div class="form-group col-md-6">
                         <label for="inputPassword">비밀번호</label>

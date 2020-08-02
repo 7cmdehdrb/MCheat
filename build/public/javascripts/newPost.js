@@ -30,10 +30,4 @@ window.addEventListener("submit", (ev) => {
     } catch (error) {
         console.log(error);
     }
-
-    if (titleInput.value > 20) {
-        ev.preventDefault();
-        alert("제목은 최대 20자까지 작성 가능합니다");
-        return;
-    }
 });

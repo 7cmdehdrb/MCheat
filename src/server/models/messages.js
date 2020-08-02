@@ -51,9 +51,7 @@ const groupMessageRoomSchema = new mongoose.Schema(
             required: true,
             validate: {
                 validator: function (v) {
-                    if (v.length > 300) {
-                        return false;
-                    }
+                    return v.length <= 300;
                 },
             },
         },

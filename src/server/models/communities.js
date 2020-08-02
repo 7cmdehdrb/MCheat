@@ -56,7 +56,7 @@ const communitySchema = new mongoose.Schema(
             required: true,
             validate: {
                 validator: function (v) {
-                    return v.length < 21;
+                    return v.length <= 30;
                 },
                 message: () => "Title is too long",
             },

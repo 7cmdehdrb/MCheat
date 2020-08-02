@@ -49,11 +49,6 @@ document.querySelector(".js_cheatForm").addEventListener("submit", (ev) => {
         return;
     }
 
-    if (title.value.length > 30) {
-        alert("제목은 최대 30자까지 작성 가능합니다");
-        return;
-    }
-
     if (phone.value != "") {
         if (Boolean(Number(phone.value.replace(/-/gi, "")))) {
             if (phone.value.replace(/-/gi, "").length != 11) {

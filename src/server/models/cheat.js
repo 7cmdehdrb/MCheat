@@ -64,9 +64,7 @@ const cheatSchema = new mongoose.Schema(
             required: true,
             validate: {
                 validator: function (v) {
-                    if (v.length > 30) {
-                        return false;
-                    }
+                    return v.length <= 30;
                 },
             },
         },

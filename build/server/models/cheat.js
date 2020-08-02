@@ -56,9 +56,7 @@ var cheatSchema = new _mongoose["default"].Schema({
     required: true,
     validate: {
       validator: function validator(v) {
-        if (v.length > 30) {
-          return false;
-        }
+        return v.length <= 30;
       }
     }
   },

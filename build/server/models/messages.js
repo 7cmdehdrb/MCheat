@@ -84,9 +84,7 @@ var groupMessageRoomSchema = new _mongoose["default"].Schema({
     required: true,
     validate: {
       validator: function validator(v) {
-        if (v.length > 300) {
-          return false;
-        }
+        return v.length <= 300;
       }
     }
   },

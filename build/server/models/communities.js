@@ -91,7 +91,7 @@ var communitySchema = new _mongoose["default"].Schema({
     required: true,
     validate: {
       validator: function validator(v) {
-        return v.length < 21;
+        return v.length <= 30;
       },
       message: function message() {
         return "Title is too long";
