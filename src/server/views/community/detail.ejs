@@ -43,7 +43,7 @@
                     <div class="py-10 text-lg text-gray-800">
                         <% if(detail.file){ %>
                         <div class="w-full lg:w-5/6 mx-auto px-1 mb-10">
-                            <img class="w-full" src="/uploads/<%= detail.file %>" alt="첨부한 사진" />
+                            <img class="w-full" src="<%= detail.file %>" alt="첨부한 사진" onerror="this.src='/images/error.webp'" />
                         </div>
                         <% } %>
                         <div class="mb-10 px-5">

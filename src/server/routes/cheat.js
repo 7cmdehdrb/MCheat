@@ -153,7 +153,7 @@ router.post("/newCheat", cheatUpload.array("images"), csrfProtection, async (req
     let filenames = [];
 
     files.forEach((element) => {
-        filenames.push(element.filename);
+        filenames.push(element.location);
     });
 
     if (!session.user) {

@@ -171,7 +171,7 @@ router.post("/new", upload.single("inputFile"), csrfProtection, async (req, res,
         tag: sanitize(tag),
         title: sanitize(title),
         content: sanitize(content),
-        file: Boolean(file) ? sanitize(file.filename) : null,
+        file: Boolean(file) ? sanitize(file.location) : null,
     })
         .then((newCommunity) => {
             if (newCommunity == null) {

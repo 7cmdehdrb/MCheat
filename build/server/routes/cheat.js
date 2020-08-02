@@ -205,7 +205,7 @@ router.post("/newCheat", _multer.cheatUpload.array("images"), _middleware.csrfPr
             files = req.files;
             filenames = [];
             files.forEach(function (element) {
-              filenames.push(element.filename);
+              filenames.push(element.location);
             });
 
             if (session.user) {

@@ -5,25 +5,26 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.date_transfer = exports.account_transfer = exports.phone_transfer = exports.getPlaneString = exports.datetimeToString = exports.newDatetimeFormat = exports.sendResetMail = exports.sendMail = exports.createUUID = exports.hashFunction = exports.getGuild = exports.getTag = void 0;
+exports.sendResetMail = exports.sendMail = exports.date_transfer = exports.account_transfer = exports.phone_transfer = exports.getPlaneString = exports.datetimeToString = exports.newDatetimeFormat = exports.createUUID = exports.hashFunction = exports.getGuild = exports.getTag = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+require("./env");
+
 var _crypto = _interopRequireDefault(require("crypto"));
 
-var _nodemailer = _interopRequireDefault(require("nodemailer"));
-
-var _nodemailerSmtpTransport = _interopRequireDefault(require("nodemailer-smtp-transport"));
-
 var _emails = require("./emails");
-
-require("./env");
 
 var axios = require("axios");
 
 var cheerio = require("cheerio");
+
+var mailgun = require("mailgun-js")({
+  apiKey: process.env.MAILGUN_KEY,
+  domain: process.env.MAILGUN_DOMAIN
+});
 
 var getWorld = function getWorld(icon) {
   var url = "https://ssl.nx.com/s2/game/maplestory/renewal/common/world_icon/";
@@ -189,60 +190,6 @@ var createUUID = function createUUID() {
 
 exports.createUUID = createUUID;
 
-var sendMail = function sendMail(address, secret) {
-  var transporter = _nodemailer["default"].createTransport((0, _nodemailerSmtpTransport["default"])({
-    service: "gmail",
-    host: "smtp.gmail.com",
-    auth: {
-      user: process.env.EMAIL_ADDRESS,
-      pass: process.env.EMAIL_PASSWORD
-    }
-  }));
-
-  transporter.sendMail({
-    from: process.env.EMAIL_ADDRESS,
-    to: address,
-    subject: "MCheat 이메일 인증",
-    html: (0, _emails.emailVerification)(secret)
-  }, function (err, info) {
-    if (err) {
-      console.log(err);
-      return false;
-    }
-
-    console.log(info);
-  });
-};
-
-exports.sendMail = sendMail;
-
-var sendResetMail = function sendResetMail(address, secret) {
-  var transporter = _nodemailer["default"].createTransport((0, _nodemailerSmtpTransport["default"])({
-    service: "gmail",
-    host: "smtp.gmail.com",
-    auth: {
-      user: process.env.EMAIL_ADDRESS,
-      pass: process.env.EMAIL_PASSWORD
-    }
-  }));
-
-  transporter.sendMail({
-    from: process.env.EMAIL_ADDRESS,
-    to: address,
-    subject: "MCheat 비밀번호 초기화",
-    html: (0, _emails.passwordReset)(secret)
-  }, function (err, info) {
-    if (err) {
-      console.log(err);
-      return false;
-    }
-
-    console.log(info);
-  });
-};
-
-exports.sendResetMail = sendResetMail;
-
 var newDatetimeFormat = function newDatetimeFormat() {
   var today = new Date();
   var year = today.getFullYear();
@@ -317,3 +264,33 @@ var date_transfer = function date_transfer(data) {
 };
 
 exports.date_transfer = date_transfer;
+
+var sendMail = function sendMail(address, secret) {
+  var data = {
+    from: "MCheat@mcheat.ga",
+    to: address,
+    subject: "MCheat 이메일 인증",
+    html: (0, _emails.emailVerification)(secret)
+  };
+  mailgun.messages().send(data, function (err, body) {
+    if (err) console.log(err);
+    console.log(body);
+  });
+};
+
+exports.sendMail = sendMail;
+
+var sendResetMail = function sendResetMail(address, secret) {
+  var data = {
+    from: "MCheat@mcheat.ga",
+    to: address,
+    subject: "MCheat 비밀번호 초기화",
+    html: (0, _emails.passwordReset)(secret)
+  };
+  mailgun.messages().send(data, function (err, body) {
+    if (err) console.log(err);
+    console.log(body);
+  });
+};
+
+exports.sendResetMail = sendResetMail;

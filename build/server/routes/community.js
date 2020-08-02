@@ -221,7 +221,7 @@ router.post("/new", _multer.upload.single("inputFile"), _middleware.csrfProtecti
               tag: (0, _mongoSanitize["default"])(tag),
               title: (0, _mongoSanitize["default"])(title),
               content: (0, _mongoSanitize["default"])(content),
-              file: Boolean(file) ? (0, _mongoSanitize["default"])(file.filename) : null
+              file: Boolean(file) ? (0, _mongoSanitize["default"])(file.location) : null
             }).then(function (newCommunity) {
               if (newCommunity == null) {
                 throw Error();

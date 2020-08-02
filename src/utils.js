@@ -1,10 +1,12 @@
+import "./env";
 import crypto from "crypto";
 const axios = require("axios");
 const cheerio = require("cheerio");
-import nodemailer from "nodemailer";
-import smtpTransport from "nodemailer-smtp-transport";
+const mailgun = require("mailgun-js")({
+    apiKey: process.env.MAILGUN_KEY,
+    domain: process.env.MAILGUN_DOMAIN,
+});
 import { emailVerification, passwordReset } from "./emails";
-import "./env";
 
 const getWorld = (icon) => {
     const url = "https://ssl.nx.com/s2/game/maplestory/renewal/common/world_icon/";
@@ -122,64 +124,6 @@ export const createUUID = () => {
     return guid();
 };
 
-export const sendMail = (address, secret) => {
-    const transporter = nodemailer.createTransport(
-        smtpTransport({
-            service: "gmail",
-            host: "smtp.gmail.com",
-            auth: {
-                user: process.env.EMAIL_ADDRESS,
-                pass: process.env.EMAIL_PASSWORD,
-            },
-        })
-    );
-
-    transporter.sendMail(
-        {
-            from: process.env.EMAIL_ADDRESS,
-            to: address,
-            subject: "MCheat 이메일 인증",
-            html: emailVerification(secret),
-        },
-        (err, info) => {
-            if (err) {
-                console.log(err);
-                return false;
-            }
-            console.log(info);
-        }
-    );
-};
-
-export const sendResetMail = (address, secret) => {
-    const transporter = nodemailer.createTransport(
-        smtpTransport({
-            service: "gmail",
-            host: "smtp.gmail.com",
-            auth: {
-                user: process.env.EMAIL_ADDRESS,
-                pass: process.env.EMAIL_PASSWORD,
-            },
-        })
-    );
-
-    transporter.sendMail(
-        {
-            from: process.env.EMAIL_ADDRESS,
-            to: address,
-            subject: "MCheat 비밀번호 초기화",
-            html: passwordReset(secret),
-        },
-        (err, info) => {
-            if (err) {
-                console.log(err);
-                return false;
-            }
-            console.log(info);
-        }
-    );
-};
-
 export const newDatetimeFormat = () => {
     const today = new Date();
 
@@ -240,4 +184,34 @@ export const date_transfer = (data) => {
     }
     const newDateFormat = `${year}-${month}-${date}`;
     return newDateFormat;
+};
+
+export const sendMail = (address, secret) => {
+    const data = {
+        from: "MCheat@mcheat.ga",
+        to: address,
+        subject: "MCheat 이메일 인증",
+        html: emailVerification(secret),
+    };
+
+    mailgun.messages().send(data, function (err, body) {
+        if (err) console.log(err);
+
+        console.log(body);
+    });
+};
+
+export const sendResetMail = (address, secret) => {
+    const data = {
+        from: "MCheat@mcheat.ga",
+        to: address,
+        subject: "MCheat 비밀번호 초기화",
+        html: passwordReset(secret),
+    };
+
+    mailgun.messages().send(data, function (err, body) {
+        if (err) console.log(err);
+
+        console.log(body);
+    });
 };
