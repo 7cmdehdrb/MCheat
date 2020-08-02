@@ -118,7 +118,7 @@
                         <!-- Images -->
                         <% detail.files.forEach(file => { %>
                         <div class="w-full lg:w-5/6 mx-auto px-1 mb-10">
-                            <img class="w-full" src="/cheatUploads/<%= file %>" alt="첨부한 사진" />
+                            <img class="w-full" src="<%= file %>" alt="첨부한 사진" onerror="this.src='/images/error.webp'" />
                         </div>
                         <% }); %>
                         <!-- Images End -->
