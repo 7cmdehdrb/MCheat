@@ -13,9 +13,17 @@
 <script type="text/javascript">
     window.onload = function () {
         var isIE = /*@cc_on!@*/ false || !!document.documentMode;
+
         if (isIE) {
             alert("이 웹사이트는 인터넷 익스플로러에서는 사용하실 수 없습니다. 다른 브라우저를 사용해주세요");
             window.close();
+            return;
+        }
+
+        if (document.location.protocol == "http:") {
+            alert("보안 강화를 위하여 HTTPS로 이동합니다");
+            document.location.href = document.location.href.replace("http:", "https:");
+            return;
         }
     };
 </script>

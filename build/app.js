@@ -97,14 +97,14 @@ app.use((0, _expressSession["default"])({
   //     collection: "sessions",
   // }),
   cookie: {
-    maxAge: 1000 * 60 * 60,
-    // 쿠키 유효기간 1시간
+    maxAge: 1000 * 60 * 60 * 5,
+    // 쿠키 유효기간 5시간
     httpOnly: true
   }
 }));
 app.use((0, _connectFlash["default"])());
 app.use(_express["default"]["static"](_path["default"].join(__dirname, "public"), {
-  maxAge: process.env.DEBUG == "true" ? 0 : 1000 * 60 * 60
+  maxAge: process.env.DEBUG == "true" ? 0 : 1000 * 60 * 60 * 5
 })); // URL Pattern
 
 app.use("/", _index["default"]);
