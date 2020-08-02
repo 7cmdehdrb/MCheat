@@ -66,10 +66,10 @@ app.use(
         secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
-        store: new MongoStore({
-            url: process.env.DB,
-            collection: "sessions",
-        }),
+        // store: new MongoStore({
+        //     url: process.env.DB,
+        //     collection: "sessions",
+        // }),
         cookie: {
             maxAge: 1000 * 60 * 60, // 쿠키 유효기간 1시간
             httpOnly: true,
