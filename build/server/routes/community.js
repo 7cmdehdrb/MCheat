@@ -185,7 +185,7 @@ router.get("/new", _middleware.csrfProtection, function (req, res, next) {
 });
 router.post("/new", _multer.upload.single("inputFile"), _middleware.csrfProtection, /*#__PURE__*/function () {
   var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(req, res, next) {
-    var session, _req$body, tag, title, content, file;
+    var session, _req$body, tag, title, content, file, newContent;
 
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
@@ -215,12 +215,13 @@ router.post("/new", _multer.upload.single("inputFile"), _middleware.csrfProtecti
             return _context3.abrupt("return");
 
           case 11:
-            _context3.next = 13;
+            newContent = content.replace(/\r\n/g, "<br>").replace(/<script>/gi, "script");
+            _context3.next = 14;
             return _communities.Community.create({
               writerEmail: session.user.email,
               tag: (0, _mongoSanitize["default"])(tag),
               title: (0, _mongoSanitize["default"])(title),
-              content: (0, _mongoSanitize["default"])(content),
+              content: (0, _mongoSanitize["default"])(newContent),
               file: Boolean(file) ? (0, _mongoSanitize["default"])(file.location) : null
             }).then(function (newCommunity) {
               if (newCommunity == null) {
@@ -235,7 +236,7 @@ router.post("/new", _multer.upload.single("inputFile"), _middleware.csrfProtecti
               res.redirect("/communities/list");
             });
 
-          case 13:
+          case 14:
           case "end":
             return _context3.stop();
         }
@@ -418,7 +419,7 @@ router.get("/updatePost", _middleware.csrfProtection, /*#__PURE__*/function () {
 }());
 router.post("/updatePost", _middleware.csrfProtection, /*#__PURE__*/function () {
   var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(req, res, next) {
-    var session, _req$body2, tag, title, content, id;
+    var session, _req$body2, tag, title, content, id, newContent;
 
     return _regenerator["default"].wrap(function _callee6$(_context6) {
       while (1) {
@@ -436,7 +437,8 @@ router.post("/updatePost", _middleware.csrfProtection, /*#__PURE__*/function () 
             return _context6.abrupt("return");
 
           case 5:
-            _context6.next = 7;
+            newContent = content.replace(/\r\n/g, "<br>").replace(/<script>/gi, "script");
+            _context6.next = 8;
             return _communities.Community.updateOne({
               $and: [{
                 writerEmail: session.user.email
@@ -447,7 +449,7 @@ router.post("/updatePost", _middleware.csrfProtection, /*#__PURE__*/function () 
               $set: {
                 tag: (0, _mongoSanitize["default"])(tag),
                 title: (0, _mongoSanitize["default"])(title),
-                content: (0, _mongoSanitize["default"])(content)
+                content: (0, _mongoSanitize["default"])(newContent)
               }
             }).then(function (updatedPost) {
               if (updatedPost.nModified == 1) {
@@ -462,7 +464,7 @@ router.post("/updatePost", _middleware.csrfProtection, /*#__PURE__*/function () 
               res.redirect("/communities/list");
             });
 
-          case 7:
+          case 8:
           case "end":
             return _context6.stop();
         }

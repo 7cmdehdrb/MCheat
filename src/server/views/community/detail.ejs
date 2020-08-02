@@ -46,10 +46,8 @@
                             <img class="w-full" src="<%= detail.file %>" alt="첨부한 사진" onerror="this.src='/images/error.webp'" />
                         </div>
                         <% } %>
-                        <div class="mb-10 px-5">
-                            <p>
-                                <%= detail.content %>
-                            </p>
+                        <div class="mb-10 px-5 js_main_content">
+                            <%- detail.content %>
                         </div>
                         <!-- Profile Card -->
                         <div class="flex mx-4">

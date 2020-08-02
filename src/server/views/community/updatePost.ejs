@@ -31,7 +31,7 @@
                     <div class="form-group col-md-12">
                         <label for="contentArea">내용</label>
                         <textarea class="form-control" id="contentArea" rows="10" name="content" required>
-                            <%= post.content.trim() %> 
+                            <%- post.content.replace(/<br>/gi, "\n") %>
                         </textarea>
                     </div>
                 </div>

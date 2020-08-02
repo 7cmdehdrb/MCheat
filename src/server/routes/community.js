@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 import sanitize from "mongo-sanitize";
 import { Community, Comment } from "../models/communities";
-import { datetimeToString, getTag } from "../../utils";
+import { getTag } from "../../utils";
 import { upload } from "../../multer";
 import { csrfProtection } from "../../middleware";
 
@@ -166,11 +166,13 @@ router.post("/new", upload.single("inputFile"), csrfProtection, async (req, res,
         return;
     }
 
+    const newContent = content.replace(/\r\n/g, "<br>").replace(/<script>/gi, "script");
+
     await Community.create({
         writerEmail: session.user.email,
         tag: sanitize(tag),
         title: sanitize(title),
-        content: sanitize(content),
+        content: sanitize(newContent),
         file: Boolean(file) ? sanitize(file.location) : null,
     })
         .then((newCommunity) => {
@@ -333,6 +335,8 @@ router.post("/updatePost", csrfProtection, async (req, res, next) => {
         return;
     }
 
+    const newContent = content.replace(/\r\n/g, "<br>").replace(/<script>/gi, "script");
+
     await Community.updateOne(
         {
             $and: [
@@ -348,7 +352,7 @@ router.post("/updatePost", csrfProtection, async (req, res, next) => {
             $set: {
                 tag: sanitize(tag),
                 title: sanitize(title),
-                content: sanitize(content),
+                content: sanitize(newContent),
             },
         }
     )
